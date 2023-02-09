@@ -1,27 +1,35 @@
 package com.mapbox.maps.mapbox_maps.annotation
 
+import android.content.Context
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.pigeons.*
 import com.mapbox.maps.plugin.annotation.AnnotationManager
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
+import com.mapbox.maps.viewannotation.ViewAnnotationManager
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 class AnnotationController(private val mapView: MapView, private val mapboxMap: MapboxMap) :
   ControllerDelegate {
+
+  companion object {
+    const val ZNAIDY_ANNITATION_CONTROLLER_ID = "0"
+  }
   private val managerMap = mutableMapOf<String, AnnotationManager<*, *, *, *, *, *, *>>()
   private val pointAnnotationController = PointAnnotationController(this)
   private val circleAnnotationController = CircleAnnotationController(this)
   private val polygonAnnotationController = PolygonAnnotationController(this)
   private val polylineAnnotationController = PolylineAnnotationController(this)
+  private val znaidyAnnotationController = ZnaidyAnnotationController(this)
   private lateinit var onPointAnnotationClickListener: FLTPointAnnotationMessager.OnPointAnnotationClickListener
   private lateinit var onPolygonAnnotationClickListener: FLTPolygonAnnotationMessager.OnPolygonAnnotationClickListener
   private lateinit var onPolylineAnnotationController: FLTPolylineAnnotationMessager.OnPolylineAnnotationClickListener
   private lateinit var onCircleAnnotationClickListener: FLTCircleAnnotationMessager.OnCircleAnnotationClickListener
-  private var index = 0
+  private lateinit var onZnaidyAnnotationClickListener: FLTZnaidyAnnotationMessager.OnZnaidyAnnotationClickListener
+  private var index = 1
   fun handleCreateManager(call: MethodCall, result: MethodChannel.Result) {
     val manager = when (val type = call.argument<String>("type")!!) {
       "circle" -> {
@@ -64,6 +72,10 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
           )
         }
       }
+      "znaidy" -> {
+        result.success(ZNAIDY_ANNITATION_CONTROLLER_ID)
+        return
+      }
       else -> {
         result.error("0", "Unrecognized manager type: $type", null)
         return
@@ -76,6 +88,9 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
 
   fun handleRemoveManager(call: MethodCall, result: MethodChannel.Result) {
     val id = call.argument<String>("id")!!
+    if (id == ZNAIDY_ANNITATION_CONTROLLER_ID) {
+      result.success(null)
+    }
     managerMap.remove(id)?.let {
       mapView.annotations.removeAnnotationManager(it)
     }
@@ -87,6 +102,7 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
     onCircleAnnotationClickListener = FLTCircleAnnotationMessager.OnCircleAnnotationClickListener(messenger)
     onPolygonAnnotationClickListener = FLTPolygonAnnotationMessager.OnPolygonAnnotationClickListener(messenger)
     onPolylineAnnotationController = FLTPolylineAnnotationMessager.OnPolylineAnnotationClickListener(messenger)
+    onZnaidyAnnotationClickListener = FLTZnaidyAnnotationMessager.OnZnaidyAnnotationClickListener(messenger)
     FLTPointAnnotationMessager._PointAnnotationMessager.setup(messenger, pointAnnotationController)
     FLTCircleAnnotationMessager._CircleAnnotationMessager.setup(
       messenger,
@@ -100,6 +116,10 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
       messenger,
       polygonAnnotationController
     )
+    FLTZnaidyAnnotationMessager._ZnaidyAnnotationMessager.setup(
+      messenger,
+      znaidyAnnotationController
+    )
   }
 
   fun dispose(messenger: BinaryMessenger) {
@@ -107,6 +127,7 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
     FLTCircleAnnotationMessager._CircleAnnotationMessager.setup(messenger, null)
     FLTPolylineAnnotationMessager._PolylineAnnotationMessager.setup(messenger, null)
     FLTPolygonAnnotationMessager._PolygonAnnotationMessager.setup(messenger, null)
+    FLTZnaidyAnnotationMessager._ZnaidyAnnotationMessager.setup(messenger, null)
   }
 
   override fun getManager(managerId: String): AnnotationManager<*, *, *, *, *, *, *> {
@@ -114,5 +135,13 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
       throw(Throwable("No manager found with id: $managerId"))
     }
     return managerMap[managerId]!!
+  }
+
+  override fun getViewAnnotationManager(): ViewAnnotationManager {
+    return mapView.viewAnnotationManager
+  }
+
+  override fun getContext(): Context {
+    return mapView.context
   }
 }

@@ -34,6 +34,12 @@ class _AnnotationManager {
         .then((value) => PolygonAnnotationManager(id: value));
   }
 
+  Future<ZnaidyAnnotationManager> createZnaidyAnnotationManager() async {
+    return _mapboxMapsPlatform
+        .createAnnotationManager('znaidy')
+        .then((value) => ZnaidyAnnotationManager(id: value));
+  }
+
   /// Remove an AnnotationManager and all the annotations created by it.
   Future<void> removeAnnotationManager(BaseAnnotationManager manager) async {
     _mapboxMapsPlatform.removeAnnotationManager(manager.id);

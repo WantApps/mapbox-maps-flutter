@@ -20,8 +20,10 @@ import 'point_annotations.dart';
 import 'projection.dart';
 import 'style.dart';
 import 'gestures.dart';
+import 'znaidy_annotations.dart';
 
 final List<ExamplePage> _allPages = <ExamplePage>[
+  ZnaidyAnnotationPage(),
   FullMapPage(),
   StylePage(),
   CameraPage(),

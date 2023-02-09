@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <View
+        android:id="@+id/markerGlow"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/marker_glow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/animationRoot"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <ImageView
+            android:id="@+id/markerBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/znaidy_marker_shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <ImageView
+            android:id="@+id/profileIcon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/profile_daniel"
+            app:layout_constraintBottom_toBottomOf="@id/pfpBottomGuideline"
+            app:layout_constraintEnd_toEndOf="@id/pfpEndGuideline"
+            app:layout_constraintStart_toStartOf="@id/pfpStartGuideline"
+            app:layout_constraintTop_toTopOf="@id/pfpTopGuideline"
+            tools:ignore="ContentDescription"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pfpBottomGuideline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.82"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pfpTopGuideline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pfpStartGuideline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.22"
+            />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pfpEndGuideline"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.78"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

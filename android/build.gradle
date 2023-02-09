@@ -69,4 +69,5 @@ dependencies {
 
     implementation "androidx.annotation:annotation:1.1.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 }
