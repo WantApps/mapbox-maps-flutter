@@ -31,56 +31,47 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 }
 
 
-@interface FLTZnaidyAnnotation ()
-+ (FLTZnaidyAnnotation *)fromMap:(NSDictionary *)dict;
-+ (nullable FLTZnaidyAnnotation *)nullableFromMap:(NSDictionary *)dict;
-- (NSDictionary *)toMap;
-@end
 @interface FLTZnaidyAnnotationOptions ()
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict;
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict;
 - (NSDictionary *)toMap;
 @end
 
-@implementation FLTZnaidyAnnotation
-+ (instancetype)makeWithId:(NSString *)id
-    geometry:(nullable NSDictionary<NSString *, id> *)geometry {
-  FLTZnaidyAnnotation* pigeonResult = [[FLTZnaidyAnnotation alloc] init];
-  pigeonResult.id = id;
-  pigeonResult.geometry = geometry;
-  return pigeonResult;
-}
-+ (FLTZnaidyAnnotation *)fromMap:(NSDictionary *)dict {
-  FLTZnaidyAnnotation *pigeonResult = [[FLTZnaidyAnnotation alloc] init];
-  pigeonResult.id = GetNullableObject(dict, @"id");
-  NSAssert(pigeonResult.id != nil, @"");
-  pigeonResult.geometry = GetNullableObject(dict, @"geometry");
-  return pigeonResult;
-}
-+ (nullable FLTZnaidyAnnotation *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotation fromMap:dict] : nil; }
-- (NSDictionary *)toMap {
-  return @{
-    @"id" : (self.id ?: [NSNull null]),
-    @"geometry" : (self.geometry ?: [NSNull null]),
-  };
-}
-@end
-
 @implementation FLTZnaidyAnnotationOptions
-+ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry {
++ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
+    onlineStatus:(FLTOnlineStatus)onlineStatus
+    userAvatar:(nullable NSString *)userAvatar
+    stickerCount:(nullable NSNumber *)stickerCount
+    companySize:(nullable NSNumber *)companySize
+    currentSpeed:(nullable NSNumber *)currentSpeed {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
   pigeonResult.geometry = geometry;
+  pigeonResult.onlineStatus = onlineStatus;
+  pigeonResult.userAvatar = userAvatar;
+  pigeonResult.stickerCount = stickerCount;
+  pigeonResult.companySize = companySize;
+  pigeonResult.currentSpeed = currentSpeed;
   return pigeonResult;
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
   FLTZnaidyAnnotationOptions *pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
   pigeonResult.geometry = GetNullableObject(dict, @"geometry");
+  pigeonResult.onlineStatus = [GetNullableObject(dict, @"onlineStatus") integerValue];
+  pigeonResult.userAvatar = GetNullableObject(dict, @"userAvatar");
+  pigeonResult.stickerCount = GetNullableObject(dict, @"stickerCount");
+  pigeonResult.companySize = GetNullableObject(dict, @"companySize");
+  pigeonResult.currentSpeed = GetNullableObject(dict, @"currentSpeed");
   return pigeonResult;
 }
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
 - (NSDictionary *)toMap {
   return @{
     @"geometry" : (self.geometry ?: [NSNull null]),
+    @"onlineStatus" : @(self.onlineStatus),
+    @"userAvatar" : (self.userAvatar ?: [NSNull null]),
+    @"stickerCount" : (self.stickerCount ?: [NSNull null]),
+    @"companySize" : (self.companySize ?: [NSNull null]),
+    @"currentSpeed" : (self.currentSpeed ?: [NSNull null]),
   };
 }
 @end
@@ -92,7 +83,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 {
   switch (type) {
     case 128:     
-      return [FLTZnaidyAnnotation fromMap:[self readValue]];
+      return [FLTZnaidyAnnotationOptions fromMap:[self readValue]];
     
     default:    
       return [super readValueOfType:type];
@@ -106,7 +97,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @implementation FLTOnZnaidyAnnotationClickListenerCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[FLTZnaidyAnnotation class]]) {
+  if ([value isKindOfClass:[FLTZnaidyAnnotationOptions class]]) {
     [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
@@ -151,13 +142,13 @@ NSObject<FlutterMessageCodec> *FLTOnZnaidyAnnotationClickListenerGetCodec() {
   }
   return self;
 }
-- (void)onZnaidyAnnotationClickAnnotation:(FLTZnaidyAnnotation *)arg_annotation completion:(void(^)(NSError *_Nullable))completion {
+- (void)onZnaidyAnnotationClickAnnotationId:(NSString *)arg_annotationId annotationOptions:(nullable FLTZnaidyAnnotationOptions *)arg_annotationOptions completion:(void(^)(NSError *_Nullable))completion {
   FlutterBasicMessageChannel *channel =
     [FlutterBasicMessageChannel
       messageChannelWithName:@"dev.flutter.pigeon.OnZnaidyAnnotationClickListener.onZnaidyAnnotationClick"
       binaryMessenger:self.binaryMessenger
       codec:FLTOnZnaidyAnnotationClickListenerGetCodec()];
-  [channel sendMessage:@[arg_annotation ?: [NSNull null]] reply:^(id reply) {
+  [channel sendMessage:@[arg_annotationId ?: [NSNull null], arg_annotationOptions ?: [NSNull null]] reply:^(id reply) {
     completion(nil);
   }];
 }
@@ -169,9 +160,6 @@ NSObject<FlutterMessageCodec> *FLTOnZnaidyAnnotationClickListenerGetCodec() {
 {
   switch (type) {
     case 128:     
-      return [FLTZnaidyAnnotation fromMap:[self readValue]];
-    
-    case 129:     
       return [FLTZnaidyAnnotationOptions fromMap:[self readValue]];
     
     default:    
@@ -186,12 +174,8 @@ NSObject<FlutterMessageCodec> *FLTOnZnaidyAnnotationClickListenerGetCodec() {
 @implementation FLT_ZnaidyAnnotationMessagerCodecWriter
 - (void)writeValue:(id)value 
 {
-  if ([value isKindOfClass:[FLTZnaidyAnnotation class]]) {
-    [self writeByte:128];
-    [self writeValue:[value toMap]];
-  } else 
   if ([value isKindOfClass:[FLTZnaidyAnnotationOptions class]]) {
-    [self writeByte:129];
+    [self writeByte:128];
     [self writeValue:[value toMap]];
   } else 
 {
@@ -235,7 +219,7 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         NSArray *args = message;
         NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
         FLTZnaidyAnnotationOptions *arg_annotationOptions = GetNullableObjectAtIndex(args, 1);
-        [api createManagerId:arg_managerId annotationOptions:arg_annotationOptions completion:^(FLTZnaidyAnnotation *_Nullable output, FlutterError *_Nullable error) {
+        [api createManagerId:arg_managerId annotationOptions:arg_annotationOptions completion:^(NSString *_Nullable output, FlutterError *_Nullable error) {
           callback(wrapResult(output, error));
         }];
       }];
@@ -251,12 +235,13 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
         codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(updateManagerId:annotation:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(updateManagerId:annotation:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(updateManagerId:annotationId:annotationOptions:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(updateManagerId:annotationId:annotationOptions:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
-        FLTZnaidyAnnotation *arg_annotation = GetNullableObjectAtIndex(args, 1);
-        [api updateManagerId:arg_managerId annotation:arg_annotation completion:^(FlutterError *_Nullable error) {
+        NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
+        FLTZnaidyAnnotationOptions *arg_annotationOptions = GetNullableObjectAtIndex(args, 2);
+        [api updateManagerId:arg_managerId annotationId:arg_annotationId annotationOptions:arg_annotationOptions completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
@@ -272,12 +257,12 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
         codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(deleteManagetId:annotation:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(deleteManagetId:annotation:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(deleteManagetId:annotationId:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(deleteManagetId:annotationId:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_managetId = GetNullableObjectAtIndex(args, 0);
-        FLTZnaidyAnnotation *arg_annotation = GetNullableObjectAtIndex(args, 1);
-        [api deleteManagetId:arg_managetId annotation:arg_annotation completion:^(FlutterError *_Nullable error) {
+        NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
+        [api deleteManagetId:arg_managetId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

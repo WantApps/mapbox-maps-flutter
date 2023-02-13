@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
@@ -27,13 +28,50 @@ class ZnaidyAnnotationBody extends StatefulWidget {
 class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
   MapboxMap? mapboxMap;
   ZnaidyAnnotationManager? znaidyAnnotationManager;
-  ZnaidyAnnotation? annotation;
+  String? annotationId;
   int styleIndex = 1;
+
+  Point? position;
+  OnlineStatus onlineStatus = OnlineStatus.offline;
+  String? avatarUrl;
+  int stickers = 0;
+  int companySize = 0;
+  int currentSpeed = 0;
 
   Future<void> _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
     znaidyAnnotationManager =
         await mapboxMap.annotations.createZnaidyAnnotationManager();
+    znaidyAnnotationManager
+        ?.addOnAnnotationTapListener(ZnaidyAnnotationClickListener());
+    final pointManager = await mapboxMap.annotations.createPointAnnotationManager();
+    pointManager.addOnPointAnnotationClickListener(PointAnnotationClickListener());
+    mapboxMap.style
+        .setStyleURI('mapbox://styles/znaidyme/cld4ktnrl000t01qn90o8n2d5');
+    await mapboxMap.setCamera(
+      CameraOptions(
+        center: Point(
+          coordinates: Position(
+            30.5,
+            50.45,
+          ),
+        ).toJson(),
+        zoom: 9,
+      ),
+    );
+  }
+
+  Future<void> _onMapTap(ScreenCoordinate coordinate) async {
+    dev.log('onMapTap: (${coordinate.x},${coordinate.y})');
+    ScreenCoordinate coordin = await mapboxMap!.pixelForCoordinate({
+      "coordinates": [coordinate.y, coordinate.x]
+    });
+
+    final features = await mapboxMap!.queryRenderedFeatures(RenderedQueryGeometry(value: json.encode(coordin.encode()), type: Type.SCREEN_COORDINATE), RenderedQueryOptions());
+    dev.log('features=$features');
+    if (features.isNotEmpty) {
+
+    }
   }
 
   Widget _create() {
@@ -52,11 +90,43 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         });
   }
 
-  Widget _update() {
+  Widget _updatePosition() {
     return TextButton(
-        child: Text('update annotation'),
+        child: Text('update annotation position'),
         onPressed: () async {
-          _updateAnnotation();
+          _updateAnnotationPosition();
+        });
+  }
+
+  Widget _updateStatus() {
+    return TextButton(
+        child: Text('update annotation status'),
+        onPressed: () async {
+          _updateAnnotationStatus();
+        });
+  }
+
+  Widget _updateStickers() {
+    return TextButton(
+        child: Text('update stickers count'),
+        onPressed: () async {
+          _updateStickerCount();
+        });
+  }
+
+  Widget _updateCompanyButton() {
+    return TextButton(
+        child: Text('update company'),
+        onPressed: () async {
+          _updateCompany();
+        });
+  }
+
+  Widget _updateSpeed() {
+    return TextButton(
+        child: Text('update speed'),
+        onPressed: () async {
+          _updateCurrentSpeed();
         });
   }
 
@@ -65,13 +135,19 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     final MapWidget mapWidget = MapWidget(
         key: ValueKey("mapWidget"),
         resourceOptions: ResourceOptions(accessToken: MapsDemo.ACCESS_TOKEN),
-        onMapCreated: _onMapCreated);
+        onMapCreated: _onMapCreated,
+        onTapListener: _onMapTap,
+    );
 
     final List<Widget> listViewChildren = <Widget>[];
 
     listViewChildren.add(_create());
     listViewChildren.add(_delete());
-    listViewChildren.add(_update());
+    listViewChildren.add(_updatePosition());
+    listViewChildren.add(_updateStatus());
+    listViewChildren.add(_updateStickers());
+    listViewChildren.add(_updateCompanyButton());
+    listViewChildren.add(_updateSpeed());
 
     final column = Column(
       mainAxisSize: MainAxisSize.min,
@@ -100,8 +176,8 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
                   child: Icon(Icons.swap_horiz),
                   heroTag: null,
                   onPressed: () {
-                    mapboxMap?.style.setStyleURI(annotationStyles[
-                        ++styleIndex % annotationStyles.length]);
+                    mapboxMap?.style.setStyleURI(
+                        'mapbox://styles/znaidyme/cld4ktnrl000t01qn90o8n2d5');
                   }),
               SizedBox(height: 10),
               FloatingActionButton(
@@ -121,31 +197,97 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
   }
 
   Future<void> _createAnnotation() async {
-    annotation = await znaidyAnnotationManager?.create(
-      ZnaidyAnnotationOptions(
-        geometry: createRandomPoint().toJson(),
+    position = Point(
+      coordinates: Position(
+        30.5,
+        50.45,
       ),
     );
-    dev.log('ZnaidyAnnotation: create: (${annotation?.id}, ${annotation?.geometry})');
+    annotationId = await znaidyAnnotationManager?.create(
+      ZnaidyAnnotationOptions(
+        geometry: position!.toJson(),
+        // userAvatar: 'https://www.krooster.com/_next/image?url=%2Fimg%2Favatars%2Fchar_350_surtr_2.png&w=2048&q=75'
+      ),
+    );
   }
 
   Future<void> _deleteAnnotation() async {
-    if (annotation == null) return;
-    await znaidyAnnotationManager?.delete(annotation!);
-    dev.log('ZnaidyAnnotation: deleted (${annotation?.id}, ${annotation?.geometry})');
-    annotation = null;
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.delete(annotationId!!);
+    annotationId = null;
+    stickers = 0;
+    companySize = 0;
+    currentSpeed = 0;
   }
 
-  Future<void> _updateAnnotation() async {
-    if (annotation == null) return;
-    final lastPosition = Point.fromJson(annotation!.geometry!.cast());
-    final newPosition = Point(coordinates: Position(
-      lastPosition.coordinates.lng + 1,
-      lastPosition.coordinates.lat + 1,
+  Future<void> _updateAnnotationPosition() async {
+    if (annotationId == null) return;
+    final newPosition = Point(
+        coordinates: Position(
+      position!.coordinates.lng + 0.001,
+      position!.coordinates.lat + 0.001,
     ));
-    final newAnnotation = ZnaidyAnnotation(id: annotation!.id, geometry: newPosition.toJson());
-    await znaidyAnnotationManager?.update(newAnnotation);
-    dev.log('ZnaidyAnnotation: updated (${annotation?.id}, ${annotation?.geometry}) -> (${newAnnotation.id}, ${newAnnotation.geometry})');
-    annotation = newAnnotation;
+    await znaidyAnnotationManager?.update(
+      annotationId!,
+      ZnaidyAnnotationOptions(geometry: newPosition.toJson()),
+    );
+    position = newPosition;
+  }
+
+  Future<void> _updateAnnotationStatus() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.update(
+      annotationId!,
+      ZnaidyAnnotationOptions(onlineStatus: _getNextStatus(onlineStatus)),
+    );
+    onlineStatus = _getNextStatus(onlineStatus);
+  }
+
+  Future<void> _updateStickerCount() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.update(
+      annotationId!,
+      ZnaidyAnnotationOptions(stickerCount: stickers + 1),
+    );
+    stickers = stickers + 1;
+  }
+
+  Future<void> _updateCompany() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.update(
+      annotationId!,
+      ZnaidyAnnotationOptions(companySize: companySize + 1),
+    );
+    companySize = companySize + 1;
+  }
+
+  Future<void> _updateCurrentSpeed() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.update(
+      annotationId!,
+      ZnaidyAnnotationOptions(currentSpeed: currentSpeed + 1),
+    );
+    currentSpeed = currentSpeed + 1;
+  }
+
+  OnlineStatus _getNextStatus(OnlineStatus status) {
+    final index = OnlineStatus.values.indexOf(status);
+    final newIndex = (index + 1).remainder(OnlineStatus.values.length);
+    return OnlineStatus.values[newIndex];
+  }
+}
+
+class ZnaidyAnnotationClickListener extends OnZnaidyAnnotationClickListener {
+  @override
+  void onZnaidyAnnotationClick(
+      String annotationId, ZnaidyAnnotationOptions? annotationOptions) {
+    dev.log('onZnaidyAnnotationClick: onTap: $annotationId');
+  }
+}
+
+class PointAnnotationClickListener extends OnPointAnnotationClickListener {
+  @override
+  void onPointAnnotationClick(PointAnnotation annotation) {
+    print("onPointAnnotationClick, id: ${annotation.id}");
   }
 }

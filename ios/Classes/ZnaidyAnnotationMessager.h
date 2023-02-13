@@ -8,21 +8,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class FLTZnaidyAnnotation;
+typedef NS_ENUM(NSUInteger, FLTOnlineStatus) {
+  FLTOnlineStatusOnline = 0,
+  FLTOnlineStatusInApp = 1,
+  FLTOnlineStatusOffline = 2,
+};
+
 @class FLTZnaidyAnnotationOptions;
 
-@interface FLTZnaidyAnnotation : NSObject
-/// `init` unavailable to enforce nonnull fields, see the `make` class method.
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)makeWithId:(NSString *)id
-    geometry:(nullable NSDictionary<NSString *, id> *)geometry;
-@property(nonatomic, copy) NSString * id;
-@property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
-@end
-
 @interface FLTZnaidyAnnotationOptions : NSObject
-+ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry;
++ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
+    onlineStatus:(FLTOnlineStatus)onlineStatus
+    userAvatar:(nullable NSString *)userAvatar
+    stickerCount:(nullable NSNumber *)stickerCount
+    companySize:(nullable NSNumber *)companySize
+    currentSpeed:(nullable NSNumber *)currentSpeed;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
+@property(nonatomic, assign) FLTOnlineStatus onlineStatus;
+@property(nonatomic, copy, nullable) NSString * userAvatar;
+@property(nonatomic, strong, nullable) NSNumber * stickerCount;
+@property(nonatomic, strong, nullable) NSNumber * companySize;
+@property(nonatomic, strong, nullable) NSNumber * currentSpeed;
 @end
 
 /// The codec used by FLTOnZnaidyAnnotationClickListener.
@@ -30,15 +36,15 @@ NSObject<FlutterMessageCodec> *FLTOnZnaidyAnnotationClickListenerGetCodec(void);
 
 @interface FLTOnZnaidyAnnotationClickListener : NSObject
 - (instancetype)initWithBinaryMessenger:(id<FlutterBinaryMessenger>)binaryMessenger;
-- (void)onZnaidyAnnotationClickAnnotation:(FLTZnaidyAnnotation *)annotation completion:(void(^)(NSError *_Nullable))completion;
+- (void)onZnaidyAnnotationClickAnnotationId:(NSString *)annotationId annotationOptions:(nullable FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(NSError *_Nullable))completion;
 @end
 /// The codec used by FLT_ZnaidyAnnotationMessager.
 NSObject<FlutterMessageCodec> *FLT_ZnaidyAnnotationMessagerGetCodec(void);
 
 @protocol FLT_ZnaidyAnnotationMessager
-- (void)createManagerId:(NSString *)managerId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(FLTZnaidyAnnotation *_Nullable, FlutterError *_Nullable))completion;
-- (void)updateManagerId:(NSString *)managerId annotation:(FLTZnaidyAnnotation *)annotation completion:(void(^)(FlutterError *_Nullable))completion;
-- (void)deleteManagetId:(NSString *)managetId annotation:(FLTZnaidyAnnotation *)annotation completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)createManagerId:(NSString *)managerId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
+- (void)updateManagerId:(NSString *)managerId annotationId:(NSString *)annotationId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)deleteManagetId:(NSString *)managetId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 @end
 
 extern void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLT_ZnaidyAnnotationMessager> *_Nullable api);

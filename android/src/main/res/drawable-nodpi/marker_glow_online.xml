@@ -10,8 +10,8 @@
                 android:centerX="0.5"
                 android:centerY="0.5"
                 android:endColor="@android:color/transparent"
-                android:gradientRadius="50dp"
-                android:startColor="@android:color/holo_red_light"
+                android:gradientRadius="@dimen/glow_gradient_radius"
+                android:startColor="#009BCC"
                 android:type="radial"
                 />
 

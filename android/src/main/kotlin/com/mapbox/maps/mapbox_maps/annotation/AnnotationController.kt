@@ -120,6 +120,7 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
       messenger,
       znaidyAnnotationController
     )
+    znaidyAnnotationController.flutterClickCallback = onZnaidyAnnotationClickListener
   }
 
   fun dispose(messenger: BinaryMessenger) {

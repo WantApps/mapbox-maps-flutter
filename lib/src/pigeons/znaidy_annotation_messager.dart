@@ -1,40 +1,36 @@
 part of mapbox_maps_flutter;
 
-class ZnaidyAnnotation {
-  ZnaidyAnnotation({
-    required this.id,
-    this.geometry,
-  });
-
-  String id;
-  Map<String?, Object?>? geometry;
-
-  Object encode() {
-    final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['id'] = id;
-    pigeonMap['geometry'] = geometry;
-    return pigeonMap;
-  }
-
-  static ZnaidyAnnotation decode(Object message) {
-    final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
-    return ZnaidyAnnotation(
-      id: pigeonMap['id']! as String,
-      geometry: (pigeonMap['geometry'] as Map<Object?, Object?>?)?.cast<String?, Object?>(),
-    );
-  }
+enum OnlineStatus {
+  online,
+  inApp,
+  offline,
 }
 
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
     this.geometry,
+    this.onlineStatus,
+    this.userAvatar,
+    this.stickerCount,
+    this.companySize,
+    this.currentSpeed,
   });
 
   Map<String?, Object?>? geometry;
+  OnlineStatus? onlineStatus;
+  String? userAvatar;
+  int? stickerCount;
+  int? companySize;
+  int? currentSpeed;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
     pigeonMap['geometry'] = geometry;
+    pigeonMap['onlineStatus'] = onlineStatus?.index;
+    pigeonMap['userAvatar'] = userAvatar;
+    pigeonMap['stickerCount'] = stickerCount;
+    pigeonMap['companySize'] = companySize;
+    pigeonMap['currentSpeed'] = currentSpeed;
     return pigeonMap;
   }
 
@@ -42,6 +38,13 @@ class ZnaidyAnnotationOptions {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return ZnaidyAnnotationOptions(
       geometry: (pigeonMap['geometry'] as Map<Object?, Object?>?)?.cast<String?, Object?>(),
+      onlineStatus: pigeonMap['onlineStatus'] != null
+          ? OnlineStatus.values[pigeonMap['onlineStatus']! as int]
+          : null,
+      userAvatar: pigeonMap['userAvatar'] as String?,
+      stickerCount: pigeonMap['stickerCount'] as int?,
+      companySize: pigeonMap['companySize'] as int?,
+      currentSpeed: pigeonMap['currentSpeed'] as int?,
     );
   }
 }
@@ -50,7 +53,7 @@ class _OnZnaidyAnnotationClickListenerCodec extends StandardMessageCodec {
   const _OnZnaidyAnnotationClickListenerCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is ZnaidyAnnotation) {
+    if (value is ZnaidyAnnotationOptions) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else
@@ -62,7 +65,7 @@ class _OnZnaidyAnnotationClickListenerCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return ZnaidyAnnotation.decode(readValue(buffer)!);
+        return ZnaidyAnnotationOptions.decode(readValue(buffer)!);
 
       default:
         return super.readValueOfType(type, buffer);
@@ -73,7 +76,7 @@ class _OnZnaidyAnnotationClickListenerCodec extends StandardMessageCodec {
 abstract class OnZnaidyAnnotationClickListener {
   static const MessageCodec<Object?> codec = _OnZnaidyAnnotationClickListenerCodec();
 
-  void onZnaidyAnnotationClick(ZnaidyAnnotation annotation);
+  void onZnaidyAnnotationClick(String annotationId, ZnaidyAnnotationOptions? annotationOptions);
   static void setup(OnZnaidyAnnotationClickListener? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -84,9 +87,10 @@ abstract class OnZnaidyAnnotationClickListener {
         channel.setMessageHandler((Object? message) async {
           assert(message != null, 'Argument for dev.flutter.pigeon.OnZnaidyAnnotationClickListener.onZnaidyAnnotationClick was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final ZnaidyAnnotation? arg_annotation = (args[0] as ZnaidyAnnotation?);
-          assert(arg_annotation != null, 'Argument for dev.flutter.pigeon.OnZnaidyAnnotationClickListener.onZnaidyAnnotationClick was null, expected non-null ZnaidyAnnotation.');
-          api.onZnaidyAnnotationClick(arg_annotation!);
+          final String? arg_annotationId = (args[0] as String?);
+          assert(arg_annotationId != null, 'Argument for dev.flutter.pigeon.OnZnaidyAnnotationClickListener.onZnaidyAnnotationClick was null, expected non-null String.');
+          final ZnaidyAnnotationOptions? arg_annotationOptions = (args[1] as ZnaidyAnnotationOptions?);
+          api.onZnaidyAnnotationClick(arg_annotationId!, arg_annotationOptions);
           return;
         });
       }
@@ -98,12 +102,8 @@ class __ZnaidyAnnotationMessagerCodec extends StandardMessageCodec {
   const __ZnaidyAnnotationMessagerCodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is ZnaidyAnnotation) {
-      buffer.putUint8(128);
-      writeValue(buffer, value.encode());
-    } else
     if (value is ZnaidyAnnotationOptions) {
-      buffer.putUint8(129);
+      buffer.putUint8(128);
       writeValue(buffer, value.encode());
     } else
     {
@@ -114,9 +114,6 @@ class __ZnaidyAnnotationMessagerCodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128:
-        return ZnaidyAnnotation.decode(readValue(buffer)!);
-
-      case 129:
         return ZnaidyAnnotationOptions.decode(readValue(buffer)!);
 
       default:
@@ -136,7 +133,7 @@ class _ZnaidyAnnotationMessager {
 
   static const MessageCodec<Object?> codec = __ZnaidyAnnotationMessagerCodec();
 
-  Future<ZnaidyAnnotation> create(String arg_managerId, ZnaidyAnnotationOptions arg_annotationOptions) async {
+  Future<String> create(String arg_managerId, ZnaidyAnnotationOptions arg_annotationOptions) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.create', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
@@ -159,15 +156,15 @@ class _ZnaidyAnnotationMessager {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (replyMap['result'] as ZnaidyAnnotation?)!;
+      return (replyMap['result'] as String?)!;
     }
   }
 
-  Future<void> update(String arg_managerId, ZnaidyAnnotation arg_annotation) async {
+  Future<void> update(String arg_managerId, String arg_annotationId, ZnaidyAnnotationOptions arg_annotationOptions) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.update', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-    await channel.send(<Object?>[arg_managerId, arg_annotation]) as Map<Object?, Object?>?;
+    await channel.send(<Object?>[arg_managerId, arg_annotationId, arg_annotationOptions]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -185,11 +182,11 @@ class _ZnaidyAnnotationMessager {
     }
   }
 
-  Future<void> delete(String arg_managetId, ZnaidyAnnotation arg_annotation) async {
+  Future<void> delete(String arg_managetId, String arg_annotationId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.delete', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-    await channel.send(<Object?>[arg_managetId, arg_annotation]) as Map<Object?, Object?>?;
+    await channel.send(<Object?>[arg_managetId, arg_annotationId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

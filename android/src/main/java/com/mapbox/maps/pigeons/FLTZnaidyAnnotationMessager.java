@@ -22,56 +22,14 @@ import java.util.HashMap;
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
 public class FLTZnaidyAnnotationMessager {
 
-  /** Generated class from Pigeon that represents data sent in messages. */
-  public static class ZnaidyAnnotation {
-    private @NonNull String id;
-    public @NonNull String getId() { return id; }
-    public void setId(@NonNull String setterArg) {
-      if (setterArg == null) {
-        throw new IllegalStateException("Nonnull field \"id\" is null.");
-      }
-      this.id = setterArg;
-    }
+  public enum OnlineStatus {
+    online(0),
+    inApp(1),
+    offline(2);
 
-    private @Nullable Map<String, Object> geometry;
-    public @Nullable Map<String, Object> getGeometry() { return geometry; }
-    public void setGeometry(@Nullable Map<String, Object> setterArg) {
-      this.geometry = setterArg;
-    }
-
-    /** Constructor is private to enforce null safety; use Builder. */
-    private ZnaidyAnnotation() {}
-    public static final class Builder {
-      private @Nullable String id;
-      public @NonNull Builder setId(@NonNull String setterArg) {
-        this.id = setterArg;
-        return this;
-      }
-      private @Nullable Map<String, Object> geometry;
-      public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
-        this.geometry = setterArg;
-        return this;
-      }
-      public @NonNull ZnaidyAnnotation build() {
-        ZnaidyAnnotation pigeonReturn = new ZnaidyAnnotation();
-        pigeonReturn.setId(id);
-        pigeonReturn.setGeometry(geometry);
-        return pigeonReturn;
-      }
-    }
-    @NonNull Map<String, Object> toMap() {
-      Map<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("id", id);
-      toMapResult.put("geometry", geometry);
-      return toMapResult;
-    }
-    static @NonNull ZnaidyAnnotation fromMap(@NonNull Map<String, Object> map) {
-      ZnaidyAnnotation pigeonResult = new ZnaidyAnnotation();
-      Object id = map.get("id");
-      pigeonResult.setId((String)id);
-      Object geometry = map.get("geometry");
-      pigeonResult.setGeometry((Map<String, Object>)geometry);
-      return pigeonResult;
+    private int index;
+    private OnlineStatus(final int index) {
+      this.index = index;
     }
   }
 
@@ -83,27 +41,102 @@ public class FLTZnaidyAnnotationMessager {
       this.geometry = setterArg;
     }
 
+    private @Nullable OnlineStatus onlineStatus;
+    public @Nullable OnlineStatus getOnlineStatus() { return onlineStatus; }
+    public void setOnlineStatus(@Nullable OnlineStatus setterArg) {
+      this.onlineStatus = setterArg;
+    }
+
+    private @Nullable String userAvatar;
+    public @Nullable String getUserAvatar() { return userAvatar; }
+    public void setUserAvatar(@Nullable String setterArg) {
+      this.userAvatar = setterArg;
+    }
+
+    private @Nullable Long stickerCount;
+    public @Nullable Long getStickerCount() { return stickerCount; }
+    public void setStickerCount(@Nullable Long setterArg) {
+      this.stickerCount = setterArg;
+    }
+
+    private @Nullable Long companySize;
+    public @Nullable Long getCompanySize() { return companySize; }
+    public void setCompanySize(@Nullable Long setterArg) {
+      this.companySize = setterArg;
+    }
+
+    private @Nullable Long currentSpeed;
+    public @Nullable Long getCurrentSpeed() { return currentSpeed; }
+    public void setCurrentSpeed(@Nullable Long setterArg) {
+      this.currentSpeed = setterArg;
+    }
+
     public static final class Builder {
       private @Nullable Map<String, Object> geometry;
       public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
         this.geometry = setterArg;
         return this;
       }
+      private @Nullable OnlineStatus onlineStatus;
+      public @NonNull Builder setOnlineStatus(@Nullable OnlineStatus setterArg) {
+        this.onlineStatus = setterArg;
+        return this;
+      }
+      private @Nullable String userAvatar;
+      public @NonNull Builder setUserAvatar(@Nullable String setterArg) {
+        this.userAvatar = setterArg;
+        return this;
+      }
+      private @Nullable Long stickerCount;
+      public @NonNull Builder setStickerCount(@Nullable Long setterArg) {
+        this.stickerCount = setterArg;
+        return this;
+      }
+      private @Nullable Long companySize;
+      public @NonNull Builder setCompanySize(@Nullable Long setterArg) {
+        this.companySize = setterArg;
+        return this;
+      }
+      private @Nullable Long currentSpeed;
+      public @NonNull Builder setCurrentSpeed(@Nullable Long setterArg) {
+        this.currentSpeed = setterArg;
+        return this;
+      }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
         pigeonReturn.setGeometry(geometry);
+        pigeonReturn.setOnlineStatus(onlineStatus);
+        pigeonReturn.setUserAvatar(userAvatar);
+        pigeonReturn.setStickerCount(stickerCount);
+        pigeonReturn.setCompanySize(companySize);
+        pigeonReturn.setCurrentSpeed(currentSpeed);
         return pigeonReturn;
       }
     }
     @NonNull Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
       toMapResult.put("geometry", geometry);
+      toMapResult.put("onlineStatus", onlineStatus == null ? null : onlineStatus.index);
+      toMapResult.put("userAvatar", userAvatar);
+      toMapResult.put("stickerCount", stickerCount);
+      toMapResult.put("companySize", companySize);
+      toMapResult.put("currentSpeed", currentSpeed);
       return toMapResult;
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
       ZnaidyAnnotationOptions pigeonResult = new ZnaidyAnnotationOptions();
       Object geometry = map.get("geometry");
       pigeonResult.setGeometry((Map<String, Object>)geometry);
+      Object onlineStatus = map.get("onlineStatus");
+      pigeonResult.setOnlineStatus(onlineStatus == null ? null : OnlineStatus.values()[(int)onlineStatus]);
+      Object userAvatar = map.get("userAvatar");
+      pigeonResult.setUserAvatar((String)userAvatar);
+      Object stickerCount = map.get("stickerCount");
+      pigeonResult.setStickerCount((stickerCount == null) ? null : ((stickerCount instanceof Integer) ? (Integer)stickerCount : (Long)stickerCount));
+      Object companySize = map.get("companySize");
+      pigeonResult.setCompanySize((companySize == null) ? null : ((companySize instanceof Integer) ? (Integer)companySize : (Long)companySize));
+      Object currentSpeed = map.get("currentSpeed");
+      pigeonResult.setCurrentSpeed((currentSpeed == null) ? null : ((currentSpeed instanceof Integer) ? (Integer)currentSpeed : (Long)currentSpeed));
       return pigeonResult;
     }
   }
@@ -119,7 +152,7 @@ public class FLTZnaidyAnnotationMessager {
     protected Object readValueOfType(byte type, ByteBuffer buffer) {
       switch (type) {
         case (byte)128:         
-          return ZnaidyAnnotation.fromMap((Map<String, Object>) readValue(buffer));
+          return ZnaidyAnnotationOptions.fromMap((Map<String, Object>) readValue(buffer));
         
         default:        
           return super.readValueOfType(type, buffer);
@@ -128,9 +161,9 @@ public class FLTZnaidyAnnotationMessager {
     }
     @Override
     protected void writeValue(ByteArrayOutputStream stream, Object value)     {
-      if (value instanceof ZnaidyAnnotation) {
+      if (value instanceof ZnaidyAnnotationOptions) {
         stream.write(128);
-        writeValue(stream, ((ZnaidyAnnotation) value).toMap());
+        writeValue(stream, ((ZnaidyAnnotationOptions) value).toMap());
       } else 
 {
         super.writeValue(stream, value);
@@ -151,10 +184,10 @@ public class FLTZnaidyAnnotationMessager {
       return OnZnaidyAnnotationClickListenerCodec.INSTANCE;
     }
 
-    public void onZnaidyAnnotationClick(@NonNull ZnaidyAnnotation annotationArg, Reply<Void> callback) {
+    public void onZnaidyAnnotationClick(@NonNull String annotationIdArg, @Nullable ZnaidyAnnotationOptions annotationOptionsArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.OnZnaidyAnnotationClickListener.onZnaidyAnnotationClick", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(annotationArg)), channelReply -> {
+      channel.send(new ArrayList<Object>(Arrays.asList(annotationIdArg, annotationOptionsArg)), channelReply -> {
         callback.reply(null);
       });
     }
@@ -166,9 +199,6 @@ public class FLTZnaidyAnnotationMessager {
     protected Object readValueOfType(byte type, ByteBuffer buffer) {
       switch (type) {
         case (byte)128:         
-          return ZnaidyAnnotation.fromMap((Map<String, Object>) readValue(buffer));
-        
-        case (byte)129:         
           return ZnaidyAnnotationOptions.fromMap((Map<String, Object>) readValue(buffer));
         
         default:        
@@ -178,12 +208,8 @@ public class FLTZnaidyAnnotationMessager {
     }
     @Override
     protected void writeValue(ByteArrayOutputStream stream, Object value)     {
-      if (value instanceof ZnaidyAnnotation) {
-        stream.write(128);
-        writeValue(stream, ((ZnaidyAnnotation) value).toMap());
-      } else 
       if (value instanceof ZnaidyAnnotationOptions) {
-        stream.write(129);
+        stream.write(128);
         writeValue(stream, ((ZnaidyAnnotationOptions) value).toMap());
       } else 
 {
@@ -194,9 +220,9 @@ public class FLTZnaidyAnnotationMessager {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface _ZnaidyAnnotationMessager {
-    void create(@NonNull String managerId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<ZnaidyAnnotation> result);
-    void update(@NonNull String managerId, @NonNull ZnaidyAnnotation annotation, Result<Void> result);
-    void delete(@NonNull String managetId, @NonNull ZnaidyAnnotation annotation, Result<Void> result);
+    void create(@NonNull String managerId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<String> result);
+    void update(@NonNull String managerId, @NonNull String annotationId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<Void> result);
+    void delete(@NonNull String managetId, @NonNull String annotationId, Result<Void> result);
 
     /** The codec used by _ZnaidyAnnotationMessager. */
     static MessageCodec<Object> getCodec() {
@@ -221,8 +247,8 @@ public class FLTZnaidyAnnotationMessager {
               if (annotationOptionsArg == null) {
                 throw new NullPointerException("annotationOptionsArg unexpectedly null.");
               }
-              Result<ZnaidyAnnotation> resultCallback = new Result<ZnaidyAnnotation>() {
-                public void success(ZnaidyAnnotation result) {
+              Result<String> resultCallback = new Result<String>() {
+                public void success(String result) {
                   wrapped.put("result", result);
                   reply.reply(wrapped);
                 }
@@ -255,9 +281,13 @@ public class FLTZnaidyAnnotationMessager {
               if (managerIdArg == null) {
                 throw new NullPointerException("managerIdArg unexpectedly null.");
               }
-              ZnaidyAnnotation annotationArg = (ZnaidyAnnotation)args.get(1);
-              if (annotationArg == null) {
-                throw new NullPointerException("annotationArg unexpectedly null.");
+              String annotationIdArg = (String)args.get(1);
+              if (annotationIdArg == null) {
+                throw new NullPointerException("annotationIdArg unexpectedly null.");
+              }
+              ZnaidyAnnotationOptions annotationOptionsArg = (ZnaidyAnnotationOptions)args.get(2);
+              if (annotationOptionsArg == null) {
+                throw new NullPointerException("annotationOptionsArg unexpectedly null.");
               }
               Result<Void> resultCallback = new Result<Void>() {
                 public void success(Void result) {
@@ -270,7 +300,7 @@ public class FLTZnaidyAnnotationMessager {
                 }
               };
 
-              api.update(managerIdArg, annotationArg, resultCallback);
+              api.update(managerIdArg, annotationIdArg, annotationOptionsArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -293,9 +323,9 @@ public class FLTZnaidyAnnotationMessager {
               if (managetIdArg == null) {
                 throw new NullPointerException("managetIdArg unexpectedly null.");
               }
-              ZnaidyAnnotation annotationArg = (ZnaidyAnnotation)args.get(1);
-              if (annotationArg == null) {
-                throw new NullPointerException("annotationArg unexpectedly null.");
+              String annotationIdArg = (String)args.get(1);
+              if (annotationIdArg == null) {
+                throw new NullPointerException("annotationIdArg unexpectedly null.");
               }
               Result<Void> resultCallback = new Result<Void>() {
                 public void success(Void result) {
@@ -308,7 +338,7 @@ public class FLTZnaidyAnnotationMessager {
                 }
               };
 
-              api.delete(managetIdArg, annotationArg, resultCallback);
+              api.delete(managetIdArg, annotationIdArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
