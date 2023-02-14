@@ -2,8 +2,8 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/stickers_count_size"
-    android:layout_height="@dimen/stickers_count_size"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/sticker_count_background"
     >
 
@@ -12,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:textStyle="bold"
         android:textSize="11dp"
         tools:text="9+"
         android:textColor="@android:color/white"

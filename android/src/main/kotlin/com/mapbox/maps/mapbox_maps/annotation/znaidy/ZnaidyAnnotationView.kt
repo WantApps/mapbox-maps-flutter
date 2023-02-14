@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
 
 class ZnaidyAnnotationView @JvmOverloads constructor(
@@ -21,7 +23,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   }
 
   var annotationData: ZnaidyAnnotationData? = null
-  private set
+    private set
 
   private var glowAnimator: ValueAnimator? = null
 
@@ -41,12 +43,19 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   fun bind(annotation: ZnaidyAnnotationData) {
     Log.d(TAG, "bind: $annotation")
+    updateSelf(annotation.isSelf)
     updateGlow(annotation.onlineStatus)
     updateStickersCount(annotation.stickersCount)
-    updateAvatar(annotation.avatarUrl)
     updateCurrentSpeed(annotation.currentSpeed)
     updateCompany(annotation.companySize)
+    updateAvatar(annotation.avatarUrls.firstOrNull())
     annotationData = annotation
+  }
+
+  private fun updateSelf(isSelf: Boolean) {
+    if (annotationData?.isSelf != isSelf) {
+      setSelf(isSelf)
+    }
   }
 
   private fun updateGlow(onlineStatus: ZnaidyOnlineStatus) {
@@ -61,8 +70,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
   }
 
-  private fun updateAvatar(avatarUrl: String) {
-    if (annotationData?.avatarUrl != avatarUrl) {
+  private fun updateAvatar(avatarUrl: String?) {
+//    //TODO remove after done with avatar
+//    setAvatar(avatarUrl)
+    if (annotationData?.avatarUrls?.firstOrNull() != avatarUrl) {
       setAvatar(avatarUrl)
     }
   }
@@ -77,6 +88,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     if (annotationData?.currentSpeed != currentSpeed) {
       setCurrentSpeed(currentSpeed)
     }
+  }
+
+  private fun setSelf(isSelf: Boolean) {
+    val background = findViewById<ImageView>(R.id.background)
+    background.setImageResource(
+      if (isSelf) R.drawable.znaidy_marker_self else R.drawable.znaidy_marker_friend
+    )
   }
 
   private fun setGlow(onlineStatus: ZnaidyOnlineStatus) {
@@ -110,24 +128,33 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
   }
 
-  private fun setAvatar(avatarUrl: String) {
+  private fun setAvatar(avatarUrl: String?) {
     val avatarView = findViewById<ImageView>(R.id.profileIcon)
 
-    Glide.with(this)
-      .load(avatarUrl)
+    val request = if (avatarUrl != null) {
+      Glide.with(this)
+        .load(avatarUrl)
+    } else {
+      Glide.with(this)
+        .load(R.drawable.profile_daniel)
+    }
+    request
       .error(R.drawable.profile_daniel)
+      .apply(RequestOptions.bitmapTransform(CircleCrop()))
       .into(avatarView)
   }
 
   private fun setCompany(companySize: Int) {
     val companyContainer = findViewById<View>(R.id.company)
     val companyLabel = findViewById<TextView>(R.id.companySizeText)
+    val background = findViewById<ImageView>(R.id.background)
 
     if (companySize == 0) {
       companyContainer.visibility = View.GONE
     } else {
       companyContainer.visibility = View.VISIBLE
       companyLabel.text = companySize.toString()
+      background.setImageResource(R.drawable.znaidy_marker_company)
     }
   }
 
@@ -141,7 +168,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       speedContainer.visibility = View.VISIBLE
       speedLabel.text = currentSpeed.toString()
     }
-
   }
 
 

@@ -2,6 +2,9 @@
 <resources>
     <dimen name="annotation_size">140dp</dimen>
     <dimen name="glow_gradient_radius">65dp</dimen>
-    <dimen name="avatar_size">50dp</dimen>
-    <dimen name="stickers_count_size">20dp</dimen>
+    <dimen name="avatar_size">64dp</dimen>
+    <dimen name="stickers_count_size">30dp</dimen>
+    <dimen name="company_count_size">24dp</dimen>
+    <dimen name="current_speed_width">24dp</dimen>
+    <dimen name="current_speed_height">27dp</dimen>
 </resources>

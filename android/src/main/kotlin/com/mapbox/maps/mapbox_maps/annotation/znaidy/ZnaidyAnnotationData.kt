@@ -5,8 +5,9 @@ import com.mapbox.geojson.Point
 data class ZnaidyAnnotationData(
   val id: String,
   val geometry: Point,
+  val isSelf: Boolean,
   val onlineStatus: ZnaidyOnlineStatus,
-  val avatarUrl: String,
+  val avatarUrls: List<String>,
   val stickersCount: Int,
   val companySize: Int,
   val currentSpeed: Int,

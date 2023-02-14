@@ -13,9 +13,10 @@ object ZnaidyAnnotationDataMapper {
     return ZnaidyAnnotationData(
       id,
       options.geometry?.toPoint() ?: Point.fromLngLat(0.0, 0.0),
+      options.isSelf ?: false,
       options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) }
         ?: ZnaidyOnlineStatus.OFFLINE,
-      options.userAvatar ?: "",
+      options.userAvatars ?: listOf(),
       options.stickerCount?.toInt() ?: 0,
       options.companySize?.toInt() ?: 0,
       options.currentSpeed?.toInt() ?: 0,
@@ -28,9 +29,10 @@ object ZnaidyAnnotationDataMapper {
 
   fun updateAnnotation(data: ZnaidyAnnotationData, options: ZnaidyAnnotationOptions): ZnaidyAnnotationData {
     return data.copy(
+      isSelf = options.isSelf ?: data.isSelf,
       geometry = options.geometry?.toPoint() ?: data.geometry,
       onlineStatus = options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) } ?: data.onlineStatus,
-      avatarUrl = options.userAvatar ?: data.avatarUrl,
+      avatarUrls = options.userAvatars ?: data.avatarUrls,
       stickersCount = options.stickerCount?.toInt() ?: data.stickersCount,
       companySize = options.companySize?.toInt() ?: data.companySize,
       currentSpeed = options.currentSpeed?.toInt() ?: data.currentSpeed,

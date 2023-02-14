@@ -2,9 +2,9 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/stickers_count_size"
-    android:layout_height="@dimen/stickers_count_size"
-    android:background="@drawable/sticker_count_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/company_count_background"
     >
 
     <TextView

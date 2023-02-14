@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer' as dev;
 
 import 'package:flutter/foundation.dart';
@@ -6,7 +5,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_example/main.dart';
 import 'package:mapbox_maps_example/page.dart';
-import 'package:mapbox_maps_example/utils.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:turf/helpers.dart';
 
@@ -39,13 +37,14 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
   int stickers = 0;
   int companySize = 0;
   int currentSpeed = 0;
+  bool isSelf = false;
 
   Future<void> _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
     znaidyAnnotationManager =
         await mapboxMap.annotations.createZnaidyAnnotationManager();
-    znaidyAnnotationManager
-        ?.addOnAnnotationTapListener(ZnaidyAnnotationClickListener(_onAnnotationClick));
+    znaidyAnnotationManager?.addOnAnnotationTapListener(
+        ZnaidyAnnotationClickListener(_onAnnotationClick));
     mapboxMap.style
         .setStyleURI('mapbox://styles/znaidyme/cld4ktnrl000t01qn90o8n2d5');
     await mapboxMap.setCamera(
@@ -93,6 +92,14 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         child: Text('update annotation position'),
         onPressed: () async {
           _updateAnnotationPosition();
+        });
+  }
+
+  Widget _switchSelf() {
+    return TextButton(
+        child: Text('switch self'),
+        onPressed: () async {
+          _switchAnnotationSelf();
         });
   }
 
@@ -147,6 +154,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     listViewChildren.add(_create());
     listViewChildren.add(_delete());
     listViewChildren.add(_updatePosition());
+    listViewChildren.add(_switchSelf());
     listViewChildren.add(_updateStatus());
     listViewChildren.add(_updateStickers());
     listViewChildren.add(_updateCompanyButton());
@@ -205,11 +213,12 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   Future<void> _deleteAnnotation() async {
     if (annotationId == null) return;
-    await znaidyAnnotationManager?.delete(annotationId!!);
+    await znaidyAnnotationManager?.delete(annotationId!);
     annotationId = null;
     stickers = 0;
     companySize = 0;
     currentSpeed = 0;
+    isSelf = false;
   }
 
   Future<void> _updateAnnotationPosition() async {
@@ -260,6 +269,15 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
       ZnaidyAnnotationOptions(currentSpeed: currentSpeed + 1),
     );
     currentSpeed = currentSpeed + 1;
+  }
+
+  Future<void> _switchAnnotationSelf() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.update(
+      annotationId!,
+      ZnaidyAnnotationOptions(isSelf: !isSelf),
+    );
+    isSelf = !isSelf;
   }
 
   OnlineStatus _getNextStatus(OnlineStatus status) {

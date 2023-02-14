@@ -15,26 +15,29 @@ enum OnlineStatus {
 
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
+    this.isSelf,
     this.geometry,
     this.onlineStatus,
-    this.userAvatar,
+    this.userAvatars,
     this.stickerCount,
     this.companySize,
     this.currentSpeed,
   });
 
+  bool? isSelf;
   Map<String?, Object?>? geometry;
   OnlineStatus? onlineStatus;
-  String? userAvatar;
+  List<String?>? userAvatars;
   int? stickerCount;
   int? companySize;
   int? currentSpeed;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['isSelf'] = isSelf;
     pigeonMap['geometry'] = geometry;
     pigeonMap['onlineStatus'] = onlineStatus?.index;
-    pigeonMap['userAvatar'] = userAvatar;
+    pigeonMap['userAvatars'] = userAvatars;
     pigeonMap['stickerCount'] = stickerCount;
     pigeonMap['companySize'] = companySize;
     pigeonMap['currentSpeed'] = currentSpeed;
@@ -44,11 +47,12 @@ class ZnaidyAnnotationOptions {
   static ZnaidyAnnotationOptions decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return ZnaidyAnnotationOptions(
+      isSelf: pigeonMap['isSelf'] as bool?,
       geometry: (pigeonMap['geometry'] as Map<Object?, Object?>?)?.cast<String?, Object?>(),
       onlineStatus: pigeonMap['onlineStatus'] != null
           ? OnlineStatus.values[pigeonMap['onlineStatus']! as int]
           : null,
-      userAvatar: pigeonMap['userAvatar'] as String?,
+      userAvatars: (pigeonMap['userAvatars'] as List<Object?>?)?.cast<String?>(),
       stickerCount: pigeonMap['stickerCount'] as int?,
       companySize: pigeonMap['companySize'] as int?,
       currentSpeed: pigeonMap['currentSpeed'] as int?,

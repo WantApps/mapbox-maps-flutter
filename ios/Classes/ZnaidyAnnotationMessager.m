@@ -38,16 +38,18 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @end
 
 @implementation FLTZnaidyAnnotationOptions
-+ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
++ (instancetype)makeWithIsSelf:(nullable NSNumber *)isSelf
+    geometry:(nullable NSDictionary<NSString *, id> *)geometry
     onlineStatus:(FLTOnlineStatus)onlineStatus
-    userAvatar:(nullable NSString *)userAvatar
+    userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
+  pigeonResult.isSelf = isSelf;
   pigeonResult.geometry = geometry;
   pigeonResult.onlineStatus = onlineStatus;
-  pigeonResult.userAvatar = userAvatar;
+  pigeonResult.userAvatars = userAvatars;
   pigeonResult.stickerCount = stickerCount;
   pigeonResult.companySize = companySize;
   pigeonResult.currentSpeed = currentSpeed;
@@ -55,9 +57,10 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
   FLTZnaidyAnnotationOptions *pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
+  pigeonResult.isSelf = GetNullableObject(dict, @"isSelf");
   pigeonResult.geometry = GetNullableObject(dict, @"geometry");
   pigeonResult.onlineStatus = [GetNullableObject(dict, @"onlineStatus") integerValue];
-  pigeonResult.userAvatar = GetNullableObject(dict, @"userAvatar");
+  pigeonResult.userAvatars = GetNullableObject(dict, @"userAvatars");
   pigeonResult.stickerCount = GetNullableObject(dict, @"stickerCount");
   pigeonResult.companySize = GetNullableObject(dict, @"companySize");
   pigeonResult.currentSpeed = GetNullableObject(dict, @"currentSpeed");
@@ -66,9 +69,10 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
 - (NSDictionary *)toMap {
   return @{
+    @"isSelf" : (self.isSelf ?: [NSNull null]),
     @"geometry" : (self.geometry ?: [NSNull null]),
     @"onlineStatus" : @(self.onlineStatus),
-    @"userAvatar" : (self.userAvatar ?: [NSNull null]),
+    @"userAvatars" : (self.userAvatars ?: [NSNull null]),
     @"stickerCount" : (self.stickerCount ?: [NSNull null]),
     @"companySize" : (self.companySize ?: [NSNull null]),
     @"currentSpeed" : (self.currentSpeed ?: [NSNull null]),

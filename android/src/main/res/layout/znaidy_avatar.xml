@@ -16,7 +16,6 @@
         android:id="@+id/profileIcon"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
-        android:src="@drawable/profile_daniel"
         android:layout_gravity="center"
         tools:ignore="ContentDescription"
         />

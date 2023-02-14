@@ -42,7 +42,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         PointAnnotationOptions()
           .withPoint(point)
           .withIconImage("dot-11")
-//          .withIconOpacity(0.01)
+          .withIconOpacity(0.01)
           .withIconAnchor(IconAnchor.BOTTOM)
           .withIconOffset(listOf(0.0, -1.0))
           .withIconSize(10.0)

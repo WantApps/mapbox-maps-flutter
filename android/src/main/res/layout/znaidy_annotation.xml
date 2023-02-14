@@ -23,7 +23,7 @@
         android:id="@+id/background"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/znaidy_marker_shape"
+        android:src="@drawable/znaidy_marker_friend"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,15 +50,15 @@
         android:layout_height="@dimen/stickers_count_size"
         app:layout_constraintBottom_toTopOf="@id/background"
         app:layout_constraintStart_toEndOf="@id/background"
-        android:layout_marginStart="-20dp"
+        android:layout_marginStart="-25dp"
         android:layout_marginBottom="-26dp"
         />
 
     <include
         android:id="@+id/company"
         layout="@layout/znaidy_company_size"
-        android:layout_width="@dimen/stickers_count_size"
-        android:layout_height="@dimen/stickers_count_size"
+        android:layout_width="@dimen/company_count_size"
+        android:layout_height="@dimen/company_count_size"
         app:layout_constraintBottom_toBottomOf="@id/background"
         app:layout_constraintStart_toStartOf="@id/background"
         android:layout_marginBottom="20dp"
@@ -67,8 +67,8 @@
     <include
         android:id="@+id/speed"
         layout="@layout/znaidy_speed"
-        android:layout_width="@dimen/stickers_count_size"
-        android:layout_height="@dimen/stickers_count_size"
+        android:layout_width="@dimen/current_speed_width"
+        android:layout_height="@dimen/current_speed_height"
         app:layout_constraintBottom_toBottomOf="@id/background"
         app:layout_constraintStart_toStartOf="@id/background"
         android:layout_marginBottom="20dp"

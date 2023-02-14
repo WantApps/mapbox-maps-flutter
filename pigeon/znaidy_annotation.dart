@@ -8,6 +8,7 @@ enum OnlineStatus {
 
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
+    this.isSelf,
     this.geometry,
     this.onlineStatus,
     this.userAvatars,
@@ -16,9 +17,10 @@ class ZnaidyAnnotationOptions {
     this.currentSpeed,
 });
 
+  bool? isSelf;
   Map<String?, Object?>? geometry;
   OnlineStatus? onlineStatus;
-  List<String>? userAvatars;
+  List<String?>? userAvatars;
   int? stickerCount;
   int? companySize;
   int? currentSpeed;

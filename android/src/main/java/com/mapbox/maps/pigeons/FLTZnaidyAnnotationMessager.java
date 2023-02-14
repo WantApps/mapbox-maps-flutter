@@ -35,6 +35,12 @@ public class FLTZnaidyAnnotationMessager {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class ZnaidyAnnotationOptions {
+    private @Nullable Boolean isSelf;
+    public @Nullable Boolean getIsSelf() { return isSelf; }
+    public void setIsSelf(@Nullable Boolean setterArg) {
+      this.isSelf = setterArg;
+    }
+
     private @Nullable Map<String, Object> geometry;
     public @Nullable Map<String, Object> getGeometry() { return geometry; }
     public void setGeometry(@Nullable Map<String, Object> setterArg) {
@@ -47,10 +53,10 @@ public class FLTZnaidyAnnotationMessager {
       this.onlineStatus = setterArg;
     }
 
-    private @Nullable String userAvatar;
-    public @Nullable String getUserAvatar() { return userAvatar; }
-    public void setUserAvatar(@Nullable String setterArg) {
-      this.userAvatar = setterArg;
+    private @Nullable List<String> userAvatars;
+    public @Nullable List<String> getUserAvatars() { return userAvatars; }
+    public void setUserAvatars(@Nullable List<String> setterArg) {
+      this.userAvatars = setterArg;
     }
 
     private @Nullable Long stickerCount;
@@ -72,6 +78,11 @@ public class FLTZnaidyAnnotationMessager {
     }
 
     public static final class Builder {
+      private @Nullable Boolean isSelf;
+      public @NonNull Builder setIsSelf(@Nullable Boolean setterArg) {
+        this.isSelf = setterArg;
+        return this;
+      }
       private @Nullable Map<String, Object> geometry;
       public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
         this.geometry = setterArg;
@@ -82,9 +93,9 @@ public class FLTZnaidyAnnotationMessager {
         this.onlineStatus = setterArg;
         return this;
       }
-      private @Nullable String userAvatar;
-      public @NonNull Builder setUserAvatar(@Nullable String setterArg) {
-        this.userAvatar = setterArg;
+      private @Nullable List<String> userAvatars;
+      public @NonNull Builder setUserAvatars(@Nullable List<String> setterArg) {
+        this.userAvatars = setterArg;
         return this;
       }
       private @Nullable Long stickerCount;
@@ -104,9 +115,10 @@ public class FLTZnaidyAnnotationMessager {
       }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
+        pigeonReturn.setIsSelf(isSelf);
         pigeonReturn.setGeometry(geometry);
         pigeonReturn.setOnlineStatus(onlineStatus);
-        pigeonReturn.setUserAvatar(userAvatar);
+        pigeonReturn.setUserAvatars(userAvatars);
         pigeonReturn.setStickerCount(stickerCount);
         pigeonReturn.setCompanySize(companySize);
         pigeonReturn.setCurrentSpeed(currentSpeed);
@@ -115,9 +127,10 @@ public class FLTZnaidyAnnotationMessager {
     }
     @NonNull Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("isSelf", isSelf);
       toMapResult.put("geometry", geometry);
       toMapResult.put("onlineStatus", onlineStatus == null ? null : onlineStatus.index);
-      toMapResult.put("userAvatar", userAvatar);
+      toMapResult.put("userAvatars", userAvatars);
       toMapResult.put("stickerCount", stickerCount);
       toMapResult.put("companySize", companySize);
       toMapResult.put("currentSpeed", currentSpeed);
@@ -125,12 +138,14 @@ public class FLTZnaidyAnnotationMessager {
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
       ZnaidyAnnotationOptions pigeonResult = new ZnaidyAnnotationOptions();
+      Object isSelf = map.get("isSelf");
+      pigeonResult.setIsSelf((Boolean)isSelf);
       Object geometry = map.get("geometry");
       pigeonResult.setGeometry((Map<String, Object>)geometry);
       Object onlineStatus = map.get("onlineStatus");
       pigeonResult.setOnlineStatus(onlineStatus == null ? null : OnlineStatus.values()[(int)onlineStatus]);
-      Object userAvatar = map.get("userAvatar");
-      pigeonResult.setUserAvatar((String)userAvatar);
+      Object userAvatars = map.get("userAvatars");
+      pigeonResult.setUserAvatars((List<String>)userAvatars);
       Object stickerCount = map.get("stickerCount");
       pigeonResult.setStickerCount((stickerCount == null) ? null : ((stickerCount instanceof Integer) ? (Integer)stickerCount : (Long)stickerCount));
       Object companySize = map.get("companySize");

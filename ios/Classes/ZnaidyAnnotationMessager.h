@@ -17,15 +17,17 @@ typedef NS_ENUM(NSUInteger, FLTOnlineStatus) {
 @class FLTZnaidyAnnotationOptions;
 
 @interface FLTZnaidyAnnotationOptions : NSObject
-+ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
++ (instancetype)makeWithIsSelf:(nullable NSNumber *)isSelf
+    geometry:(nullable NSDictionary<NSString *, id> *)geometry
     onlineStatus:(FLTOnlineStatus)onlineStatus
-    userAvatar:(nullable NSString *)userAvatar
+    userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed;
+@property(nonatomic, strong, nullable) NSNumber * isSelf;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
 @property(nonatomic, assign) FLTOnlineStatus onlineStatus;
-@property(nonatomic, copy, nullable) NSString * userAvatar;
+@property(nonatomic, strong, nullable) NSArray<NSString *> * userAvatars;
 @property(nonatomic, strong, nullable) NSNumber * stickerCount;
 @property(nonatomic, strong, nullable) NSNumber * companySize;
 @property(nonatomic, strong, nullable) NSNumber * currentSpeed;
