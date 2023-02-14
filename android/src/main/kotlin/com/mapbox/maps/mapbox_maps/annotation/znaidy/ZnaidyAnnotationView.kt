@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.mapbox.maps.mapbox_maps.R
-import org.w3c.dom.Text
 
 class ZnaidyAnnotationView @JvmOverloads constructor(
   context: Context, attrs: AttributeSet? = null
@@ -26,20 +25,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   private var glowAnimator: ValueAnimator? = null
 
-  private var tapListener: OnClickListener? = null
-
   init {
     LayoutInflater.from(context).inflate(R.layout.znaidy_annotation, this)
     addOnAttachStateChangeListener(this)
   }
 
   override fun onViewAttachedToWindow(v: View?) {
-    Log.d(TAG, "onViewAttachedToWindow: tapListener=$tapListener")
-    val background = findViewById<View>(R.id.background)
-    background.setOnClickListener {
-      Log.d(TAG, "onClick: ")
-      tapListener?.onClick(this)
-    }
+    Log.d(TAG, "onViewAttachedToWindow: ")
   }
 
   override fun onViewDetachedFromWindow(v: View?) {
@@ -55,10 +47,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     updateCurrentSpeed(annotation.currentSpeed)
     updateCompany(annotation.companySize)
     annotationData = annotation
-  }
-
-  fun setOnTapListener(listener: OnClickListener) {
-    tapListener = listener
   }
 
   private fun updateGlow(onlineStatus: ZnaidyOnlineStatus) {

@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer' as dev;
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_example/main.dart';
 import 'package:mapbox_maps_example/page.dart';
@@ -43,9 +45,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     znaidyAnnotationManager =
         await mapboxMap.annotations.createZnaidyAnnotationManager();
     znaidyAnnotationManager
-        ?.addOnAnnotationTapListener(ZnaidyAnnotationClickListener());
-    final pointManager = await mapboxMap.annotations.createPointAnnotationManager();
-    pointManager.addOnPointAnnotationClickListener(PointAnnotationClickListener());
+        ?.addOnAnnotationTapListener(ZnaidyAnnotationClickListener(_onAnnotationClick));
     mapboxMap.style
         .setStyleURI('mapbox://styles/znaidyme/cld4ktnrl000t01qn90o8n2d5');
     await mapboxMap.setCamera(
@@ -63,15 +63,13 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   Future<void> _onMapTap(ScreenCoordinate coordinate) async {
     dev.log('onMapTap: (${coordinate.x},${coordinate.y})');
-    ScreenCoordinate coordin = await mapboxMap!.pixelForCoordinate({
-      "coordinates": [coordinate.y, coordinate.x]
-    });
+  }
 
-    final features = await mapboxMap!.queryRenderedFeatures(RenderedQueryGeometry(value: json.encode(coordin.encode()), type: Type.SCREEN_COORDINATE), RenderedQueryOptions());
-    dev.log('features=$features');
-    if (features.isNotEmpty) {
-
-    }
+  void _onAnnotationClick(String id, ZnaidyAnnotationOptions? options) {
+    if (options == null) return;
+    mapboxMap?.setCamera(
+      CameraOptions(center: options.geometry),
+    );
   }
 
   Widget _create() {
@@ -133,10 +131,15 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
   @override
   Widget build(BuildContext context) {
     final MapWidget mapWidget = MapWidget(
-        key: ValueKey("mapWidget"),
-        resourceOptions: ResourceOptions(accessToken: MapsDemo.ACCESS_TOKEN),
-        onMapCreated: _onMapCreated,
-        onTapListener: _onMapTap,
+      key: ValueKey("mapWidget"),
+      resourceOptions: ResourceOptions(accessToken: MapsDemo.ACCESS_TOKEN),
+      onMapCreated: _onMapCreated,
+      onTapListener: _onMapTap,
+      gestureRecognizers: {
+        new Factory<OneSequenceGestureRecognizer>(
+          () => new EagerGestureRecognizer(),
+        ),
+      },
     );
 
     final List<Widget> listViewChildren = <Widget>[];
@@ -180,16 +183,6 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
                         'mapbox://styles/znaidyme/cld4ktnrl000t01qn90o8n2d5');
                   }),
               SizedBox(height: 10),
-              FloatingActionButton(
-                  child: Icon(Icons.clear),
-                  heroTag: null,
-                  onPressed: () {
-                    // if (pointAnnotationManager != null) {
-                    //   mapboxMap?.annotations
-                    //       .removeAnnotationManager(pointAnnotationManager!);
-                    //   pointAnnotationManager = null;
-                    // }
-                  }),
             ],
           ),
         ),
@@ -206,7 +199,6 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     annotationId = await znaidyAnnotationManager?.create(
       ZnaidyAnnotationOptions(
         geometry: position!.toJson(),
-        // userAvatar: 'https://www.krooster.com/_next/image?url=%2Fimg%2Favatars%2Fchar_350_surtr_2.png&w=2048&q=75'
       ),
     );
   }
@@ -278,16 +270,16 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 }
 
 class ZnaidyAnnotationClickListener extends OnZnaidyAnnotationClickListener {
+  ZnaidyAnnotationClickListener(this.onAnnotationClick);
+
+  final void Function(String, ZnaidyAnnotationOptions?) onAnnotationClick;
+
   @override
   void onZnaidyAnnotationClick(
-      String annotationId, ZnaidyAnnotationOptions? annotationOptions) {
+    String annotationId,
+    ZnaidyAnnotationOptions? annotationOptions,
+  ) {
     dev.log('onZnaidyAnnotationClick: onTap: $annotationId');
-  }
-}
-
-class PointAnnotationClickListener extends OnPointAnnotationClickListener {
-  @override
-  void onPointAnnotationClick(PointAnnotation annotation) {
-    print("onPointAnnotationClick, id: ${annotation.id}");
+    onAnnotationClick(annotationId, annotationOptions);
   }
 }

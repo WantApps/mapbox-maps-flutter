@@ -16,7 +16,8 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
   ControllerDelegate {
 
   companion object {
-    const val ZNAIDY_ANNITATION_CONTROLLER_ID = "0"
+    const val ZNAIDY_ANNOTATION_CONTROLLER_ID = "0"
+    const val ZNAIDY_POINT_CONTROLLER_ID = "1"
   }
   private val managerMap = mutableMapOf<String, AnnotationManager<*, *, *, *, *, *, *>>()
   private val pointAnnotationController = PointAnnotationController(this)
@@ -29,7 +30,7 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
   private lateinit var onPolylineAnnotationController: FLTPolylineAnnotationMessager.OnPolylineAnnotationClickListener
   private lateinit var onCircleAnnotationClickListener: FLTCircleAnnotationMessager.OnCircleAnnotationClickListener
   private lateinit var onZnaidyAnnotationClickListener: FLTZnaidyAnnotationMessager.OnZnaidyAnnotationClickListener
-  private var index = 1
+  private var index = 2
   fun handleCreateManager(call: MethodCall, result: MethodChannel.Result) {
     val manager = when (val type = call.argument<String>("type")!!) {
       "circle" -> {
@@ -73,7 +74,11 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
         }
       }
       "znaidy" -> {
-        result.success(ZNAIDY_ANNITATION_CONTROLLER_ID)
+        val pointManager = mapView.annotations.createPointAnnotationManager().apply {
+          this.addClickListener(znaidyAnnotationController)
+        }
+        managerMap[ZNAIDY_POINT_CONTROLLER_ID] = pointManager
+        result.success(ZNAIDY_ANNOTATION_CONTROLLER_ID)
         return
       }
       else -> {
@@ -88,7 +93,10 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
 
   fun handleRemoveManager(call: MethodCall, result: MethodChannel.Result) {
     val id = call.argument<String>("id")!!
-    if (id == ZNAIDY_ANNITATION_CONTROLLER_ID) {
+    if (id == ZNAIDY_ANNOTATION_CONTROLLER_ID) {
+      managerMap.remove(ZNAIDY_POINT_CONTROLLER_ID)?.let {
+        mapView.annotations.removeAnnotationManager(it)
+      }
       result.success(null)
     }
     managerMap.remove(id)?.let {
@@ -140,6 +148,10 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
 
   override fun getViewAnnotationManager(): ViewAnnotationManager {
     return mapView.viewAnnotationManager
+  }
+
+  override fun getPointAnnotationManager(): PointAnnotationManager {
+    return getManager(ZNAIDY_POINT_CONTROLLER_ID) as PointAnnotationManager
   }
 
   override fun getContext(): Context {

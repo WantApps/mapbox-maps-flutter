@@ -17,8 +17,3 @@ enum class ZnaidyOnlineStatus {
   INAPP,
   OFFLINE
 }
-
-data class ZnaidyAnnotationTuple(
-  val data: ZnaidyAnnotationData,
-  val view: ZnaidyAnnotationView,
-)

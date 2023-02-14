@@ -1,6 +1,8 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
+import com.mapbox.geojson.Geometry
 import com.mapbox.geojson.Point
+import com.mapbox.maps.mapbox_maps.toMap
 import com.mapbox.maps.mapbox_maps.toPoint
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.OnlineStatus
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.ZnaidyAnnotationOptions
@@ -20,6 +22,10 @@ object ZnaidyAnnotationDataMapper {
     )
   }
 
+  fun geometryFromOptions(options: ZnaidyAnnotationOptions): Point {
+    return options.geometry?.toPoint() ?: Point.fromLngLat(0.0, 0.0)
+  }
+
   fun updateAnnotation(data: ZnaidyAnnotationData, options: ZnaidyAnnotationOptions): ZnaidyAnnotationData {
     return data.copy(
       geometry = options.geometry?.toPoint() ?: data.geometry,
@@ -29,6 +35,12 @@ object ZnaidyAnnotationDataMapper {
       companySize = options.companySize?.toInt() ?: data.companySize,
       currentSpeed = options.currentSpeed?.toInt() ?: data.currentSpeed,
     )
+  }
+
+  fun mapToOptions(data: ZnaidyAnnotationData): ZnaidyAnnotationOptions {
+    return ZnaidyAnnotationOptions.Builder().apply {
+      setGeometry(data.geometry.toMap())
+    }.build()
   }
 
   private fun mapToTunnelOnlineStatus(status: ZnaidyOnlineStatus): OnlineStatus {
