@@ -10,6 +10,7 @@ public enum AnnotationControllerError: Error {
 
 public protocol ControllerDelegate: class {
     func getManager(managerId: String) throws -> AnnotationManager
+    func getViewAnnotationsManager() -> ViewAnnotationManager
 }
 
 extension AnnotationController: AnnotationInteractionDelegate {
@@ -37,43 +38,51 @@ class AnnotationController: ControllerDelegate {
     private var pointAnnotationController: PointAnnotationController?
     private var polygonAnnotationController: PolygonAnnotationController?
     private var polylineAnnotationController: PolylineAnnotationController?
+    private var znaidyAnnotatonController: ZnaidyAnnotationController?
     private var onPointAnnotationClickListener: FLTOnPointAnnotationClickListener?
     private var onCircleAnnotationClickListener: FLTOnCircleAnnotationClickListener?
     private var onPolygonAnnotationClickListener: FLTOnPolygonAnnotationClickListener?
     private var onPolylineAnnotationClickListener: FLTOnPolylineAnnotationClickListener?
-
+    private var onZnaidyAnnotationClickListener: FLTOnZnaidyAnnotationClickListener?
+    
     init(withMapView mapView: MapView) {
         self.mapView = mapView
         circleAnnotationController = CircleAnnotationController(withDelegate: self)
         pointAnnotationController = PointAnnotationController(withDelegate: self)
         polygonAnnotationController = PolygonAnnotationController(withDelegate: self)
         polylineAnnotationController = PolylineAnnotationController(withDelegate: self)
+        znaidyAnnotatonController = ZnaidyAnnotationController(withDelegate: self)
     }
 
     func handleCreateManager(methodCall: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let arguments = methodCall.arguments as? [String: Any] else { return }
         guard let type = arguments["type"] as? String else { return }
-
+        
+        if type == "znaidy" {
+            result("100")
+            return
+        }
+        
         if let manager = { () -> AnnotationManager? in
             switch type {
-            case "circle":
-                let circleManager = mapView.annotations.makeCircleAnnotationManager()
-                circleManager.delegate = self
-                return circleManager
-            case "point":
-                let pointManager = mapView.annotations.makePointAnnotationManager()
-                pointManager.delegate = self
-                return pointManager
-            case "polygon":
-                let polygonManager: PolygonAnnotationManager = mapView.annotations.makePolygonAnnotationManager()
-                polygonManager.delegate = self
-                return polygonManager
-            case "polyline":
-                let polylineManager: PolylineAnnotationManager = mapView.annotations.makePolylineAnnotationManager()
-                polylineManager.delegate = self
-                return polylineManager
-            default:
-                return nil
+                case "circle":
+                    let circleManager = mapView.annotations.makeCircleAnnotationManager()
+                    circleManager.delegate = self
+                    return circleManager
+                case "point":
+                    let pointManager = mapView.annotations.makePointAnnotationManager()
+                    pointManager.delegate = self
+                    return pointManager
+                case "polygon":
+                    let polygonManager: PolygonAnnotationManager = mapView.annotations.makePolygonAnnotationManager()
+                    polygonManager.delegate = self
+                    return polygonManager
+                case "polyline":
+                    let polylineManager: PolylineAnnotationManager = mapView.annotations.makePolylineAnnotationManager()
+                    polylineManager.delegate = self
+                    return polylineManager
+                default:
+                    return nil
             }
         }() {
             annotationManagers[manager.id] = manager
@@ -96,10 +105,12 @@ class AnnotationController: ControllerDelegate {
         FLT_PointAnnotationMessagerSetup(messenger, pointAnnotationController)
         FLT_PolygonAnnotationMessagerSetup(messenger, polygonAnnotationController)
         FLT_PolylineAnnotationMessagerSetup(messenger, polylineAnnotationController)
+        FLT_ZnaidyAnnotationMessagerSetup(messenger, znaidyAnnotatonController)
         onPointAnnotationClickListener = FLTOnPointAnnotationClickListener.init(binaryMessenger: messenger)
         onCircleAnnotationClickListener = FLTOnCircleAnnotationClickListener.init(binaryMessenger: messenger)
         onPolygonAnnotationClickListener = FLTOnPolygonAnnotationClickListener.init(binaryMessenger: messenger)
         onPolylineAnnotationClickListener = FLTOnPolylineAnnotationClickListener.init(binaryMessenger: messenger)
+        onZnaidyAnnotationClickListener = FLTOnZnaidyAnnotationClickListener.init(binaryMessenger: messenger)
     }
 
     func getManager(managerId: String) throws -> AnnotationManager {
@@ -107,5 +118,9 @@ class AnnotationController: ControllerDelegate {
             throw AnnotationControllerError.noManagerFound
         }
         return annotationManagers[managerId]!
+    }
+    
+    func getViewAnnotationsManager() -> ViewAnnotationManager {
+        return mapView.viewAnnotations
     }
 }
