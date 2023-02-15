@@ -33,18 +33,29 @@ public class FLTZnaidyAnnotationMessager {
     }
   }
 
+  public enum MarkerType {
+    self(0),
+    friend(1),
+    company(2);
+
+    private int index;
+    private MarkerType(final int index) {
+      this.index = index;
+    }
+  }
+
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class ZnaidyAnnotationOptions {
-    private @Nullable Boolean isSelf;
-    public @Nullable Boolean getIsSelf() { return isSelf; }
-    public void setIsSelf(@Nullable Boolean setterArg) {
-      this.isSelf = setterArg;
-    }
-
     private @Nullable Map<String, Object> geometry;
     public @Nullable Map<String, Object> getGeometry() { return geometry; }
     public void setGeometry(@Nullable Map<String, Object> setterArg) {
       this.geometry = setterArg;
+    }
+
+    private @Nullable MarkerType markerType;
+    public @Nullable MarkerType getMarkerType() { return markerType; }
+    public void setMarkerType(@Nullable MarkerType setterArg) {
+      this.markerType = setterArg;
     }
 
     private @Nullable OnlineStatus onlineStatus;
@@ -78,14 +89,14 @@ public class FLTZnaidyAnnotationMessager {
     }
 
     public static final class Builder {
-      private @Nullable Boolean isSelf;
-      public @NonNull Builder setIsSelf(@Nullable Boolean setterArg) {
-        this.isSelf = setterArg;
-        return this;
-      }
       private @Nullable Map<String, Object> geometry;
       public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
         this.geometry = setterArg;
+        return this;
+      }
+      private @Nullable MarkerType markerType;
+      public @NonNull Builder setMarkerType(@Nullable MarkerType setterArg) {
+        this.markerType = setterArg;
         return this;
       }
       private @Nullable OnlineStatus onlineStatus;
@@ -115,8 +126,8 @@ public class FLTZnaidyAnnotationMessager {
       }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
-        pigeonReturn.setIsSelf(isSelf);
         pigeonReturn.setGeometry(geometry);
+        pigeonReturn.setMarkerType(markerType);
         pigeonReturn.setOnlineStatus(onlineStatus);
         pigeonReturn.setUserAvatars(userAvatars);
         pigeonReturn.setStickerCount(stickerCount);
@@ -127,8 +138,8 @@ public class FLTZnaidyAnnotationMessager {
     }
     @NonNull Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
-      toMapResult.put("isSelf", isSelf);
       toMapResult.put("geometry", geometry);
+      toMapResult.put("markerType", markerType == null ? null : markerType.index);
       toMapResult.put("onlineStatus", onlineStatus == null ? null : onlineStatus.index);
       toMapResult.put("userAvatars", userAvatars);
       toMapResult.put("stickerCount", stickerCount);
@@ -138,10 +149,10 @@ public class FLTZnaidyAnnotationMessager {
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
       ZnaidyAnnotationOptions pigeonResult = new ZnaidyAnnotationOptions();
-      Object isSelf = map.get("isSelf");
-      pigeonResult.setIsSelf((Boolean)isSelf);
       Object geometry = map.get("geometry");
       pigeonResult.setGeometry((Map<String, Object>)geometry);
+      Object markerType = map.get("markerType");
+      pigeonResult.setMarkerType(markerType == null ? null : MarkerType.values()[(int)markerType]);
       Object onlineStatus = map.get("onlineStatus");
       pigeonResult.setOnlineStatus(onlineStatus == null ? null : OnlineStatus.values()[(int)onlineStatus]);
       Object userAvatars = map.get("userAvatars");
@@ -238,6 +249,8 @@ public class FLTZnaidyAnnotationMessager {
     void create(@NonNull String managerId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<String> result);
     void update(@NonNull String managerId, @NonNull String annotationId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<Void> result);
     void delete(@NonNull String managetId, @NonNull String annotationId, Result<Void> result);
+    void select(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
+    void resetSelection(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
 
     /** The codec used by _ZnaidyAnnotationMessager. */
     static MessageCodec<Object> getCodec() {
@@ -354,6 +367,82 @@ public class FLTZnaidyAnnotationMessager {
               };
 
               api.delete(managetIdArg, annotationIdArg, resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon._ZnaidyAnnotationMessager.select", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              String managerIdArg = (String)args.get(0);
+              if (managerIdArg == null) {
+                throw new NullPointerException("managerIdArg unexpectedly null.");
+              }
+              String annotationIdArg = (String)args.get(1);
+              if (annotationIdArg == null) {
+                throw new NullPointerException("annotationIdArg unexpectedly null.");
+              }
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.select(managerIdArg, annotationIdArg, resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon._ZnaidyAnnotationMessager.resetSelection", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              String managerIdArg = (String)args.get(0);
+              if (managerIdArg == null) {
+                throw new NullPointerException("managerIdArg unexpectedly null.");
+              }
+              String annotationIdArg = (String)args.get(1);
+              if (annotationIdArg == null) {
+                throw new NullPointerException("annotationIdArg unexpectedly null.");
+              }
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.resetSelection(managerIdArg, annotationIdArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

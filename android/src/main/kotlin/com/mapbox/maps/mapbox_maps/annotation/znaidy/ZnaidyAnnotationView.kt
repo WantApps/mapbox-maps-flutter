@@ -1,6 +1,5 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
@@ -8,11 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
+
 
 class ZnaidyAnnotationView @JvmOverloads constructor(
   context: Context, attrs: AttributeSet? = null
@@ -25,7 +26,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   var annotationData: ZnaidyAnnotationData? = null
     private set
 
-  private var glowAnimator: ValueAnimator? = null
+  private val animator = ZnaidyMarkerAnimator(this)
 
   init {
     LayoutInflater.from(context).inflate(R.layout.znaidy_annotation, this)
@@ -38,82 +39,127 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   override fun onViewDetachedFromWindow(v: View?) {
     Log.d(TAG, "onViewDetachedFromWindow: ")
-    glowAnimator?.cancel()
+    animator.stopAllAnimations()
   }
 
   fun bind(annotation: ZnaidyAnnotationData) {
     Log.d(TAG, "bind: $annotation")
-    updateSelf(annotation.isSelf)
-    updateGlow(annotation.onlineStatus)
-    updateStickersCount(annotation.stickersCount)
-    updateCurrentSpeed(annotation.currentSpeed)
-    updateCompany(annotation.companySize)
-    updateAvatar(annotation.avatarUrls.firstOrNull())
+    when (annotation.markerType) {
+      ZnaidyMarkerType.SELF -> bindSelf(annotation)
+      ZnaidyMarkerType.FRIEND -> bindFriend(annotation)
+      ZnaidyMarkerType.COMPANY -> bindCompany(annotation)
+    }
+
+    if (annotationData != null && annotationData?.focused != annotation.focused) {
+      animator.startFocusAnimation(annotation.focused)
+    }
     annotationData = annotation
   }
 
-  private fun updateSelf(isSelf: Boolean) {
-    if (annotationData?.isSelf != isSelf) {
-      setSelf(isSelf)
+  private fun bindSelf(annotation: ZnaidyAnnotationData) {
+    val typeChanged = annotationData?.markerType != annotation.markerType
+    if (typeChanged) {
+      animator.stopAvatarAnimation()
+      setMarkerBackground(R.drawable.znaidy_marker_self)
+      hideStickersCount()
+      hideCompanySize()
+      hideCurrentSpeed()
+    }
+    if (typeChanged || annotationData?.userAvatar != annotation.userAvatar) {
+      setAvatar(annotation.userAvatar)
+    }
+    if (typeChanged || annotationData?.onlineStatus != annotation.onlineStatus || annotationData?.focused != annotation.focused) {
+      setOnlineStatus(annotation.onlineStatus, annotation.focused)
     }
   }
 
-  private fun updateGlow(onlineStatus: ZnaidyOnlineStatus) {
-    if (annotationData?.onlineStatus != onlineStatus) {
-      setGlow(onlineStatus)
+
+  private fun bindFriend(annotation: ZnaidyAnnotationData) {
+    val typeChanged = annotationData?.markerType != annotation.markerType
+    if (typeChanged) {
+      animator.stopAvatarAnimation()
+      setMarkerBackground(R.drawable.znaidy_marker_friend)
+      hideCompanySize()
+    }
+    if (typeChanged || annotationData?.userAvatar != annotation.userAvatar) {
+      setAvatar(annotation.userAvatar)
+    }
+    if (typeChanged || annotationData?.onlineStatus != annotation.onlineStatus || annotationData?.focused != annotation.focused) {
+      setOnlineStatus(annotation.onlineStatus, annotation.focused)
+    }
+    if (typeChanged || annotationData?.stickersCount != annotation.stickersCount) {
+      setStickersCount(annotation.stickersCount)
+    }
+    if (typeChanged || annotationData?.currentSpeed != annotation.currentSpeed) {
+      setCurrentSpeed(annotation.currentSpeed)
     }
   }
 
-  private fun updateStickersCount(stickersCount: Int) {
-    if (annotationData?.stickersCount != stickersCount) {
-      setStickersCount(stickersCount)
+  private fun bindCompany(annotation: ZnaidyAnnotationData) {
+    val typeChanged = annotationData?.markerType != annotation.markerType
+    if (typeChanged) {
+      setMarkerBackground(R.drawable.znaidy_marker_company)
+      showCompanyGlow()
+      hideStickersCount()
+      hideCurrentSpeed()
+    }
+    if (typeChanged || annotationData?.avatarUrls != annotation.avatarUrls) {
+      setCompanyAvatars(annotation.avatarUrls)
+    }
+    if (typeChanged || annotationData?.companySize != annotation.companySize) {
+      setCompanySize(annotation.companySize)
     }
   }
 
-  private fun updateAvatar(avatarUrl: String?) {
-//    //TODO remove after done with avatar
-//    setAvatar(avatarUrl)
-    if (annotationData?.avatarUrls?.firstOrNull() != avatarUrl) {
-      setAvatar(avatarUrl)
-    }
+  private fun setMarkerBackground(@DrawableRes drawable: Int) {
+    val background = findViewById<ImageView>(R.id.markerBackground)
+    background.setImageResource(drawable)
   }
 
-  private fun updateCompany(companySize: Int) {
-    if (annotationData?.companySize != companySize) {
-      setCompany(companySize)
-    }
-  }
-
-  private fun updateCurrentSpeed(currentSpeed: Int) {
-    if (annotationData?.currentSpeed != currentSpeed) {
-      setCurrentSpeed(currentSpeed)
-    }
-  }
-
-  private fun setSelf(isSelf: Boolean) {
-    val background = findViewById<ImageView>(R.id.background)
-    background.setImageResource(
-      if (isSelf) R.drawable.znaidy_marker_self else R.drawable.znaidy_marker_friend
-    )
-  }
-
-  private fun setGlow(onlineStatus: ZnaidyOnlineStatus) {
-    glowAnimator?.cancel()
+  private fun setOnlineStatus(onlineStatus: ZnaidyOnlineStatus, focused: Boolean) {
     val markerGlow = findViewById<View>(R.id.glow)
-    if (onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
-      markerGlow.setBackgroundResource(R.drawable.marker_glow_offline)
-    } else {
-      markerGlow.setBackgroundResource(R.drawable.marker_glow_online)
-    }
-    glowAnimator = ValueAnimator.ofFloat(1f, 0.5f, 1f).apply {
-      duration = 2000L
-      addUpdateListener { animation ->
-        val value = animation.animatedValue.toString().toFloatOrNull() ?: 1f
-        markerGlow.alpha = value
+    when (onlineStatus) {
+      ZnaidyOnlineStatus.ONLINE -> {
+        markerGlow.setBackgroundResource(R.drawable.marker_glow_online)
+        animator.startGlowAnimation()
+        animator.startIdleAnimation(false)
+        hideInApp()
       }
-      repeatCount = ValueAnimator.INFINITE
+      ZnaidyOnlineStatus.INAPP -> {
+        markerGlow.setBackgroundResource(R.drawable.marker_glow_inapp)
+        animator.startGlowAnimation()
+        animator.startIdleAnimation(focused)
+        if (focused) {
+          showInApp()
+        } else {
+          hideInApp()
+        }
+      }
+      ZnaidyOnlineStatus.OFFLINE -> {
+        markerGlow.setBackgroundResource(0)
+        animator.stopGlowAnimation()
+        animator.stopIdleAnimation()
+        hideInApp()
+      }
     }
-    glowAnimator?.start()
+  }
+
+  private fun showInApp() {
+    val inApp = findViewById<View>(R.id.inApp)
+    inApp.visibility = View.VISIBLE
+  }
+
+  private fun hideInApp() {
+    val inApp = findViewById<View>(R.id.inApp)
+    inApp.visibility = View.GONE
+  }
+
+  private fun showCompanyGlow() {
+    val markerGlow = findViewById<View>(R.id.glow)
+    markerGlow.setBackgroundResource(R.drawable.marker_glow_company)
+    animator.startGlowAnimation()
+    animator.startIdleAnimation(false)
+    hideInApp()
   }
 
   private fun setStickersCount(stickersCount: Int) {
@@ -126,6 +172,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       stickerContainer.visibility = View.VISIBLE
       stickerLabel.text = if (stickersCount <= 9) stickersCount.toString() else "9+"
     }
+  }
+
+  private fun hideStickersCount() {
+    setStickersCount(0)
   }
 
   private fun setAvatar(avatarUrl: String?) {
@@ -144,10 +194,16 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       .into(avatarView)
   }
 
-  private fun setCompany(companySize: Int) {
+  private fun setCompanyAvatars(avatarUrls: List<String>) {
+    animator.startAvatarAnimation(avatarUrls.size) {
+      setAvatar(avatarUrls[it])
+    }
+  }
+
+  private fun setCompanySize(companySize: Int) {
     val companyContainer = findViewById<View>(R.id.company)
     val companyLabel = findViewById<TextView>(R.id.companySizeText)
-    val background = findViewById<ImageView>(R.id.background)
+    val background = findViewById<ImageView>(R.id.markerBackground)
 
     if (companySize == 0) {
       companyContainer.visibility = View.GONE
@@ -156,6 +212,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       companyLabel.text = companySize.toString()
       background.setImageResource(R.drawable.znaidy_marker_company)
     }
+  }
+
+  private fun hideCompanySize() {
+    setCompanySize(0)
   }
 
   private fun setCurrentSpeed(currentSpeed: Int) {
@@ -170,5 +230,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
   }
 
-
+  private fun hideCurrentSpeed() {
+    setCurrentSpeed(0)
+  }
 }

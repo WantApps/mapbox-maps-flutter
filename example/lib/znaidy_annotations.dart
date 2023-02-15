@@ -31,13 +31,22 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
   String? annotationId;
   int styleIndex = 1;
 
+  final avatars = [
+    'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1760&q=80',
+    'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1760&q=80',
+    'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2067&q=80',
+    'https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80',
+  ];
+
   Point? position;
   OnlineStatus onlineStatus = OnlineStatus.offline;
+  MarkerType markerType = MarkerType.friend;
   String? avatarUrl;
   int stickers = 0;
   int companySize = 0;
   int currentSpeed = 0;
-  bool isSelf = false;
+  List<String> userAvatars = [];
+  Map<String?, Object?>? lastCameraPosition;
 
   Future<void> _onMapCreated(MapboxMap mapboxMap) async {
     this.mapboxMap = mapboxMap;
@@ -56,6 +65,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
           ),
         ).toJson(),
         zoom: 9,
+        bearing: 0.1,
       ),
     );
   }
@@ -66,9 +76,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   void _onAnnotationClick(String id, ZnaidyAnnotationOptions? options) {
     if (options == null) return;
-    mapboxMap?.setCamera(
-      CameraOptions(center: options.geometry),
-    );
+    _focusAnnotation(id, options);
   }
 
   Widget _create() {
@@ -87,6 +95,14 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         });
   }
 
+  Widget _unfocus() {
+    return TextButton(
+        child: Text('unfocus'),
+        onPressed: () async {
+          _unfocusAnnotation();
+        });
+  }
+
   Widget _updatePosition() {
     return TextButton(
         child: Text('update annotation position'),
@@ -95,11 +111,11 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         });
   }
 
-  Widget _switchSelf() {
+  Widget _switchMode() {
     return TextButton(
-        child: Text('switch self'),
+        child: Text('switch type'),
         onPressed: () async {
-          _switchAnnotationSelf();
+          _switchAnnotationMode();
         });
   }
 
@@ -154,7 +170,8 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     listViewChildren.add(_create());
     listViewChildren.add(_delete());
     listViewChildren.add(_updatePosition());
-    listViewChildren.add(_switchSelf());
+    listViewChildren.add(_unfocus());
+    listViewChildren.add(_switchMode());
     listViewChildren.add(_updateStatus());
     listViewChildren.add(_updateStickers());
     listViewChildren.add(_updateCompanyButton());
@@ -197,7 +214,17 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         body: column);
   }
 
+  void _resetVars() {
+    onlineStatus = OnlineStatus.offline;
+    markerType = MarkerType.company;
+    stickers = 0;
+    companySize = 4;
+    currentSpeed = 0;
+    userAvatars = avatars;
+  }
+
   Future<void> _createAnnotation() async {
+    _resetVars();
     position = Point(
       coordinates: Position(
         30.5,
@@ -207,6 +234,12 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     annotationId = await znaidyAnnotationManager?.create(
       ZnaidyAnnotationOptions(
         geometry: position!.toJson(),
+        markerType: markerType,
+        onlineStatus: onlineStatus,
+        userAvatars: userAvatars,
+        companySize: companySize,
+        currentSpeed: currentSpeed,
+        stickerCount: stickers,
       ),
     );
   }
@@ -215,10 +248,6 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     if (annotationId == null) return;
     await znaidyAnnotationManager?.delete(annotationId!);
     annotationId = null;
-    stickers = 0;
-    companySize = 0;
-    currentSpeed = 0;
-    isSelf = false;
   }
 
   Future<void> _updateAnnotationPosition() async {
@@ -255,11 +284,13 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   Future<void> _updateCompany() async {
     if (annotationId == null) return;
+    final size = (companySize + 1).remainder(avatars.length);
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(companySize: companySize + 1),
+      ZnaidyAnnotationOptions(
+          companySize: size, userAvatars: avatars.sublist(0, size)),
     );
-    companySize = companySize + 1;
+    companySize = size;
   }
 
   Future<void> _updateCurrentSpeed() async {
@@ -271,19 +302,53 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     currentSpeed = currentSpeed + 1;
   }
 
-  Future<void> _switchAnnotationSelf() async {
+  Future<void> _switchAnnotationMode() async {
     if (annotationId == null) return;
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(isSelf: !isSelf),
+      ZnaidyAnnotationOptions(markerType: _getNextType(markerType)),
     );
-    isSelf = !isSelf;
+    markerType = _getNextType(markerType);
+  }
+
+  Future<void> _focusAnnotation(
+    String id,
+    ZnaidyAnnotationOptions options,
+  ) async {
+    final cameraState = await mapboxMap?.getCameraState();
+    lastCameraPosition = cameraState?.center;
+    mapboxMap?.flyTo(
+      CameraOptions(
+        center: options.geometry,
+        bearing: 0.1,
+      ),
+      MapAnimationOptions(duration: 500),
+    );
+    await znaidyAnnotationManager?.select(id);
+  }
+
+  Future<void> _unfocusAnnotation() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.resetSelection(annotationId!);
+    await mapboxMap?.easeTo(
+      CameraOptions(
+        center: lastCameraPosition,
+        bearing: 0.1,
+      ),
+      MapAnimationOptions(duration: 500),
+    );
   }
 
   OnlineStatus _getNextStatus(OnlineStatus status) {
     final index = OnlineStatus.values.indexOf(status);
     final newIndex = (index + 1).remainder(OnlineStatus.values.length);
     return OnlineStatus.values[newIndex];
+  }
+
+  MarkerType _getNextType(MarkerType type) {
+    final index = MarkerType.values.indexOf(type);
+    final newIndex = (index + 1).remainder(MarkerType.values.length);
+    return MarkerType.values[newIndex];
   }
 }
 

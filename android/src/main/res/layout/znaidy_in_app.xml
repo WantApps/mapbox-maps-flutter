@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/sticker_count_background"
+    android:id="@+id/inAppContainer"
+    android:background="@drawable/in_app_label_background"
     >
 
     <TextView
-        android:id="@+id/stickerCounterText"
+        android:id="@+id/inAppLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textStyle="bold"
         android:textSize="13dp"
-        tools:text="9+"
+        android:text="in app"
         android:textColor="@android:color/white"
         />
 

@@ -13,10 +13,16 @@ enum OnlineStatus {
   offline,
 }
 
+enum MarkerType {
+  self,
+  friend,
+  company,
+}
+
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
-    this.isSelf,
     this.geometry,
+    this.markerType,
     this.onlineStatus,
     this.userAvatars,
     this.stickerCount,
@@ -24,8 +30,8 @@ class ZnaidyAnnotationOptions {
     this.currentSpeed,
   });
 
-  bool? isSelf;
   Map<String?, Object?>? geometry;
+  MarkerType? markerType;
   OnlineStatus? onlineStatus;
   List<String?>? userAvatars;
   int? stickerCount;
@@ -34,8 +40,8 @@ class ZnaidyAnnotationOptions {
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
-    pigeonMap['isSelf'] = isSelf;
     pigeonMap['geometry'] = geometry;
+    pigeonMap['markerType'] = markerType?.index;
     pigeonMap['onlineStatus'] = onlineStatus?.index;
     pigeonMap['userAvatars'] = userAvatars;
     pigeonMap['stickerCount'] = stickerCount;
@@ -47,8 +53,10 @@ class ZnaidyAnnotationOptions {
   static ZnaidyAnnotationOptions decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return ZnaidyAnnotationOptions(
-      isSelf: pigeonMap['isSelf'] as bool?,
       geometry: (pigeonMap['geometry'] as Map<Object?, Object?>?)?.cast<String?, Object?>(),
+      markerType: pigeonMap['markerType'] != null
+          ? MarkerType.values[pigeonMap['markerType']! as int]
+          : null,
       onlineStatus: pigeonMap['onlineStatus'] != null
           ? OnlineStatus.values[pigeonMap['onlineStatus']! as int]
           : null,
@@ -198,6 +206,50 @@ class _ZnaidyAnnotationMessager {
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.delete', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object?>[arg_managetId, arg_annotationId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> select(String arg_managerId, String arg_annotationId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon._ZnaidyAnnotationMessager.select', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_managerId, arg_annotationId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> resetSelection(String arg_managerId, String arg_annotationId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon._ZnaidyAnnotationMessager.resetSelection', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object?>[arg_managerId, arg_annotationId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

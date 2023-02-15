@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="annotation_size">140dp</dimen>
+    <dimen name="annotation_width">140dp</dimen>
+    <dimen name="annotation_height">180dp</dimen>
+    <dimen name="annotation_y_offset">42dp</dimen>
+    <dimen name="marker_width">91dp</dimen>
+    <dimen name="marker_height">100dp</dimen>
     <dimen name="glow_gradient_radius">65dp</dimen>
     <dimen name="avatar_size">64dp</dimen>
     <dimen name="stickers_count_size">30dp</dimen>
     <dimen name="company_count_size">24dp</dimen>
     <dimen name="current_speed_width">24dp</dimen>
     <dimen name="current_speed_height">27dp</dimen>
+    <dimen name="in_app_width">80dp</dimen>
+    <dimen name="in_app_height">33dp</dimen>
 </resources>

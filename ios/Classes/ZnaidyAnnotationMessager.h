@@ -14,18 +14,24 @@ typedef NS_ENUM(NSUInteger, FLTOnlineStatus) {
   FLTOnlineStatusOffline = 2,
 };
 
+typedef NS_ENUM(NSUInteger, FLTMarkerType) {
+  FLTMarkerTypeSelf = 0,
+  FLTMarkerTypeFriend = 1,
+  FLTMarkerTypeCompany = 2,
+};
+
 @class FLTZnaidyAnnotationOptions;
 
 @interface FLTZnaidyAnnotationOptions : NSObject
-+ (instancetype)makeWithIsSelf:(nullable NSNumber *)isSelf
-    geometry:(nullable NSDictionary<NSString *, id> *)geometry
++ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
+    markerType:(FLTMarkerType)markerType
     onlineStatus:(FLTOnlineStatus)onlineStatus
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed;
-@property(nonatomic, strong, nullable) NSNumber * isSelf;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
+@property(nonatomic, assign) FLTMarkerType markerType;
 @property(nonatomic, assign) FLTOnlineStatus onlineStatus;
 @property(nonatomic, strong, nullable) NSArray<NSString *> * userAvatars;
 @property(nonatomic, strong, nullable) NSNumber * stickerCount;
@@ -47,6 +53,8 @@ NSObject<FlutterMessageCodec> *FLT_ZnaidyAnnotationMessagerGetCodec(void);
 - (void)createManagerId:(NSString *)managerId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 - (void)updateManagerId:(NSString *)managerId annotationId:(NSString *)annotationId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)deleteManagetId:(NSString *)managetId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)selectManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)resetSelectionManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 @end
 
 extern void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLT_ZnaidyAnnotationMessager> *_Nullable api);

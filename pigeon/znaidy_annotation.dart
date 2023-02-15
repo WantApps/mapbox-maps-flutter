@@ -6,10 +6,16 @@ enum OnlineStatus {
   offline,
 }
 
+enum MarkerType {
+  self,
+  friend,
+  company,
+}
+
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
-    this.isSelf,
     this.geometry,
+    this.markerType,
     this.onlineStatus,
     this.userAvatars,
     this.stickerCount,
@@ -17,8 +23,8 @@ class ZnaidyAnnotationOptions {
     this.currentSpeed,
 });
 
-  bool? isSelf;
   Map<String?, Object?>? geometry;
+  MarkerType? markerType;
   OnlineStatus? onlineStatus;
   List<String?>? userAvatars;
   int? stickerCount;
@@ -40,5 +46,11 @@ abstract class _ZnaidyAnnotationMessager {
   void update(String managerId, String annotationId, ZnaidyAnnotationOptions annotationOptions);
 
   @async
-  void delete(String managetId, String annotationId,);
+  void delete(String managetId, String annotationId);
+
+  @async
+  void select(String managerId, String annotationId);
+
+  @async
+  void resetSelection(String managerId, String annotationId);
 }

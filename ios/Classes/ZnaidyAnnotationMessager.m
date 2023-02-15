@@ -38,16 +38,16 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @end
 
 @implementation FLTZnaidyAnnotationOptions
-+ (instancetype)makeWithIsSelf:(nullable NSNumber *)isSelf
-    geometry:(nullable NSDictionary<NSString *, id> *)geometry
++ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
+    markerType:(FLTMarkerType)markerType
     onlineStatus:(FLTOnlineStatus)onlineStatus
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
-  pigeonResult.isSelf = isSelf;
   pigeonResult.geometry = geometry;
+  pigeonResult.markerType = markerType;
   pigeonResult.onlineStatus = onlineStatus;
   pigeonResult.userAvatars = userAvatars;
   pigeonResult.stickerCount = stickerCount;
@@ -57,8 +57,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
   FLTZnaidyAnnotationOptions *pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
-  pigeonResult.isSelf = GetNullableObject(dict, @"isSelf");
   pigeonResult.geometry = GetNullableObject(dict, @"geometry");
+  pigeonResult.markerType = [GetNullableObject(dict, @"markerType") integerValue];
   pigeonResult.onlineStatus = [GetNullableObject(dict, @"onlineStatus") integerValue];
   pigeonResult.userAvatars = GetNullableObject(dict, @"userAvatars");
   pigeonResult.stickerCount = GetNullableObject(dict, @"stickerCount");
@@ -69,8 +69,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
 - (NSDictionary *)toMap {
   return @{
-    @"isSelf" : (self.isSelf ?: [NSNull null]),
     @"geometry" : (self.geometry ?: [NSNull null]),
+    @"markerType" : @(self.markerType),
     @"onlineStatus" : @(self.onlineStatus),
     @"userAvatars" : (self.userAvatars ?: [NSNull null]),
     @"stickerCount" : (self.stickerCount ?: [NSNull null]),
@@ -267,6 +267,48 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         NSString *arg_managetId = GetNullableObjectAtIndex(args, 0);
         NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
         [api deleteManagetId:arg_managetId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon._ZnaidyAnnotationMessager.select"
+        binaryMessenger:binaryMessenger
+        codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(selectManagerId:annotationId:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(selectManagerId:annotationId:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
+        NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
+        [api selectManagerId:arg_managerId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon._ZnaidyAnnotationMessager.resetSelection"
+        binaryMessenger:binaryMessenger
+        codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(resetSelectionManagerId:annotationId:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(resetSelectionManagerId:annotationId:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
+        NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
+        [api resetSelectionManagerId:arg_managerId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

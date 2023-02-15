@@ -16,6 +16,11 @@ class ZnaidyAnnotationManager extends BaseAnnotationManager {
 
   Future<void> delete(String annotationId) => messager.delete(id, annotationId);
 
+  Future<void> select(String annotationId) => messager.select(id, annotationId);
+
+  Future<void> resetSelection(String annotationId) =>
+      messager.resetSelection(id, annotationId);
+
   void addOnAnnotationTapListener(OnZnaidyAnnotationClickListener listener) {
     OnZnaidyAnnotationClickListener.setup(listener);
   }

@@ -1,9 +1,9 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
-import com.mapbox.geojson.Geometry
 import com.mapbox.geojson.Point
 import com.mapbox.maps.mapbox_maps.toMap
 import com.mapbox.maps.mapbox_maps.toPoint
+import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.MarkerType
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.OnlineStatus
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.ZnaidyAnnotationOptions
 
@@ -13,7 +13,7 @@ object ZnaidyAnnotationDataMapper {
     return ZnaidyAnnotationData(
       id,
       options.geometry?.toPoint() ?: Point.fromLngLat(0.0, 0.0),
-      options.isSelf ?: false,
+      options.markerType?.let { mapFromTunnelMarkerType(it) } ?: ZnaidyMarkerType.FRIEND,
       options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) }
         ?: ZnaidyOnlineStatus.OFFLINE,
       options.userAvatars ?: listOf(),
@@ -27,11 +27,15 @@ object ZnaidyAnnotationDataMapper {
     return options.geometry?.toPoint() ?: Point.fromLngLat(0.0, 0.0)
   }
 
-  fun updateAnnotation(data: ZnaidyAnnotationData, options: ZnaidyAnnotationOptions): ZnaidyAnnotationData {
+  fun updateAnnotation(
+    data: ZnaidyAnnotationData,
+    options: ZnaidyAnnotationOptions
+  ): ZnaidyAnnotationData {
     return data.copy(
-      isSelf = options.isSelf ?: data.isSelf,
       geometry = options.geometry?.toPoint() ?: data.geometry,
-      onlineStatus = options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) } ?: data.onlineStatus,
+      markerType = options.markerType?.let { mapFromTunnelMarkerType(it) } ?: data.markerType,
+      onlineStatus = options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) }
+        ?: data.onlineStatus,
       avatarUrls = options.userAvatars ?: data.avatarUrls,
       stickersCount = options.stickerCount?.toInt() ?: data.stickersCount,
       companySize = options.companySize?.toInt() ?: data.companySize,
@@ -46,7 +50,7 @@ object ZnaidyAnnotationDataMapper {
   }
 
   private fun mapToTunnelOnlineStatus(status: ZnaidyOnlineStatus): OnlineStatus {
-    return when(status) {
+    return when (status) {
       ZnaidyOnlineStatus.ONLINE -> OnlineStatus.online
       ZnaidyOnlineStatus.INAPP -> OnlineStatus.inApp
       ZnaidyOnlineStatus.OFFLINE -> OnlineStatus.offline
@@ -55,5 +59,13 @@ object ZnaidyAnnotationDataMapper {
 
   private fun mapFromTunnelOnlineStatus(status: OnlineStatus): ZnaidyOnlineStatus {
     return ZnaidyOnlineStatus.valueOf(status.name.uppercase())
+  }
+
+  private fun mapToTunnelMarkerType(markerType: ZnaidyMarkerType): MarkerType {
+    return MarkerType.valueOf(markerType.name.lowercase())
+  }
+
+  private fun mapFromTunnelMarkerType(markerType: MarkerType): ZnaidyMarkerType {
+    return ZnaidyMarkerType.valueOf(markerType.name.uppercase())
   }
 }

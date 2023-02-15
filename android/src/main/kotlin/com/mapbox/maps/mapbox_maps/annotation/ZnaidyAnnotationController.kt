@@ -44,7 +44,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
           .withIconImage("dot-11")
           .withIconOpacity(0.01)
           .withIconAnchor(IconAnchor.BOTTOM)
-          .withIconOffset(listOf(0.0, -1.0))
+          .withIconOffset(listOf(0.0, 0.0))
           .withIconSize(10.0)
       )
 
@@ -54,10 +54,10 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       )
       val viewAnnotationOptions = ViewAnnotationOptions.Builder().apply {
         geometry(annotationData.geometry)
-        width(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_size))
-        height(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_size))
+        width(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_width))
+        height(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_height))
         anchor(ViewAnnotationAnchor.BOTTOM)
-        this.offsetY(-25)
+        offsetY(-delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_y_offset))
         associatedFeatureId(pointAnnotation.featureIdentifier)
       }.build()
       val annotationView = viewAnnotationManager.addViewAnnotation(
@@ -127,6 +127,38 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       result?.success(null)
     } catch (ex: Exception) {
       Log.e(TAG, "delete: ", ex)
+      result?.error(ex)
+    }
+  }
+
+  override fun select(
+    managerId: String,
+    annotationId: String,
+    result: FLTZnaidyAnnotationMessager.Result<Void>?
+  ) {
+    try {
+      viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
+        val newAnnotationData = znaidyAnnotationView.annotationData?.copy(focused = true)
+        newAnnotationData?.let { znaidyAnnotationView.bind(it) }
+      } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
+    } catch (ex: Exception) {
+      Log.e(TAG, "select: ", ex)
+      result?.error(ex)
+    }
+  }
+
+  override fun resetSelection(
+    managerId: String,
+    annotationId: String,
+    result: FLTZnaidyAnnotationMessager.Result<Void>?
+  ) {
+    try {
+      viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
+        val newAnnotationData = znaidyAnnotationView.annotationData?.copy(focused = false)
+        newAnnotationData?.let { znaidyAnnotationView.bind(it) }
+      } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
+    } catch (ex: Exception) {
+      Log.e(TAG, "resetSelection: ", ex)
       result?.error(ex)
     }
   }
