@@ -10,7 +10,6 @@ import Turf
 import MapboxMaps
 
 class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
-    
     private let TAG = "ZnaidyAnnotationController"
     
     private weak var delegate: ControllerDelegate?
@@ -20,7 +19,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     }
     
     func createManagerId(_ managerId: String, annotationOptions: FLTZnaidyAnnotationOptions, completion: @escaping (String?, FlutterError?) -> Void) {
-        addViewAnnotation(at: convertDictionaryToCLLocationCoordinate2D(dict: annotationOptions.geometry)!)
+//        addViewAnnotation(at: convertDictionaryToCLLocationCoordinate2D(dict: annotationOptions.geometry)!)
         completion("0", nil)
     }
     
@@ -28,10 +27,22 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
         completion(nil)
     }
     
-    func deleteManagetId(_ managetId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
+    func deleteManagetId(_ managetId: String, annotationId: String, animated: NSNumber, completion: @escaping (FlutterError?) -> Void) {
         completion(nil)
     }
     
+    func selectManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
+        completion(nil)
+    }
+
+    func resetSelectionManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
+        completion(nil)
+    }
+
+    func sendStickerManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
+        completion(nil)
+    }
+
     
     private func addViewAnnotation(at coordinate: CLLocationCoordinate2D) {
         let options = ViewAnnotationOptions(
