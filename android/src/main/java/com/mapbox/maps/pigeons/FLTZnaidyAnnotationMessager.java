@@ -248,9 +248,10 @@ public class FLTZnaidyAnnotationMessager {
   public interface _ZnaidyAnnotationMessager {
     void create(@NonNull String managerId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<String> result);
     void update(@NonNull String managerId, @NonNull String annotationId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<Void> result);
-    void delete(@NonNull String managetId, @NonNull String annotationId, Result<Void> result);
+    void delete(@NonNull String managetId, @NonNull String annotationId, @NonNull Boolean animated, Result<Void> result);
     void select(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void resetSelection(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
+    void sendSticker(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
 
     /** The codec used by _ZnaidyAnnotationMessager. */
     static MessageCodec<Object> getCodec() {
@@ -355,6 +356,10 @@ public class FLTZnaidyAnnotationMessager {
               if (annotationIdArg == null) {
                 throw new NullPointerException("annotationIdArg unexpectedly null.");
               }
+              Boolean animatedArg = (Boolean)args.get(2);
+              if (animatedArg == null) {
+                throw new NullPointerException("animatedArg unexpectedly null.");
+              }
               Result<Void> resultCallback = new Result<Void>() {
                 public void success(Void result) {
                   wrapped.put("result", null);
@@ -366,7 +371,7 @@ public class FLTZnaidyAnnotationMessager {
                 }
               };
 
-              api.delete(managetIdArg, annotationIdArg, resultCallback);
+              api.delete(managetIdArg, annotationIdArg, animatedArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));
@@ -443,6 +448,44 @@ public class FLTZnaidyAnnotationMessager {
               };
 
               api.resetSelection(managerIdArg, annotationIdArg, resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon._ZnaidyAnnotationMessager.sendSticker", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              String managerIdArg = (String)args.get(0);
+              if (managerIdArg == null) {
+                throw new NullPointerException("managerIdArg unexpectedly null.");
+              }
+              String annotationIdArg = (String)args.get(1);
+              if (annotationIdArg == null) {
+                throw new NullPointerException("annotationIdArg unexpectedly null.");
+              }
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.sendSticker(managerIdArg, annotationIdArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

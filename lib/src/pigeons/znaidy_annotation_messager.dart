@@ -194,11 +194,11 @@ class _ZnaidyAnnotationMessager {
     }
   }
 
-  Future<void> delete(String arg_managetId, String arg_annotationId) async {
+  Future<void> delete(String arg_managetId, String arg_annotationId, bool arg_animated) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.delete', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-    await channel.send(<Object?>[arg_managetId, arg_annotationId]) as Map<Object?, Object?>?;
+    await channel.send(<Object?>[arg_managetId, arg_annotationId, arg_animated]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -241,6 +241,28 @@ class _ZnaidyAnnotationMessager {
   Future<void> resetSelection(String arg_managerId, String arg_annotationId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.resetSelection', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+    await channel.send(<Object?>[arg_managerId, arg_annotationId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> sendSticker(String arg_managerId, String arg_annotationId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon._ZnaidyAnnotationMessager.sendSticker', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
     await channel.send(<Object?>[arg_managerId, arg_annotationId]) as Map<Object?, Object?>?;
     if (replyMap == null) {

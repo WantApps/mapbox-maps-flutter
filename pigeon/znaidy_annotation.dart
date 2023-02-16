@@ -46,11 +46,14 @@ abstract class _ZnaidyAnnotationMessager {
   void update(String managerId, String annotationId, ZnaidyAnnotationOptions annotationOptions);
 
   @async
-  void delete(String managetId, String annotationId);
+  void delete(String managetId, String annotationId, bool animated);
 
   @async
   void select(String managerId, String annotationId);
 
   @async
   void resetSelection(String managerId, String annotationId);
+
+  @async
+  void sendSticker(String managerId, String annotationId);
 }

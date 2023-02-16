@@ -261,12 +261,13 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
         codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(deleteManagetId:annotationId:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(deleteManagetId:annotationId:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(deleteManagetId:annotationId:animated:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(deleteManagetId:annotationId:animated:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_managetId = GetNullableObjectAtIndex(args, 0);
         NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
-        [api deleteManagetId:arg_managetId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
+        NSNumber *arg_animated = GetNullableObjectAtIndex(args, 2);
+        [api deleteManagetId:arg_managetId annotationId:arg_annotationId animated:arg_animated completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];
@@ -309,6 +310,27 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
         NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
         [api resetSelectionManagerId:arg_managerId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon._ZnaidyAnnotationMessager.sendSticker"
+        binaryMessenger:binaryMessenger
+        codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(sendStickerManagerId:annotationId:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(sendStickerManagerId:annotationId:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
+        NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
+        [api sendStickerManagerId:arg_managerId annotationId:arg_annotationId completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

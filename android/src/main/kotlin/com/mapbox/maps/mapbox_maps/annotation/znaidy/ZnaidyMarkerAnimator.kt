@@ -1,7 +1,5 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
-import android.animation.Animator
-import android.animation.Animator.AnimatorListener
 import android.animation.ValueAnimator
 import android.util.Log
 import android.view.View
@@ -14,6 +12,8 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
   private var glowAnimator: ValueAnimator? = null
   private var markerIdleAnimator: ValueAnimator? = null
   private var companyAvatarAnimator: Timer? = null
+  private var stickerReceiveAnimator: ValueAnimator? = null
+  private var creationAnimator: ValueAnimator? = null
 
   var glowActive = glowAnimator != null
   var markerIdleActive = markerIdleAnimator != null
@@ -22,6 +22,8 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
     glowAnimator?.cancel()
     markerIdleAnimator?.cancel()
     companyAvatarAnimator?.cancel()
+    stickerReceiveAnimator?.cancel()
+    creationAnimator?.cancel()
   }
 
   fun startGlowAnimation() {
@@ -49,7 +51,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
 
   private fun startIdleAnimation(baseValue: Float) {
     Log.d(ZnaidyAnnotationView.TAG, "startIdleAnimation: base = $baseValue")
-    markerIdleAnimator?.cancel()
+    markerIdleAnimator?.end()
     val background = annotationView.findViewById<View>(R.id.markerBackground)
     val avatar = annotationView.findViewById<View>(R.id.avatar)
 
@@ -77,7 +79,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
   }
 
   fun stopIdleAnimation() {
-    markerIdleAnimator?.cancel()
+    markerIdleAnimator?.end()
   }
 
   fun startAvatarAnimation(count: Int, onTick: ((Int) -> Unit)) {
@@ -97,5 +99,53 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
 
   fun stopAvatarAnimation() {
     companyAvatarAnimator?.cancel()
+  }
+
+  fun animateReceiveSticker() {
+    stickerReceiveAnimator?.end()
+
+    val background = annotationView.findViewById<View>(R.id.markerBackground)
+    val avatar = annotationView.findViewById<View>(R.id.avatar)
+
+    stickerReceiveAnimator = ValueAnimator.ofFloat(1.0f, 0.97f, 0.96f, 0.9f, 1.1f, 0.99f, 1.01f, 1.0f).apply {
+      duration = 500L
+      addUpdateListener { animator ->
+        val value = animator.animatedValue.toString().toFloatOrNull() ?: 1f
+        background.scaleX = value
+        background.scaleY = value
+        avatar.scaleX = value
+        avatar.scaleY = value
+      }
+    }
+    stickerReceiveAnimator?.start()
+  }
+
+  fun animateCreation(onAnimationEnd: () -> Unit) {
+    creationAnimator = ValueAnimator.ofFloat(0.0f, 1.0f).apply {
+      duration = 500L
+      addUpdateListener { animator ->
+        val value = animator.animatedValue.toString().toFloatOrNull() ?: 1f
+        annotationView.alpha = value
+        if (value == 1.0f) {
+          onAnimationEnd()
+         }
+      }
+    }
+    creationAnimator?.start()
+  }
+
+  fun animateDeletion(onAnimationEnd: () -> Unit) {
+    stopAllAnimations()
+    creationAnimator = ValueAnimator.ofFloat(1.0f, 0.0f).apply {
+      duration = 500L
+      addUpdateListener { animator ->
+        val value = animator.animatedValue.toString().toFloatOrNull() ?: 0f
+        annotationView.alpha = value
+        if (value == 0.0f) {
+          onAnimationEnd()
+        }
+      }
+    }
+    creationAnimator?.start()
   }
 }

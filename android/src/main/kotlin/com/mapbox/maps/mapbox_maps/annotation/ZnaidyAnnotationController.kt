@@ -112,23 +112,34 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   override fun delete(
     managetId: String,
     annotationId: String,
+    animated: Boolean,
     result: FLTZnaidyAnnotationMessager.Result<Void>?
   ) {
     try {
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
-        val viewAnnotationManager = delegate.getViewAnnotationManager()
-        viewAnnotationManager.removeViewAnnotation(znaidyAnnotationView)
-        val pointAnnotationManager = delegate.getPointAnnotationManager()
-        val pointAnnotation =
-          pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
-        pointAnnotationManager.delete(pointAnnotation)
-        viewAnnotations.remove(annotationId)
+        if (animated) {
+          znaidyAnnotationView.delete {
+            deleteAnnotation(annotationId, znaidyAnnotationView)
+          }
+        } else {
+          deleteAnnotation(annotationId, znaidyAnnotationView)
+        }
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
       result?.success(null)
     } catch (ex: Exception) {
       Log.e(TAG, "delete: ", ex)
       result?.error(ex)
     }
+  }
+
+  private fun deleteAnnotation(annotationId: String, znaidyAnnotationView: ZnaidyAnnotationView) {
+    val viewAnnotationManager = delegate.getViewAnnotationManager()
+    viewAnnotationManager.removeViewAnnotation(znaidyAnnotationView)
+    val pointAnnotationManager = delegate.getPointAnnotationManager()
+    val pointAnnotation =
+      pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
+    pointAnnotationManager.delete(pointAnnotation)
+    viewAnnotations.remove(annotationId)
   }
 
   override fun select(
@@ -159,6 +170,21 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
       Log.e(TAG, "resetSelection: ", ex)
+      result?.error(ex)
+    }
+  }
+
+  override fun sendSticker(
+    managerId: String,
+    annotationId: String,
+    result: FLTZnaidyAnnotationMessager.Result<Void>?
+  ) {
+    try {
+      viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
+        znaidyAnnotationView.animateReceiveSticker()
+      } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
+    } catch (ex: Exception) {
+      Log.e(TAG, "sendSticker: ", ex)
       result?.error(ex)
     }
   }

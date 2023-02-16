@@ -1,7 +1,6 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
 import android.content.Context
-import android.transition.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,7 +11,6 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
@@ -39,6 +37,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   override fun onViewAttachedToWindow(v: View?) {
     Log.d(TAG, "onViewAttachedToWindow: ")
+    animator.animateCreation {
+      annotationData?.let {
+        if (it.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
+          animator.startIdleAnimation()
+        }
+      }
+    }
   }
 
   override fun onViewDetachedFromWindow(v: View?) {
@@ -63,17 +68,17 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
     if (annotation.focused) {
       setFocusedSize(constraintAnimationBuilder)
-      constraintAnimationBuilder.onAnimationEnd = {
+      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
         animator.startIdleAnimation()
       }
     } else if (annotation.onlineStatus == ZnaidyOnlineStatus.OFFLINE && annotation.markerType != ZnaidyMarkerType.COMPANY) {
       setOfflineSize(constraintAnimationBuilder)
-      constraintAnimationBuilder.onAnimationEnd = {
+      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
         animator.stopIdleAnimation()
       }
     } else {
       setRegularSize(constraintAnimationBuilder)
-      constraintAnimationBuilder.onAnimationEnd = {
+      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
         animator.startIdleAnimation()
       }
     }
@@ -82,6 +87,14 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     Log.d(TAG, "bind: constraintAnimation hasChanges=${animation.hasChanges} (${animation.changesCount})")
     if (animation.hasChanges) animation.run()
     annotationData = annotation
+  }
+
+  fun animateReceiveSticker() {
+    animator.animateReceiveSticker()
+  }
+
+  fun delete(onAnimationEnd: () -> Unit) {
+    animator.animateDeletion(onAnimationEnd)
   }
 
   private fun bindSelf(

@@ -103,6 +103,14 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         });
   }
 
+  Widget _sendSticker() {
+    return TextButton(
+        child: Text('send sticker'),
+        onPressed: () async {
+          _animateSticker();
+        });
+  }
+
   Widget _updatePosition() {
     return TextButton(
         child: Text('update annotation position'),
@@ -171,6 +179,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     listViewChildren.add(_delete());
     listViewChildren.add(_updatePosition());
     listViewChildren.add(_unfocus());
+    listViewChildren.add(_sendSticker());
     listViewChildren.add(_switchMode());
     listViewChildren.add(_updateStatus());
     listViewChildren.add(_updateStickers());
@@ -246,7 +255,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   Future<void> _deleteAnnotation() async {
     if (annotationId == null) return;
-    await znaidyAnnotationManager?.delete(annotationId!);
+    await znaidyAnnotationManager?.delete(annotationId!, true);
     annotationId = null;
   }
 
@@ -337,6 +346,11 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
       ),
       MapAnimationOptions(duration: 500),
     );
+  }
+
+  Future<void> _animateSticker() async {
+    if (annotationId == null) return;
+    await znaidyAnnotationManager?.sendSticker(annotationId!);
   }
 
   OnlineStatus _getNextStatus(OnlineStatus status) {
