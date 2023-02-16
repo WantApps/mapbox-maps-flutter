@@ -2,11 +2,21 @@
 <resources>
     <dimen name="annotation_width">140dp</dimen>
     <dimen name="annotation_height">180dp</dimen>
+    <dimen name="annotation_width_focused">150dp</dimen>
+    <dimen name="annotation_height_focused">193dp</dimen>
+    <dimen name="annotation_width_offline">126dp</dimen>
+    <dimen name="annotation_height_offline">126dp</dimen>
     <dimen name="annotation_y_offset">42dp</dimen>
     <dimen name="marker_width">91dp</dimen>
     <dimen name="marker_height">100dp</dimen>
+    <dimen name="marker_width_focused">100dp</dimen>
+    <dimen name="marker_height_focused">110dp</dimen>
+    <dimen name="marker_width_offline">82dp</dimen>
+    <dimen name="marker_height_offline">90dp</dimen>
     <dimen name="glow_gradient_radius">65dp</dimen>
     <dimen name="avatar_size">64dp</dimen>
+    <dimen name="avatar_size_focused">70dp</dimen>
+    <dimen name="avatar_size_offline">57.6dp</dimen>
     <dimen name="stickers_count_size">30dp</dimen>
     <dimen name="company_count_size">24dp</dimen>
     <dimen name="current_speed_width">24dp</dimen>

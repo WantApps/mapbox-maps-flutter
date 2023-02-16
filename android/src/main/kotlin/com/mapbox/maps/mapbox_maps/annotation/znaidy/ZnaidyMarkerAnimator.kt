@@ -43,8 +43,8 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
     glowAnimator?.cancel()
   }
 
-  fun startIdleAnimation(focused: Boolean) {
-    startIdleAnimation(if (focused) 1.1f else 1.0f)
+  fun startIdleAnimation() {
+    startIdleAnimation(1.0f)
   }
 
   private fun startIdleAnimation(baseValue: Float) {
@@ -97,40 +97,5 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
 
   fun stopAvatarAnimation() {
     companyAvatarAnimator?.cancel()
-  }
-
-  fun startFocusAnimation(focused: Boolean) {
-    Log.d(ZnaidyAnnotationView.TAG, "startFocusAnimation: ")
-    markerIdleAnimator?.cancel()
-
-    markerIdleAnimator = if (focused) {
-      ValueAnimator.ofFloat(1.0f, 1.1f)
-    } else {
-      ValueAnimator.ofFloat(1.1f, 1.0f)
-    }
-    markerIdleAnimator?.apply {
-      duration = 500L
-      addUpdateListener { animator ->
-        val value = animator.animatedValue.toString().toFloatOrNull() ?: 1f
-        annotationView.scaleX = value
-        annotationView.scaleY = value
-      }
-      addListener(object : AnimatorListener {
-        override fun onAnimationStart(animation: Animator?) {
-        }
-
-        override fun onAnimationEnd(animation: Animator?) {
-          Log.d(ZnaidyAnnotationView.TAG, "startFocusAnimation: onAnimationEnd: ")
-          startIdleAnimation(focused)
-        }
-
-        override fun onAnimationCancel(animation: Animator?) {
-        }
-
-        override fun onAnimationRepeat(animation: Animator?) {
-        }
-      })
-    }
-    markerIdleAnimator?.start()
   }
 }

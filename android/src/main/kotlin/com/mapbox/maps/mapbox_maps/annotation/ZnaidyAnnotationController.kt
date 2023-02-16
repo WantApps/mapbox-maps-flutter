@@ -54,8 +54,8 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       )
       val viewAnnotationOptions = ViewAnnotationOptions.Builder().apply {
         geometry(annotationData.geometry)
-        width(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_width))
-        height(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_height))
+        width(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_width_focused))
+        height(delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_height_focused))
         anchor(ViewAnnotationAnchor.BOTTOM)
         offsetY(-delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_y_offset))
         associatedFeatureId(pointAnnotation.featureIdentifier)

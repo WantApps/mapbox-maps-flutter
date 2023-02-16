@@ -215,10 +215,10 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
   }
 
   void _resetVars() {
-    onlineStatus = OnlineStatus.offline;
-    markerType = MarkerType.company;
+    onlineStatus = OnlineStatus.inApp;
+    markerType = MarkerType.friend;
     stickers = 0;
-    companySize = 4;
+    companySize = 0;
     currentSpeed = 0;
     userAvatars = avatars;
   }
@@ -320,7 +320,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     mapboxMap?.flyTo(
       CameraOptions(
         center: options.geometry,
-        bearing: 0.1,
+        bearing: 1,
       ),
       MapAnimationOptions(duration: 500),
     );
@@ -333,7 +333,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     await mapboxMap?.easeTo(
       CameraOptions(
         center: lastCameraPosition,
-        bearing: 0.1,
+        bearing: 1,
       ),
       MapAnimationOptions(duration: 500),
     );
