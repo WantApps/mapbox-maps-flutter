@@ -46,7 +46,7 @@ abstract class _ZnaidyAnnotationMessager {
   void update(String managerId, String annotationId, ZnaidyAnnotationOptions annotationOptions);
 
   @async
-  void delete(String managetId, String annotationId, bool animated);
+  void delete(String managerId, String annotationId, bool animated);
 
   @async
   void select(String managerId, String annotationId);

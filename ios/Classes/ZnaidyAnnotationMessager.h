@@ -52,7 +52,7 @@ NSObject<FlutterMessageCodec> *FLT_ZnaidyAnnotationMessagerGetCodec(void);
 @protocol FLT_ZnaidyAnnotationMessager
 - (void)createManagerId:(NSString *)managerId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 - (void)updateManagerId:(NSString *)managerId annotationId:(NSString *)annotationId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(FlutterError *_Nullable))completion;
-- (void)deleteManagetId:(NSString *)managetId annotationId:(NSString *)annotationId animated:(NSNumber *)animated completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)deleteManagerId:(NSString *)managerId annotationId:(NSString *)annotationId animated:(NSNumber *)animated completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)selectManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)resetSelectionManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)sendStickerManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;

@@ -201,11 +201,11 @@ class _ZnaidyAnnotationMessager {
     }
   }
 
-  Future<void> delete(String arg_managetId, String arg_annotationId, bool arg_animated) async {
+  Future<void> delete(String arg_managerId, String arg_annotationId, bool arg_animated) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.delete', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object?>[arg_managetId, arg_annotationId, arg_animated]) as Map<Object?, Object?>?;
+        await channel.send(<Object?>[arg_managerId, arg_annotationId, arg_animated]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

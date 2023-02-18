@@ -110,7 +110,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   }
 
   override fun delete(
-    managetId: String,
+    managerId: String,
     annotationId: String,
     animated: Boolean,
     result: FLTZnaidyAnnotationMessager.Result<Void>?

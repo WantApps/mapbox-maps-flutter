@@ -32,6 +32,7 @@ extension AnnotationController: AnnotationInteractionDelegate {
 }
 
 class AnnotationController: ControllerDelegate {
+    
     private var mapView: MapView
     private var annotationManagers = [String: AnnotationManager]()
     private var circleAnnotationController: CircleAnnotationController?
@@ -58,11 +59,6 @@ class AnnotationController: ControllerDelegate {
         guard let arguments = methodCall.arguments as? [String: Any] else { return }
         guard let type = arguments["type"] as? String else { return }
         
-        if type == "znaidy" {
-            result("100")
-            return
-        }
-        
         if let manager = { () -> AnnotationManager? in
             switch type {
                 case "circle":
@@ -81,6 +77,10 @@ class AnnotationController: ControllerDelegate {
                     let polylineManager: PolylineAnnotationManager = mapView.annotations.makePolylineAnnotationManager()
                     polylineManager.delegate = self
                     return polylineManager
+                case "znaidy":
+                    let pointManager = mapView.annotations.makePointAnnotationManager()
+                    pointManager.delegate = znaidyAnnotatonController
+                    return pointManager
                 default:
                     return nil
             }
@@ -111,6 +111,7 @@ class AnnotationController: ControllerDelegate {
         onPolygonAnnotationClickListener = FLTOnPolygonAnnotationClickListener.init(binaryMessenger: messenger)
         onPolylineAnnotationClickListener = FLTOnPolylineAnnotationClickListener.init(binaryMessenger: messenger)
         onZnaidyAnnotationClickListener = FLTOnZnaidyAnnotationClickListener.init(binaryMessenger: messenger)
+        znaidyAnnotatonController?.flutterClickListener = onZnaidyAnnotationClickListener
     }
 
     func getManager(managerId: String) throws -> AnnotationManager {

@@ -5,6 +5,7 @@ PODS:
   - mapbox_maps_flutter (0.4.0):
     - Flutter
     - MapboxMaps (~> 10.9.0)
+    - SDWebImage (~> 5.0)
   - MapboxCommon (23.1.0)
   - MapboxCoreMaps (10.9.1):
     - MapboxCommon (~> 23.1)
@@ -16,6 +17,9 @@ PODS:
   - MapboxMobileEvents (1.0.8)
   - permission_handler_apple (9.0.4):
     - Flutter
+  - SDWebImage (5.15.2):
+    - SDWebImage/Core (= 5.15.2)
+  - SDWebImage/Core (5.15.2)
   - Turf (2.6.1)
 
 DEPENDENCIES:
@@ -30,6 +34,7 @@ SPEC REPOS:
     - MapboxCoreMaps
     - MapboxMaps
     - MapboxMobileEvents
+    - SDWebImage
     - Turf
 
 EXTERNAL SOURCES:
@@ -45,14 +50,15 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   integration_test: a1e7d09bd98eca2fc37aefd79d4f41ad37bdbbe5
-  mapbox_maps_flutter: 97a05e7827337bdd8931c42ee8cee9584e6c860f
+  mapbox_maps_flutter: 3e2867a69484e19251e033f4346a5ba927d6ce35
   MapboxCommon: bfffb68226f650df065cf24e307576267ebc75e8
   MapboxCoreMaps: c74e3dd1d7d2b8c0ca5503d8c3e8ef79a8feccd5
   MapboxMaps: f5e3858e71a923f0e2fc168a93397cfd98341dc5
   MapboxMobileEvents: febdd92835daa258ca1c1faad0821c0b3394ef40
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
+  SDWebImage: 8ab87d4b3e5cc4927bd47f78db6ceb0b94442577
   Turf: 469ce2c3d22e5e8e4818d5a3b254699a5c89efa4
 
-PODFILE CHECKSUM: 04c8a50f0eb98e8e64bc4237a0712e89ba6c14b8
+PODFILE CHECKSUM: 59200008a5348a471be702918078ef9cc4006b25
 
 COCOAPODS: 1.11.3

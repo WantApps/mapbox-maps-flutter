@@ -11,50 +11,145 @@ import MapboxMaps
 
 class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     private let TAG = "ZnaidyAnnotationController"
-    
+    private static let errorCode = "0"
     private weak var delegate: ControllerDelegate?
-
+    
+    weak var flutterClickListener: FLTOnZnaidyAnnotationClickListener?
+    
+    private var viewAnnotations: [String: ZnaidyAnnotationView] = [:]
+    
     init(withDelegate delegate: ControllerDelegate) {
         self.delegate = delegate
     }
     
     func createManagerId(_ managerId: String, annotationOptions: FLTZnaidyAnnotationOptions, completion: @escaping (String?, FlutterError?) -> Void) {
-//        addViewAnnotation(at: convertDictionaryToCLLocationCoordinate2D(dict: annotationOptions.geometry)!)
-        completion("0", nil)
+        do {
+            guard let pointManager = try delegate?.getManager(managerId: managerId) as? PointAnnotationManager else {
+                completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: "No manager found with id: \(managerId)", details: nil))
+                return
+            }
+            var pointAnnotation = PointAnnotation(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
+            pointAnnotation.iconImage = "dot-11"
+            pointAnnotation.iconAnchor = IconAnchor.bottom
+            pointAnnotation.iconSize = 10
+            pointManager.annotations.append(pointAnnotation)
+            
+            let annotationData = ZnaidyAnnotationDataMapper.createAnnotation(id: pointAnnotation.id, options: annotationOptions)
+            let annotationView = ZnaidyAnnotationView()
+            annotationView.bind(annotationData)
+            
+            //todo add viewAnnotation
+            let options = ViewAnnotationOptions(
+                geometry: Point(annotationData.geometry),
+                width: ZnaidyConstants.annotationWidth,
+                height: ZnaidyConstants.annotationHeight,
+                allowOverlap: false,
+                anchor: .bottom,
+                offsetY: ZnaidyConstants.markerOffsetY * -1
+            )
+            try delegate?.getViewAnnotationsManager().add(annotationView, options: options)
+
+            viewAnnotations[annotationData.id] = annotationView
+            completion(pointAnnotation.id, nil)
+        } catch {
+            completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+        }
     }
     
     func updateManagerId(_ managerId: String, annotationId: String, annotationOptions: FLTZnaidyAnnotationOptions, completion: @escaping (FlutterError?) -> Void) {
-        completion(nil)
+        do {
+            guard let annotationView = viewAnnotations[annotationId] else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            let newAnnotationData = ZnaidyAnnotationDataMapper.updateAnnotation(data: annotationView.annotationData!, options: annotationOptions)
+            if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
+                guard let pointManager = try delegate?.getManager(managerId: managerId) as? PointAnnotationManager else {
+                    completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: "No manager found with id: \(managerId)", details: nil))
+                    return
+                }
+                guard let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
+                    pointAnnotation.id == annotationId
+                }) else {
+                    throw AnnotationControllerError.noAnnotationFound
+                }
+                var pointAnnotation = pointManager.annotations[index]
+                var newPointAnnotation = pointAnnotation.updateCoordinate(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
+                pointManager.annotations[index] = newPointAnnotation
+                
+                try delegate?.getViewAnnotationsManager().update(annotationView, options: ViewAnnotationOptions(geometry: Point(newAnnotationData.geometry)))
+            }
+            annotationView.bind(newAnnotationData)
+            completion(nil)
+        } catch {
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+        }
     }
     
-    func deleteManagetId(_ managetId: String, annotationId: String, animated: NSNumber, completion: @escaping (FlutterError?) -> Void) {
-        completion(nil)
+    func deleteManagerId(_ managerId: String, annotationId: String, animated: NSNumber, completion: @escaping (FlutterError?) -> Void) {
+        do {
+            guard let annotationView = viewAnnotations[annotationId] else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            guard let pointManager = try delegate?.getManager(managerId: managerId) as? PointAnnotationManager else {
+                completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: "No manager found with id: \(managerId)", details: nil))
+                return
+            }
+            let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
+                pointAnnotation.id == annotationId
+            })
+            if index == nil {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            pointManager.annotations.remove(at: index!)
+            
+            try delegate?.getViewAnnotationsManager().remove(annotationView)
+            viewAnnotations.removeValue(forKey: annotationId)
+            completion(nil)
+        } catch {
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+        }
     }
     
     func selectManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
-        completion(nil)
+        do {
+            guard let annotationView = viewAnnotations[annotationId], let annotationData = annotationView.annotationData else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: true)
+            annotationView.bind(newAnnotationData)
+            completion(nil)
+        } catch {
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+        }
     }
 
     func resetSelectionManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
-        completion(nil)
+        do {
+            guard let annotationView = viewAnnotations[annotationId], let annotationData = annotationView.annotationData else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: false)
+            annotationView.bind(newAnnotationData)
+            completion(nil)
+        } catch {
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+        }
     }
 
     func sendStickerManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
-        completion(nil)
+        do {
+            guard let annotationView = viewAnnotations[annotationId] else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            annotationView.animateReceiveSticker()
+            completion(nil)
+        } catch {
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+        }
     }
 
     
-    private func addViewAnnotation(at coordinate: CLLocationCoordinate2D) {
-        let options = ViewAnnotationOptions(
-            geometry: Point(coordinate),
-            width: 100,
-            height: 40,
-            allowOverlap: false,
-            anchor: .center
-        )
-        let sampleView = createSampleView(withText: "Hello world!")
-//        sampleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector (self.onAnnotationTap (_:))))
-        try? delegate?.getViewAnnotationsManager().add(sampleView, options: options)
+    private func addViewAnnotation(at coordinate: CLLocationCoordinate2D, sampleView: ZnaidyAnnotationView) {
     }
     
     private func createSampleView(withText text: String) -> UIView {
@@ -75,5 +170,33 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     
     @objc func onAnnotationTap(_ sender:UITapGestureRecognizer){
         NSLog("\(TAG): onAnnotationTap")
+    }
+}
+
+extension ZnaidyAnnotationController: AnnotationInteractionDelegate {
+    func annotationManager(_ manager: MapboxMaps.AnnotationManager, didDetectTappedAnnotations annotations: [MapboxMaps.Annotation]) {
+        guard let annotation = annotations.first as? PointAnnotation else {
+            return
+        }
+        NSLog("\(TAG): onPointAnnotationClick: \(annotation.id)")
+        guard let znaidyAnnotation = viewAnnotations[annotation.id] else {
+            return
+        }
+        NSLog("\(TAG): onPointAnnotationClick: \(annotation.id), \(String(describing: znaidyAnnotation.annotationData))")
+        flutterClickListener?.onZnaidyAnnotationClickAnnotationId(annotation.id, annotationOptions: ZnaidyAnnotationDataMapper.mapToOptions(data: znaidyAnnotation.annotationData!), completion: { error in
+            NSLog("\(self.TAG): onPointAnnotationClick: \(String(describing: error))")
+        })
+    }
+}
+
+extension PointAnnotation {
+    func updateCoordinate(coordinate: CLLocationCoordinate2D) -> PointAnnotation {
+        var newAnnotation = PointAnnotation(id: id, coordinate: coordinate)
+        newAnnotation.iconImage = iconImage
+        newAnnotation.iconSize = iconSize
+        newAnnotation.iconOpacity = iconOpacity
+        newAnnotation.iconOffset = iconOffset
+        newAnnotation.iconAnchor = iconAnchor
+        return newAnnotation
     }
 }

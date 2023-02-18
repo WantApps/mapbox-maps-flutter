@@ -248,7 +248,7 @@ public class FLTZnaidyAnnotationMessager {
   public interface _ZnaidyAnnotationMessager {
     void create(@NonNull String managerId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<String> result);
     void update(@NonNull String managerId, @NonNull String annotationId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<Void> result);
-    void delete(@NonNull String managetId, @NonNull String annotationId, @NonNull Boolean animated, Result<Void> result);
+    void delete(@NonNull String managerId, @NonNull String annotationId, @NonNull Boolean animated, Result<Void> result);
     void select(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void resetSelection(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void sendSticker(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
@@ -348,9 +348,9 @@ public class FLTZnaidyAnnotationMessager {
             Map<String, Object> wrapped = new HashMap<>();
             try {
               ArrayList<Object> args = (ArrayList<Object>)message;
-              String managetIdArg = (String)args.get(0);
-              if (managetIdArg == null) {
-                throw new NullPointerException("managetIdArg unexpectedly null.");
+              String managerIdArg = (String)args.get(0);
+              if (managerIdArg == null) {
+                throw new NullPointerException("managerIdArg unexpectedly null.");
               }
               String annotationIdArg = (String)args.get(1);
               if (annotationIdArg == null) {
@@ -371,7 +371,7 @@ public class FLTZnaidyAnnotationMessager {
                 }
               };
 
-              api.delete(managetIdArg, annotationIdArg, animatedArg, resultCallback);
+              api.delete(managerIdArg, annotationIdArg, animatedArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

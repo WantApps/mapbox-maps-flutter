@@ -56,6 +56,8 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
         ZnaidyAnnotationClickListener(_onAnnotationClick));
     mapboxMap.style
         .setStyleURI('mapbox://styles/znaidyme/cld4ktnrl000t01qn90o8n2d5');
+    mapboxMap.compass.updateSettings(CompassSettings(enabled: false));
+    mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
     await mapboxMap.setCamera(
       CameraOptions(
         center: Point(
