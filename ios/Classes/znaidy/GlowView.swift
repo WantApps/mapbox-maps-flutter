@@ -45,7 +45,7 @@ class GlowView: UIView, CAAnimationDelegate {
         let colorsAnimation = CABasicAnimation(keyPath: #keyPath(CAGradientLayer.locations))
         colorsAnimation.fromValue = gradientLayer.locations
         colorsAnimation.toValue = [0, 0.85]
-        colorsAnimation.duration = 2.0
+        colorsAnimation.duration = 1.0
         colorsAnimation.delegate = self
         colorsAnimation.fillMode = .forwards
         colorsAnimation.repeatCount = .infinity

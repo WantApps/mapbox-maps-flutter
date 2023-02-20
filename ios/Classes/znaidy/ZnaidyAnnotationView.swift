@@ -19,6 +19,7 @@ class ZnaidyAnnotationView: UIView {
     private var companyCounter: UILabel!
     private var speedView: ZnaidySpeedView!
     private var glowView: GlowView!
+    private var inAppView: UILabel!
     
     private var markerBackgrounsWidthConstraint: NSLayoutConstraint!
     private var markerBackgroundHeightConstraint: NSLayoutConstraint!
@@ -29,6 +30,15 @@ class ZnaidyAnnotationView: UIView {
     
     func bind(_ annotationData: ZnaidyAnnotationData) {
         NSLog("\(TAG): bind: \(annotationData)")
+        switch (annotationData.markerType) {
+            case ._self:
+                bindSelf(annotationData)
+            case .friend:
+                bindFriend(annotationData)
+            case .company:
+                bindCompany(annotationData)
+        }
+        
         if let avatar = annotationData.avatarUrls.first {
             setAvatar(avatarUrl: avatar)
         }
@@ -45,6 +55,18 @@ class ZnaidyAnnotationView: UIView {
     
     func animateReceiveSticker() {
         
+    }
+    
+    func bindSelf(_ annotationData: ZnaidyAnnotationData) {
+        markerBackground.image = MediaProvider.image(named: "znaidy_marker_self")
+    }
+    
+    func bindFriend(_ annotationData: ZnaidyAnnotationData) {
+        markerBackground.image = MediaProvider.image(named: "znaidy_marker_friend")
+    }
+    
+    func bindCompany(_ annotationData: ZnaidyAnnotationData) {
+        markerBackground.image = MediaProvider.image(named: "znaidy_marker_company")
     }
     
     override init(frame: CGRect) {
@@ -64,15 +86,18 @@ class ZnaidyAnnotationView: UIView {
         companyCounter = buildCompanySizeCounter()
         speedView = ZnaidySpeedView()
         glowView = GlowView()
+        inAppView = buildInAppView()
         addSubview(glowView)
         addSubview(markerBackground)
         addSubview(userAvatar)
         addSubview(stickerCounter)
         addSubview(companyCounter)
         addSubview(speedView)
+        addSubview(inAppView)
         companyCounter.isHidden = true
         speedView.isHidden = true
         stickerCounter.isHidden = true
+        inAppView.isHidden = true
         
         markerBackgrounsWidthConstraint = markerBackground.widthAnchor.constraint(equalToConstant: ZnaidyConstants.markerWidth)
         markerBackgroundHeightConstraint = markerBackground.heightAnchor.constraint(equalToConstant: ZnaidyConstants.markerHeight)
@@ -109,7 +134,14 @@ class ZnaidyAnnotationView: UIView {
             speedView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.currentSpeedHeight),
             speedView.bottomAnchor.constraint(equalTo: markerBackground.bottomAnchor, constant: -20.0),
             speedView.leftAnchor.constraint(equalTo: markerBackground.leftAnchor),
+            
+            inAppView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.inAppWidth),
+            inAppView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.inAppHeight),
+            inAppView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
+            inAppView.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: -10.0),
         ])
+        
+        markerIdleAnimation()
     }
     
     private func buildMarkerBackground() -> UIImageView {
@@ -149,6 +181,19 @@ class ZnaidyAnnotationView: UIView {
         label.font = .systemFont(ofSize: 11)
         label.backgroundColor = ZnaidyConstants.znaidyBlack
         label.layer.cornerRadius = ZnaidyConstants.companyCountSize / 2
+        label.layer.masksToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }
+    
+    private func buildInAppView() -> UILabel {
+        let label = UILabel()
+        label.text = "in app"
+        label .textColor = .white
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 13)
+        label.backgroundColor = ZnaidyConstants.znaidyBlue
+        label.layer.cornerRadius = 4.0
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

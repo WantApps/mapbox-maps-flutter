@@ -40,7 +40,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   Point? position;
   OnlineStatus onlineStatus = OnlineStatus.offline;
-  MarkerType markerType = MarkerType.friend;
+  MarkerType markerType = MarkerType.self;
   String? avatarUrl;
   int stickers = 0;
   int companySize = 0;
@@ -227,7 +227,7 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
 
   void _resetVars() {
     onlineStatus = OnlineStatus.inApp;
-    markerType = MarkerType.friend;
+    markerType = MarkerType.self;
     stickers = 0;
     companySize = 0;
     currentSpeed = 0;
