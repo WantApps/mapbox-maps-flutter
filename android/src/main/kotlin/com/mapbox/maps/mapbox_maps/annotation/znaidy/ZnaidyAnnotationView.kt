@@ -292,10 +292,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         .load(avatarUrl)
     } else {
       Glide.with(this)
-        .load(R.drawable.profile_daniel)
+        .load(R.drawable.avatar_placeholder)
     }
     request
-      .error(R.drawable.profile_daniel)
+      .error(R.drawable.avatar_placeholder)
       .apply(RequestOptions.bitmapTransform(CircleCrop()))
       .into(avatarView)
   }

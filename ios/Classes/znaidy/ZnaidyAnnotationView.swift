@@ -39,9 +39,7 @@ class ZnaidyAnnotationView: UIView {
                 bindCompany(annotationData)
         }
         
-        if let avatar = annotationData.avatarUrls.first {
-            setAvatar(avatarUrl: avatar)
-        }
+        setAvatar(avatarUrl: annotationData.avatarUrls.first)
         
         if (annotationData.focused) {
             setFocusedSize()
@@ -145,15 +143,13 @@ class ZnaidyAnnotationView: UIView {
     }
     
     private func buildMarkerBackground() -> UIImageView {
-        let image = MediaProvider.image(named: "znaidy_marker_friend")!
-        let imageView = UIImageView(image: image)
+        let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }
     
     private func buildUserAvatar() -> UIImageView {
-        let image = MediaProvider.image(named: "profile_daniel")!
-        let imageView = UIImageView(image: image)
+        let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.layer.cornerRadius = ZnaidyConstants.avatarSize / 2
         imageView.layer.masksToBounds = true
@@ -227,16 +223,16 @@ class ZnaidyAnnotationView: UIView {
         userAvatar.layer.removeAnimation(forKey: "idle")
     }
         
-    private func setAvatar(avatarUrl: String) {
-        let resizeTransformer = SDImageResizingTransformer(size: CGSize(width: ZnaidyConstants.avatarSize, height: ZnaidyConstants.avatarSize), scaleMode: SDImageScaleMode.aspectFill)
-        userAvatar.sd_setImage(
-            with: URL(string: avatarUrl),
-            placeholderImage: MediaProvider.image(named: "profile_daniel"),
-            context: [:
-//                .imageTransformer: resizeTransformer,
-            ],
-            progress: nil
-        )
+    private func setAvatar(avatarUrl: String?) {
+        if let avatarUrl = avatarUrl {
+            userAvatar.sd_setImage(
+                with: URL(string: avatarUrl),
+                placeholderImage: MediaProvider.image(named: "avatar_placeholder"),
+                progress: nil
+            )
+        } else {
+            userAvatar.image = MediaProvider.image(named: "avatar_placeholder")
+        }
     }
     
     private func setFocusedSize() {

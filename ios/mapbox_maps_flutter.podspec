@@ -14,6 +14,8 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
 
   s.source_files = 'Classes/**/*'
+  s.resources = 'Assets/**/*.xcassets'
+  s.resource_bundle = { 'mapbox_maps_flutter' => 'Assets/**/*.xcassets' }
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
   s.dependency 'MapboxMaps', '~> 10.9.0'
