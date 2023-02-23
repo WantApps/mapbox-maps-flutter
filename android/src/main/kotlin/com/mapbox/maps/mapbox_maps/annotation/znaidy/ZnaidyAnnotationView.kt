@@ -11,10 +11,12 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.IdRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
+import kotlin.math.roundToInt
 
 
 class ZnaidyAnnotationView @JvmOverloads constructor(
@@ -54,6 +56,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   fun bind(annotation: ZnaidyAnnotationData) {
     Log.d(TAG, "bind: $annotation")
     val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
+    constraintAnimationBuilder.zoomFactor = annotation.zoomFactor;
     when (annotation.markerType) {
       ZnaidyMarkerType.SELF -> bindSelf(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.FRIEND -> bindFriend(annotation, constraintAnimationBuilder)
@@ -194,66 +197,54 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   private fun setFocusedSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
     val markerBackground = findViewById<View>(R.id.markerBackground)
-    Log.d(
-      TAG, "setFocusedSize: markerWidth=${markerBackground.width}," +
-        " dimen_focused=${getDimen(R.dimen.marker_width_focused)}," +
-        " dimen_regular=${getDimen(R.dimen.marker_width)}," +
-        " dimen_offline=${getDimen(R.dimen.marker_width_offline)}"
-    )
-    if (markerBackground.width != getDimen(R.dimen.marker_width_focused)) {
+    if (markerBackground.width != getDimen(R.dimen.marker_width_focused, constraintAnimationBuilder.zoomFactor)) {
       constraintAnimationBuilder.addChange { constraintSet ->
-        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width_focused))
-        constraintSet.constrainHeight(
-          R.id.markerBackground,
-          getDimen(R.dimen.marker_height_focused)
-        )
-        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size_focused))
-        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size_focused))
+        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width_focused, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height_focused, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size_focused, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size_focused, constraintAnimationBuilder.zoomFactor))
+        constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+        constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+        val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
+        constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
       }
     }
   }
 
   private fun setRegularSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
     val markerBackground = findViewById<View>(R.id.markerBackground)
-    Log.d(
-      TAG, "setRegularSize: markerWidth=${markerBackground.width}," +
-        " dimen_focused=${getDimen(R.dimen.marker_width_focused)}," +
-        " dimen_regular=${getDimen(R.dimen.marker_width)}," +
-        " dimen_offline=${getDimen(R.dimen.marker_width_offline)}"
-    )
-    if (markerBackground.width != getDimen(R.dimen.marker_width)) {
+    if (markerBackground.width != getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor)) {
       constraintAnimationBuilder.addChange { constraintSet ->
-        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width))
-        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height))
-        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size))
-        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size))
+        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
+        constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+        constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+        val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
+        constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
       }
     }
   }
 
   private fun setOfflineSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
     val markerBackground = findViewById<View>(R.id.markerBackground)
-    Log.d(
-      TAG, "setOfflineSize: markerWidth=${markerBackground.width}," +
-        " dimen_focused=${getDimen(R.dimen.marker_width_focused)}," +
-        " dimen_regular=${getDimen(R.dimen.marker_width)}," +
-        " dimen_offline=${getDimen(R.dimen.marker_width_offline)}"
-    )
-    if (markerBackground.width != getDimen(R.dimen.marker_width_offline)) {
+    if (markerBackground.width != getDimen(R.dimen.marker_width_offline, constraintAnimationBuilder.zoomFactor)) {
       constraintAnimationBuilder.addChange { constraintSet ->
-        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width_offline))
-        constraintSet.constrainHeight(
-          R.id.markerBackground,
-          getDimen(R.dimen.marker_height_offline)
-        )
-        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size_offline))
-        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size_offline))
+        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width_offline, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height_offline, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size_offline, constraintAnimationBuilder.zoomFactor))
+        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size_offline, constraintAnimationBuilder.zoomFactor))
+        constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+        constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+        val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
+        constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
       }
     }
   }
 
-  private fun getDimen(@DimenRes dimen: Int): Int {
-    return context.resources.getDimensionPixelOffset(dimen)
+  private fun getDimen(@DimenRes dimen: Int, zoomFactor: Double = 1.0): Int {
+    return (context.resources.getDimensionPixelOffset(dimen) * zoomFactor).roundToInt()
   }
 
   private fun showCompanyGlow() {

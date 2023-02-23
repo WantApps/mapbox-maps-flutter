@@ -11,6 +11,7 @@ data class ZnaidyAnnotationData(
   val stickersCount: Int,
   val companySize: Int,
   val currentSpeed: Int,
+  val zoomFactor: Double,
   val focused: Boolean = false,
 ) {
   var userAvatar = avatarUrls.firstOrNull()

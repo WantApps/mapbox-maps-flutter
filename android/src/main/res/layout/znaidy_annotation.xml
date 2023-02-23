@@ -11,13 +11,15 @@
 
     <View
         android:id="@+id/glow"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/annotation_width_focused"
+        android:layout_height="@dimen/annotation_width_focused"
         android:background="@drawable/marker_glow_inapp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="@dimen/glow_y_offset"
+        app:layout_constraintVertical_bias="1.0"
         />
 
     <ImageView

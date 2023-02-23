@@ -10,7 +10,7 @@ import Turf
 import MapboxMaps
 
 class ZnaidyAnnotationData {
-    init(id: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, focused: Bool) {
+    init(id: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, zoomFactor: Double, focused: Bool) {
         self.id = id
         self.geometry = geometry
         self.markerType = markerType
@@ -19,6 +19,7 @@ class ZnaidyAnnotationData {
         self.stickerCount = stickerCount
         self.companySize = companySize
         self.currentSpeed = currentSpeed
+        self.zoomFactor = zoomFactor
         self.focused = focused
     }
     
@@ -30,10 +31,11 @@ class ZnaidyAnnotationData {
     let stickerCount: Int
     let companySize: Int
     let currentSpeed: Int
+    let zoomFactor: Double
     let focused: Bool
     
     func toString() -> String {
-        return "ZnaidyAnnotationData(id=\(id), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), focused=\(focused))"
+        return "ZnaidyAnnotationData(id=\(id), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), zoomFactor=\(zoomFactor), focused=\(focused))"
     }
 }
 

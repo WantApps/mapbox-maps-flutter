@@ -88,6 +88,12 @@ public class FLTZnaidyAnnotationMessager {
       this.currentSpeed = setterArg;
     }
 
+    private @Nullable Double zoomFactor;
+    public @Nullable Double getZoomFactor() { return zoomFactor; }
+    public void setZoomFactor(@Nullable Double setterArg) {
+      this.zoomFactor = setterArg;
+    }
+
     public static final class Builder {
       private @Nullable Map<String, Object> geometry;
       public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
@@ -124,6 +130,11 @@ public class FLTZnaidyAnnotationMessager {
         this.currentSpeed = setterArg;
         return this;
       }
+      private @Nullable Double zoomFactor;
+      public @NonNull Builder setZoomFactor(@Nullable Double setterArg) {
+        this.zoomFactor = setterArg;
+        return this;
+      }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
         pigeonReturn.setGeometry(geometry);
@@ -133,6 +144,7 @@ public class FLTZnaidyAnnotationMessager {
         pigeonReturn.setStickerCount(stickerCount);
         pigeonReturn.setCompanySize(companySize);
         pigeonReturn.setCurrentSpeed(currentSpeed);
+        pigeonReturn.setZoomFactor(zoomFactor);
         return pigeonReturn;
       }
     }
@@ -145,6 +157,7 @@ public class FLTZnaidyAnnotationMessager {
       toMapResult.put("stickerCount", stickerCount);
       toMapResult.put("companySize", companySize);
       toMapResult.put("currentSpeed", currentSpeed);
+      toMapResult.put("zoomFactor", zoomFactor);
       return toMapResult;
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
@@ -163,6 +176,8 @@ public class FLTZnaidyAnnotationMessager {
       pigeonResult.setCompanySize((companySize == null) ? null : ((companySize instanceof Integer) ? (Integer)companySize : (Long)companySize));
       Object currentSpeed = map.get("currentSpeed");
       pigeonResult.setCurrentSpeed((currentSpeed == null) ? null : ((currentSpeed instanceof Integer) ? (Integer)currentSpeed : (Long)currentSpeed));
+      Object zoomFactor = map.get("zoomFactor");
+      pigeonResult.setZoomFactor((Double)zoomFactor);
       return pigeonResult;
     }
   }

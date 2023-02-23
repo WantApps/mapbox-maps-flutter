@@ -20,6 +20,7 @@ object ZnaidyAnnotationDataMapper {
       options.stickerCount?.toInt() ?: 0,
       options.companySize?.toInt() ?: 0,
       options.currentSpeed?.toInt() ?: 0,
+      options.zoomFactor ?: 1.0,
     )
   }
 
@@ -40,6 +41,7 @@ object ZnaidyAnnotationDataMapper {
       stickersCount = options.stickerCount?.toInt() ?: data.stickersCount,
       companySize = options.companySize?.toInt() ?: data.companySize,
       currentSpeed = options.currentSpeed?.toInt() ?: data.currentSpeed,
+      zoomFactor = options.zoomFactor ?: data.zoomFactor,
     )
   }
 

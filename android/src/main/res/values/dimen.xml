@@ -13,7 +13,8 @@
     <dimen name="marker_height_focused">110dp</dimen>
     <dimen name="marker_width_offline">82dp</dimen>
     <dimen name="marker_height_offline">90dp</dimen>
-    <dimen name="glow_gradient_radius">65dp</dimen>
+    <dimen name="glow_gradient_radius">58dp</dimen>
+    <dimen name="glow_y_offset">24dp</dimen>
     <dimen name="avatar_size">64dp</dimen>
     <dimen name="avatar_size_focused">70dp</dimen>
     <dimen name="avatar_size_offline">57.6dp</dimen>

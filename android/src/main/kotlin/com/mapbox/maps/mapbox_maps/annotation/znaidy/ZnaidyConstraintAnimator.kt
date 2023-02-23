@@ -15,6 +15,7 @@ class ZnaidyConstraintAnimation private constructor(
   private val onAnimationEnd: (() -> Unit),
   private val duration: Long,
   private val transition: Transition,
+  private val zoomFactor: Double,
 ) {
 
   var hasChanges = changes.isNotEmpty()
@@ -25,7 +26,8 @@ class ZnaidyConstraintAnimation private constructor(
     private var changes: List<ConstraintAnimationChange> = listOf(),
     var onAnimationEnd: (() -> Unit) = {},
     var duration: Long = 200L,
-    var transition: Transition = AutoTransition()
+    var transition: Transition = AutoTransition(),
+    var zoomFactor: Double = 1.0,
   ) {
 
     fun addChange(change: ConstraintAnimationChange) {
@@ -38,7 +40,8 @@ class ZnaidyConstraintAnimation private constructor(
         changes,
         onAnimationEnd,
         duration,
-        transition
+        transition,
+        zoomFactor,
       )
     }
   }

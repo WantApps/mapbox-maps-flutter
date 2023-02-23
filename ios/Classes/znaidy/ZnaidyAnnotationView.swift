@@ -25,6 +25,9 @@ class ZnaidyAnnotationView: UIView {
     private var markerBackgroundHeightConstraint: NSLayoutConstraint!
     private var avatarWidthConstraint: NSLayoutConstraint!
     private var avatarHeightConstraint: NSLayoutConstraint!
+    private var avatarBottomOffsetConstraint: NSLayoutConstraint!
+    private var glowWidthConstraint: NSLayoutConstraint!
+    private var glowHeightConstraint: NSLayoutConstraint!
     
     private(set) var annotationData: ZnaidyAnnotationData?
     
@@ -42,11 +45,11 @@ class ZnaidyAnnotationView: UIView {
         setAvatar(avatarUrl: annotationData.avatarUrls.first)
         
         if (annotationData.focused) {
-            setFocusedSize()
+            setFocusedSize(zoomFactor: annotationData.zoomFactor)
         } else if (annotationData.onlineStatus == .offline) {
-            setOfflineSize()
+            setOfflineSize(zoomFactor: annotationData.zoomFactor)
         } else {
-            setRegularSize()
+            setRegularSize(zoomFactor: annotationData.zoomFactor)
         }
         self.annotationData = annotationData
     }
@@ -101,6 +104,9 @@ class ZnaidyAnnotationView: UIView {
         markerBackgroundHeightConstraint = markerBackground.heightAnchor.constraint(equalToConstant: ZnaidyConstants.markerHeight)
         avatarWidthConstraint = userAvatar.widthAnchor.constraint(equalToConstant: ZnaidyConstants.avatarSize)
         avatarHeightConstraint = userAvatar.heightAnchor.constraint(equalToConstant: ZnaidyConstants.avatarSize)
+        avatarBottomOffsetConstraint = userAvatar.centerYAnchor.constraint(equalTo: markerBackground.centerYAnchor, constant: ZnaidyConstants.avatarOffset)
+        glowWidthConstraint = glowView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.annotationWidth)
+        glowHeightConstraint = glowView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.annotationWidth)
 
         NSLayoutConstraint.activate([
             markerBackgrounsWidthConstraint,
@@ -108,15 +114,15 @@ class ZnaidyAnnotationView: UIView {
             markerBackground.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -ZnaidyConstants.markerOffsetY),
             markerBackground.centerXAnchor.constraint(equalTo: centerXAnchor),
             
-            glowView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.annotationWidth),
-            glowView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.annotationWidth),
+            glowWidthConstraint,
+            glowHeightConstraint,
             glowView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
             glowView.centerYAnchor.constraint(equalTo: markerBackground.centerYAnchor),
 
             avatarWidthConstraint,
             avatarHeightConstraint,
             userAvatar.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
-            userAvatar.centerYAnchor.constraint(equalTo: markerBackground.centerYAnchor, constant: ZnaidyConstants.avatarOffset),
+            avatarBottomOffsetConstraint,
             
             stickerCounter.widthAnchor.constraint(equalToConstant: ZnaidyConstants.stickerCountSize),
             stickerCounter.heightAnchor.constraint(equalToConstant: ZnaidyConstants.stickerCountSize),
@@ -235,41 +241,56 @@ class ZnaidyAnnotationView: UIView {
         }
     }
     
-    private func setFocusedSize() {
+    private func setFocusedSize(zoomFactor: Double) {
         NSLog("\(TAG): setFocusedSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidthFocused)")
-        
         self.layoutIfNeeded()
         
-        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthFocused
-        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightFocused
-        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeFocused
-        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeFocused
-
-        UIView.animate(withDuration: 0.5) {
+        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthFocused * zoomFactor
+        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightFocused * zoomFactor
+        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeFocused * zoomFactor
+        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeFocused * zoomFactor
+        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSizeFocused / 2 * zoomFactor
+        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        
+        UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
         }
     }
     
-    private func setRegularSize() {
+    private func setRegularSize(zoomFactor: Double) {
         NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth)")
         self.layoutIfNeeded()
-        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidth
-        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeight
-        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize
-        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize
-        UIView.animate(withDuration: 0.5) {
+        
+        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidth * zoomFactor
+        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeight * zoomFactor
+        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
+        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
+        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSize / 2 * zoomFactor
+        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+
+        UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
         }
     }
     
-    private func setOfflineSize() {
+    private func setOfflineSize(zoomFactor: Double) {
         NSLog("\(TAG): setOfflineSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidthOffline)")
         self.layoutIfNeeded()
-        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthOffline
-        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightOffline
-        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeOffline
-        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeOffline
-        UIView.animate(withDuration: 0.5) {
+        
+        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthOffline * zoomFactor
+        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightOffline * zoomFactor
+        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeOffline * zoomFactor
+        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeOffline * zoomFactor
+        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSizeOffline / 2 * zoomFactor
+        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+
+        UIView.animate(withDuration: 0.2) {
             self.layoutIfNeeded()
         }
     }

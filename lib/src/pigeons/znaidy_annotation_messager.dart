@@ -21,6 +21,7 @@ class ZnaidyAnnotationOptions {
     this.stickerCount,
     this.companySize,
     this.currentSpeed,
+    this.zoomFactor,
   });
 
   Map<String?, Object?>? geometry;
@@ -30,6 +31,7 @@ class ZnaidyAnnotationOptions {
   int? stickerCount;
   int? companySize;
   int? currentSpeed;
+  double? zoomFactor;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -40,6 +42,7 @@ class ZnaidyAnnotationOptions {
     pigeonMap['stickerCount'] = stickerCount;
     pigeonMap['companySize'] = companySize;
     pigeonMap['currentSpeed'] = currentSpeed;
+    pigeonMap['zoomFactor'] = zoomFactor;
     return pigeonMap;
   }
 
@@ -57,6 +60,7 @@ class ZnaidyAnnotationOptions {
       stickerCount: pigeonMap['stickerCount'] as int?,
       companySize: pigeonMap['companySize'] as int?,
       currentSpeed: pigeonMap['currentSpeed'] as int?,
+      zoomFactor: pigeonMap['zoomFactor'] as double?,
     );
   }
 }

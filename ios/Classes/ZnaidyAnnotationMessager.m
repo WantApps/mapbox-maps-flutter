@@ -44,7 +44,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
-    currentSpeed:(nullable NSNumber *)currentSpeed {
+    currentSpeed:(nullable NSNumber *)currentSpeed
+    zoomFactor:(nullable NSNumber *)zoomFactor {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
   pigeonResult.geometry = geometry;
   pigeonResult.markerType = markerType;
@@ -53,6 +54,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.stickerCount = stickerCount;
   pigeonResult.companySize = companySize;
   pigeonResult.currentSpeed = currentSpeed;
+  pigeonResult.zoomFactor = zoomFactor;
   return pigeonResult;
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
@@ -64,6 +66,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.stickerCount = GetNullableObject(dict, @"stickerCount");
   pigeonResult.companySize = GetNullableObject(dict, @"companySize");
   pigeonResult.currentSpeed = GetNullableObject(dict, @"currentSpeed");
+  pigeonResult.zoomFactor = GetNullableObject(dict, @"zoomFactor");
   return pigeonResult;
 }
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
@@ -76,6 +79,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     @"stickerCount" : (self.stickerCount ?: [NSNull null]),
     @"companySize" : (self.companySize ?: [NSNull null]),
     @"currentSpeed" : (self.currentSpeed ?: [NSNull null]),
+    @"zoomFactor" : (self.zoomFactor ?: [NSNull null]),
   };
 }
 @end

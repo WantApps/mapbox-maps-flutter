@@ -30,6 +30,7 @@ class ZnaidyAnnotationOptions {
   int? stickerCount;
   int? companySize;
   int? currentSpeed;
+  double? zoomFactor;
 }
 
 @FlutterApi()

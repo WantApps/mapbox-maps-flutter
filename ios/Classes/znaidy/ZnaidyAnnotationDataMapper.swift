@@ -20,6 +20,7 @@ class ZnaidyAnnotationDataMapper {
             stickerCount: Int(truncating: options.stickerCount ?? 0),
             companySize: Int(truncating: options.companySize ?? 0),
             currentSpeed: Int(truncating: options.currentSpeed ?? 0),
+            zoomFactor: Double(truncating: options.zoomFactor ?? 1.0),
             focused: false
         )
     }
@@ -38,6 +39,7 @@ class ZnaidyAnnotationDataMapper {
             stickerCount: Int(truncating: options.stickerCount ?? data.stickerCount as NSNumber),
             companySize: Int(truncating: options.companySize ?? data.companySize as NSNumber),
             currentSpeed: Int(truncating: options.currentSpeed ?? data.currentSpeed as NSNumber),
+            zoomFactor: Double(truncating: options.zoomFactor ?? data.zoomFactor as NSNumber),
             focused: data.focused
         )
     }
@@ -52,6 +54,7 @@ class ZnaidyAnnotationDataMapper {
             stickerCount: data.stickerCount,
             companySize: data.companySize,
             currentSpeed: data.currentSpeed,
+            zoomFactor: data.zoomFactor,
             focused: focused
         )
     }
@@ -64,7 +67,8 @@ class ZnaidyAnnotationDataMapper {
             userAvatars: nil,
             stickerCount: nil,
             companySize: nil,
-            currentSpeed: nil
+            currentSpeed: nil,
+            zoomFactor: nil
         )
     }
 }
