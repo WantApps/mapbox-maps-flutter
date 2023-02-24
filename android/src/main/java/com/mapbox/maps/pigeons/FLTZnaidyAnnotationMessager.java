@@ -267,6 +267,7 @@ public class FLTZnaidyAnnotationMessager {
     void select(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void resetSelection(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void sendSticker(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
+    void setUpdateRate(@NonNull String managerId, @NonNull Long rate, Result<Void> result);
 
     /** The codec used by _ZnaidyAnnotationMessager. */
     static MessageCodec<Object> getCodec() {
@@ -501,6 +502,44 @@ public class FLTZnaidyAnnotationMessager {
               };
 
               api.sendSticker(managerIdArg, annotationIdArg, resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon._ZnaidyAnnotationMessager.setUpdateRate", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              String managerIdArg = (String)args.get(0);
+              if (managerIdArg == null) {
+                throw new NullPointerException("managerIdArg unexpectedly null.");
+              }
+              Number rateArg = (Number)args.get(1);
+              if (rateArg == null) {
+                throw new NullPointerException("rateArg unexpectedly null.");
+              }
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.setUpdateRate(managerIdArg, (rateArg == null) ? null : rateArg.longValue(), resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

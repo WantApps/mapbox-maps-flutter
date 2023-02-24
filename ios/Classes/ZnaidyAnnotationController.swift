@@ -16,7 +16,11 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     
     weak var flutterClickListener: FLTOnZnaidyAnnotationClickListener?
     
+    var pointManagerId: String!
+    
+    private var locationUpdateRate: TimeInterval = 2.0
     private var viewAnnotations: [String: ZnaidyAnnotationView] = [:]
+    private var annotationAnimators: [String:ZnaidyPositionAnimator] = [:]
     
     init(withDelegate delegate: ControllerDelegate) {
         self.delegate = delegate
@@ -64,20 +68,14 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.updateAnnotation(data: annotationView.annotationData!, options: annotationOptions)
             if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
-                guard let pointManager = try delegate?.getManager(managerId: managerId) as? PointAnnotationManager else {
-                    completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: "No manager found with id: \(managerId)", details: nil))
-                    return
+                var startPosition = annotationView.annotationData!.geometry
+                if let lastAnimator = annotationAnimators[annotationId] {
+                    startPosition = lastAnimator.stop()
+                    annotationAnimators.removeValue(forKey: annotationId)
                 }
-                guard let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
-                    pointAnnotation.id == annotationId
-                }) else {
-                    throw AnnotationControllerError.noAnnotationFound
-                }
-                var pointAnnotation = pointManager.annotations[index]
-                var newPointAnnotation = pointAnnotation.updateCoordinate(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
-                pointManager.annotations[index] = newPointAnnotation
-                
-                try delegate?.getViewAnnotationsManager().update(annotationView, options: ViewAnnotationOptions(geometry: Point(newAnnotationData.geometry)))
+                let animator = ZnaidyPositionAnimator(id: annotationId, from: startPosition, to: newAnnotationData.geometry, duration: locationUpdateRate, delegate: self)
+                animator.start()
+                annotationAnimators[annotationId] = animator
             }
             annotationView.bind(newAnnotationData)
             completion(nil)
@@ -148,29 +146,43 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
         }
     }
+    
+    func setUpdateRateManagerId(_ managerId: String, rate: NSNumber, completion: @escaping (FlutterError?) -> Void) {
+        locationUpdateRate = TimeInterval(rate.intValue / 1000)
+        completion(nil)
+    }
+}
 
-    
-    private func addViewAnnotation(at coordinate: CLLocationCoordinate2D, sampleView: ZnaidyAnnotationView) {
+extension ZnaidyAnnotationController: ZnaidyPositionAnimationDelegate {
+    func onAnimationUpdate(id: String, position: CLLocationCoordinate2D) {
+        do {
+            guard let annotationView = viewAnnotations[id] else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            guard let pointManager = try delegate?.getManager(managerId: pointManagerId) as? PointAnnotationManager else {
+                return
+            }
+            guard let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
+                pointAnnotation.id == id
+            }) else {
+                throw AnnotationControllerError.noAnnotationFound
+            }
+            var pointAnnotation = pointManager.annotations[index]
+            var newPointAnnotation = pointAnnotation.updateCoordinate(coordinate: position)
+            pointManager.annotations[index] = newPointAnnotation
+            
+            try delegate?.getViewAnnotationsManager().update(annotationView, options: ViewAnnotationOptions(geometry: Point(position)))
+        } catch {
+            NSLog("\(TAG): onAnimationUpdate: \(error)")
+            if let animator = annotationAnimators[id] {
+                animator.stop()
+                annotationAnimators.removeValue(forKey: id)
+            }
+        }
     }
     
-    private func createSampleView(withText text: String) -> UIView {
-        let button = UIButton(type: UIButton.ButtonType.roundedRect)
-        button.setTitle(text, for: UIControl.State.normal)
-        button.addTarget(self, action: #selector (self.onAnnotationTap (_:)), for: UIControl.Event.touchDown)
-        return button
-        
-//        let label = UILabel()
-//        label.text = text
-//        label.font = .systemFont(ofSize: 14)
-//        label.numberOfLines = 0
-//        label.textColor = .black
-//        label.backgroundColor = .white
-//        label.textAlignment = .center
-//        return label
-    }
-    
-    @objc func onAnnotationTap(_ sender:UITapGestureRecognizer){
-        NSLog("\(TAG): onAnnotationTap")
+    func onAnimationEnd(id: String) {
+        annotationAnimators.removeValue(forKey: id)
     }
 }
 

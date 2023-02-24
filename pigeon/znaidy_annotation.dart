@@ -57,4 +57,7 @@ abstract class _ZnaidyAnnotationMessager {
 
   @async
   void sendSticker(String managerId, String annotationId);
+
+  @async
+  void setUpdateRate(String managerId, int rate);
 }

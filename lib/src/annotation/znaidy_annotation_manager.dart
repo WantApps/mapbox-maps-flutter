@@ -25,6 +25,9 @@ class ZnaidyAnnotationManager extends BaseAnnotationManager {
   Future<void> sendSticker(String annotationId) =>
       messager.sendSticker(id, annotationId);
 
+  Future<void> setLocationUpdateRate(int rate) =>
+      messager.setUpdateRate(id, rate);
+
   void addOnAnnotationTapListener(OnZnaidyAnnotationClickListener listener) {
     OnZnaidyAnnotationClickListener.setup(listener);
   }

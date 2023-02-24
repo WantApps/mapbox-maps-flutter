@@ -343,4 +343,25 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
       [channel setMessageHandler:nil];
     }
   }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon._ZnaidyAnnotationMessager.setUpdateRate"
+        binaryMessenger:binaryMessenger
+        codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setUpdateRateManagerId:rate:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(setUpdateRateManagerId:rate:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
+        NSNumber *arg_rate = GetNullableObjectAtIndex(args, 1);
+        [api setUpdateRateManagerId:arg_managerId rate:arg_rate completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
 }

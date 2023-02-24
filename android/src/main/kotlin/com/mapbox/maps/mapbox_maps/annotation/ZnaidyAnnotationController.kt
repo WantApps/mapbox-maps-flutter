@@ -1,20 +1,25 @@
 package com.mapbox.maps.mapbox_maps.annotation
 
 import android.util.Log
+import com.mapbox.geojson.Point
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationOptions
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.mapbox_maps.R
+import com.mapbox.maps.mapbox_maps.annotation.znaidy.OnPositionAnimationListener
 import com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyAnnotationDataMapper
 import com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyAnnotationView
+import com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyPositionAnimator
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.ZnaidyAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import java.util.*
 
 class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
-  FLTZnaidyAnnotationMessager._ZnaidyAnnotationMessager, OnPointAnnotationClickListener {
+  FLTZnaidyAnnotationMessager._ZnaidyAnnotationMessager, OnPointAnnotationClickListener,
+  OnPositionAnimationListener {
 
   private companion object {
     const val TAG = "ZnaidyAnnotationController"
@@ -22,7 +27,10 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
 
   var flutterClickCallback: FLTZnaidyAnnotationMessager.OnZnaidyAnnotationClickListener? = null
 
+
+  private var updateRate: Long = 2000L
   private val viewAnnotations = mutableMapOf<String, ZnaidyAnnotationView>()
+  private val annotationAnimations = mutableMapOf<String, ZnaidyPositionAnimator>()
 
   override fun create(
     managerId: String,
@@ -89,16 +97,18 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             annotationOptions
           )
         if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {
-          val viewAnnotationOptions = ViewAnnotationOptions.Builder().apply {
-            geometry(newAnnotationData.geometry)
-          }.build()
-          val viewAnnotationManager = delegate.getViewAnnotationManager()
-          viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptions)
-          val pointAnnotationManager = delegate.getPointAnnotationManager()
-          val pointAnnotation =
-            pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
-          pointAnnotation.geometry = newAnnotationData.geometry
-          pointAnnotationManager.update(pointAnnotation)
+          val startPosition = annotationAnimations[annotationId]?.let {
+            annotationAnimations.remove(annotationId)
+            it.stop()
+          } ?: znaidyAnnotationView.annotationData!!.geometry
+          val animator = ZnaidyPositionAnimator(
+            annotationId,
+            startPosition,
+            newAnnotationData.geometry,
+            updateRate,
+            this
+          ).apply { start() }
+          annotationAnimations[annotationId] = animator
         }
         znaidyAnnotationView.bind(newAnnotationData)
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
@@ -189,6 +199,15 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     }
   }
 
+  override fun setUpdateRate(
+    managerId: String,
+    rate: Long,
+    result: FLTZnaidyAnnotationMessager.Result<Void>?
+  ) {
+    updateRate = rate
+    result?.success(null)
+  }
+
   override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
     Log.d(TAG, "onAnnotationClick: $annotation")
     viewAnnotations[annotation.id.toString()]?.annotationData?.let { annotationData ->
@@ -203,4 +222,28 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     return true
   }
 
+  override fun onPositionAnimationUpdate(id: String, position: Point) {
+    try {
+      viewAnnotations[id]?.let { znaidyAnnotationView ->
+        val viewAnnotationManager = delegate.getViewAnnotationManager()
+        val pointAnnotationManager = delegate.getPointAnnotationManager()
+        val viewAnnotationOptions = ViewAnnotationOptions.Builder().apply {
+          geometry(position)
+        }.build()
+        viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptions)
+        val pointAnnotation =
+          pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
+        pointAnnotation.geometry = position
+        pointAnnotationManager.update(pointAnnotation)
+      }
+    } catch (ex: Exception) {
+      Log.e(TAG, "onPositionAnimationUpdate: ", ex)
+      annotationAnimations[id]?.stop()
+      annotationAnimations.remove(id)
+    }
+  }
+
+  override fun onPositionAnimationEnded(id: String) {
+    annotationAnimations.remove(id)
+  }
 }

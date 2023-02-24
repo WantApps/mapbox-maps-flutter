@@ -80,6 +80,7 @@ class AnnotationController: ControllerDelegate {
                 case "znaidy":
                     let pointManager = mapView.annotations.makePointAnnotationManager()
                     pointManager.delegate = znaidyAnnotatonController
+                    znaidyAnnotatonController?.pointManagerId = pointManager.id
                     return pointManager
                 default:
                     return nil

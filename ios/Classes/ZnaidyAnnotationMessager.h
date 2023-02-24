@@ -58,6 +58,7 @@ NSObject<FlutterMessageCodec> *FLT_ZnaidyAnnotationMessagerGetCodec(void);
 - (void)selectManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)resetSelectionManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)sendStickerManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)setUpdateRateManagerId:(NSString *)managerId rate:(NSNumber *)rate completion:(void(^)(FlutterError *_Nullable))completion;
 @end
 
 extern void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLT_ZnaidyAnnotationMessager> *_Nullable api);
