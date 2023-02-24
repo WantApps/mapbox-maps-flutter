@@ -3,6 +3,7 @@ package com.mapbox.maps.mapbox_maps.annotation.znaidy
 import android.animation.ValueAnimator
 import android.util.Log
 import android.view.View
+import android.view.animation.LinearInterpolator
 import com.mapbox.maps.mapbox_maps.R
 import java.util.Timer
 import java.util.TimerTask
@@ -29,9 +30,10 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
   fun startGlowAnimation() {
     glowAnimator?.cancel()
     val glowView = annotationView.findViewById<View>(R.id.glow)
-    glowAnimator = ValueAnimator.ofFloat(0.5f, 1f).apply {
-      duration = 2000L
+    glowAnimator = ValueAnimator.ofFloat(0.2f, 1f).apply {
+      duration = 750L
       repeatMode = ValueAnimator.REVERSE
+      interpolator = LinearInterpolator()
       addUpdateListener { animation ->
         val value = animation.animatedValue.toString().toFloatOrNull() ?: 1f
         glowView.alpha = value
@@ -57,16 +59,16 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
 
     markerIdleAnimator = ValueAnimator.ofFloat(
       baseValue,
-      baseValue + 0.01f,
-      baseValue + 0.03f,
+      baseValue + 0.02f,
+      baseValue + 0.06f,
       baseValue,
-      baseValue - 0.03f,
-      baseValue - 0.01f,
+      baseValue - 0.06f,
+      baseValue - 0.02f,
       baseValue
     ).apply {
-      duration = 2000L
+      duration = 1500L
       repeatCount = ValueAnimator.INFINITE
-      repeatMode = ValueAnimator.REVERSE
+      interpolator = LinearInterpolator()
       addUpdateListener { animator ->
         val value = animator.animatedValue.toString().toFloatOrNull() ?: baseValue
         background.scaleX = value

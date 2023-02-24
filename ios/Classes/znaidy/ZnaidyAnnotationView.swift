@@ -202,24 +202,29 @@ class ZnaidyAnnotationView: UIView {
     }
     
     private func markerIdleAnimation() {
+        let keyframes: [NSNumber] = [0.0, NSNumber(value: 1.0/7.0), NSNumber(value: 2.0/7.0), NSNumber(value: 3.0/7.0), NSNumber(value: 4.0/7.0), NSNumber(value: 5.0/7.0), NSNumber(value: 6.0/7.0), NSNumber(value: 7.0/7.0)]
+        let values = [1.0, 1.02, 1.06, 1.0, 0.94, 0.98, 1.0]
+        let reversedValues = [1.0, 0.98, 0.94, 1.0, 1.06, 1.02, 1.0]
+        let duration = 1.5
+        
         let markerAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        markerAnimation.values = [1.0, 1.01, 1.03, 1.0, 0.97, 0.99]
-        markerAnimation.keyTimes = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-        markerAnimation.duration = 2.0
+        markerAnimation.values = values
+        markerAnimation.keyTimes = keyframes
+        markerAnimation.duration = duration
         markerAnimation.repeatCount = Float.infinity
         markerBackground.layer.add(markerAnimation, forKey: "idle")
         
         let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        avatarHeightAnimation.values = [1.0, 1.01, 1.03, 1.0, 0.97, 0.99]
-        markerAnimation.keyTimes = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
+        avatarHeightAnimation.values = values
+        markerAnimation.keyTimes = keyframes
 
         let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
-        avatarWidthAnimation.values = [1.0, 0.99, 0.97, 1.0, 1.03, 1.01]
-        markerAnimation.keyTimes = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
+        avatarWidthAnimation.values = reversedValues
+        markerAnimation.keyTimes = keyframes
 
         var animationGroup = CAAnimationGroup()
         animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
-        animationGroup.duration = 2.0
+        animationGroup.duration = duration
         animationGroup.repeatCount = Float.infinity
         userAvatar.layer.add(animationGroup, forKey: "idle")
     }
