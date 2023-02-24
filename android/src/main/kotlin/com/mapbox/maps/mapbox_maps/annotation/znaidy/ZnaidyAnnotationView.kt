@@ -43,6 +43,9 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       annotationData?.let {
         if (it.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
           animator.startIdleAnimation()
+          if (it.markerType != ZnaidyMarkerType.COMPANY) {
+            animator.startGlowAnimation()
+          }
         }
       }
     }

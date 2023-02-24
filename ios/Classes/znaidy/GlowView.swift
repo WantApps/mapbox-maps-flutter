@@ -41,7 +41,9 @@ class GlowView: UIView, CAAnimationDelegate {
     override func layoutSubviews() {
         gradientLayer.frame = bounds
         gradientLayer.cornerRadius = bounds.width / 2.0
-        
+    }
+    
+    func startAnimation() {
         let colorsAnimation = CABasicAnimation(keyPath: #keyPath(CAGradientLayer.locations))
         colorsAnimation.fromValue = gradientLayer.locations
         colorsAnimation.toValue = [0, 0.85]
@@ -50,6 +52,10 @@ class GlowView: UIView, CAAnimationDelegate {
         colorsAnimation.fillMode = .forwards
         colorsAnimation.repeatCount = .infinity
         colorsAnimation.autoreverses = true
-        gradientLayer.add(colorsAnimation, forKey: "locations")
+        gradientLayer.add(colorsAnimation, forKey: "glow")
+    }
+    
+    func stopAnimation() {
+        gradientLayer.removeAnimation(forKey: "glow")
     }
 }

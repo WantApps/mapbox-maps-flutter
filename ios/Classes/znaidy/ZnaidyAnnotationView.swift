@@ -52,6 +52,9 @@ class ZnaidyAnnotationView: UIView {
             setRegularSize(zoomFactor: annotationData.zoomFactor)
         }
         self.annotationData = annotationData
+        
+        markerIdleAnimation()
+        glowView.startAnimation()
     }
     
     func animateReceiveSticker() {
@@ -146,6 +149,7 @@ class ZnaidyAnnotationView: UIView {
         ])
         
         markerIdleAnimation()
+        glowView.startAnimation()
     }
     
     private func buildMarkerBackground() -> UIImageView {
