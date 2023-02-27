@@ -34,6 +34,10 @@ class ZnaidyAnnotationData {
     let zoomFactor: Double
     let focused: Bool
     
+    func userAvatar() -> String? {
+        return avatarUrls.first
+    }
+    
     func toString() -> String {
         return "ZnaidyAnnotationData(id=\(id), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), zoomFactor=\(zoomFactor), focused=\(focused))"
     }

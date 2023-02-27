@@ -58,4 +58,13 @@ class GlowView: UIView, CAAnimationDelegate {
     func stopAnimation() {
         gradientLayer.removeAnimation(forKey: "glow")
     }
+    
+    func setColor(color: UIColor) {
+        stopAnimation()
+        gradientLayer.colors = [
+            color.cgColor,
+            color.withAlphaComponent(0.0).cgColor
+        ]
+    }
+    
 }

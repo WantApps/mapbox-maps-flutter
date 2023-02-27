@@ -67,7 +67,6 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
           ),
         ).toJson(),
         zoom: 9,
-        bearing: 0.1,
       ),
     );
   }
@@ -270,7 +269,11 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     ));
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(geometry: newPosition.toJson()),
+      ZnaidyAnnotationOptions(
+          geometry: newPosition.toJson(),
+        markerType: markerType,
+        onlineStatus: onlineStatus,
+      ),
     );
     position = newPosition;
   }
@@ -279,7 +282,10 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     if (annotationId == null) return;
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(onlineStatus: _getNextStatus(onlineStatus)),
+      ZnaidyAnnotationOptions(
+        markerType: markerType,
+        onlineStatus: _getNextStatus(onlineStatus),
+      ),
     );
     onlineStatus = _getNextStatus(onlineStatus);
   }
@@ -288,7 +294,11 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     if (annotationId == null) return;
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(stickerCount: stickers + 1),
+      ZnaidyAnnotationOptions(
+        markerType: markerType,
+        onlineStatus: onlineStatus,
+        stickerCount: stickers + 1,
+      ),
     );
     stickers = stickers + 1;
   }
@@ -299,6 +309,8 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     await znaidyAnnotationManager?.update(
       annotationId!,
       ZnaidyAnnotationOptions(
+          markerType: markerType,
+          onlineStatus: onlineStatus,
           companySize: size, userAvatars: avatars.sublist(0, size)),
     );
     companySize = size;
@@ -308,7 +320,11 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     if (annotationId == null) return;
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(currentSpeed: currentSpeed + 1),
+      ZnaidyAnnotationOptions(
+        markerType: markerType,
+        onlineStatus: onlineStatus,
+          currentSpeed: currentSpeed + 1,
+      ),
     );
     currentSpeed = currentSpeed + 1;
   }
@@ -317,7 +333,9 @@ class _ZnaidyAnnotationBodyState extends State<ZnaidyAnnotationBody> {
     if (annotationId == null) return;
     await znaidyAnnotationManager?.update(
       annotationId!,
-      ZnaidyAnnotationOptions(markerType: _getNextType(markerType)),
+      ZnaidyAnnotationOptions(
+        onlineStatus: onlineStatus,
+        markerType: _getNextType(markerType),),
     );
     markerType = _getNextType(markerType);
   }

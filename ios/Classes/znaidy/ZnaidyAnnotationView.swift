@@ -32,7 +32,7 @@ class ZnaidyAnnotationView: UIView {
     private(set) var annotationData: ZnaidyAnnotationData?
     
     func bind(_ annotationData: ZnaidyAnnotationData) {
-        NSLog("\(TAG): bind: \(annotationData)")
+        NSLog("\(TAG): bind: \(annotationData.toString())")
         switch (annotationData.markerType) {
             case ._self:
                 bindSelf(annotationData)
@@ -41,8 +41,6 @@ class ZnaidyAnnotationView: UIView {
             case .company:
                 bindCompany(annotationData)
         }
-        
-        setAvatar(avatarUrl: annotationData.avatarUrls.first)
         
         if (annotationData.focused) {
             setFocusedSize(zoomFactor: annotationData.zoomFactor)
@@ -53,24 +51,16 @@ class ZnaidyAnnotationView: UIView {
         }
         self.annotationData = annotationData
         
-        markerIdleAnimation()
-        glowView.startAnimation()
+        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline) {
+            markerIdleAnimation()
+            if (annotationData.markerType != ZnaidyMarkerType.company) {
+                glowView.startAnimation()
+            }
+        }
     }
     
     func animateReceiveSticker() {
         
-    }
-    
-    func bindSelf(_ annotationData: ZnaidyAnnotationData) {
-        markerBackground.image = MediaProvider.image(named: "znaidy_marker_self")
-    }
-    
-    func bindFriend(_ annotationData: ZnaidyAnnotationData) {
-        markerBackground.image = MediaProvider.image(named: "znaidy_marker_friend")
-    }
-    
-    func bindCompany(_ annotationData: ZnaidyAnnotationData) {
-        markerBackground.image = MediaProvider.image(named: "znaidy_marker_company")
     }
     
     override init(frame: CGRect) {
@@ -82,6 +72,214 @@ class ZnaidyAnnotationView: UIView {
         super.init(coder: aDecoder)
         commonInit()
     }
+}
+
+//bind annotation data
+extension ZnaidyAnnotationView {
+    
+    private func bindSelf(_ annotationData: ZnaidyAnnotationData) {
+        let typeChanged = self.annotationData?.markerType != annotationData.markerType
+        if (typeChanged) {
+            markerBackground.image = MediaProvider.image(named: "znaidy_marker_self")
+            companyCounter.isHidden = true
+            stickerCounter.isHidden = true
+            speedView.isHidden = true
+        }
+        if (typeChanged || self.annotationData?.onlineStatus != annotationData.onlineStatus) {
+            setOnlineStatus(onlineStatus: annotationData.onlineStatus)
+        }
+        if (typeChanged || self.annotationData?.userAvatar() != annotationData.userAvatar()) {
+            setAvatar(avatarUrl: annotationData.userAvatar())
+        }
+    }
+    
+    private func bindFriend(_ annotationData: ZnaidyAnnotationData) {
+        let typeChanged = self.annotationData?.markerType != annotationData.markerType
+        if (typeChanged) {
+            markerBackground.image = MediaProvider.image(named: "znaidy_marker_friend")
+            companyCounter.isHidden = true
+        }
+        if (typeChanged || self.annotationData?.onlineStatus != annotationData.onlineStatus) {
+            setOnlineStatus(onlineStatus: annotationData.onlineStatus)
+        }
+        if (typeChanged || self.annotationData?.stickerCount != annotationData.stickerCount) {
+            setStickersCount(annotationData.stickerCount)
+        }
+        if (typeChanged || self.annotationData?.currentSpeed != annotationData.currentSpeed) {
+            setCurrentSpeed(annotationData.currentSpeed)
+        }
+        if (typeChanged || self.annotationData?.userAvatar() != annotationData.userAvatar()) {
+            setAvatar(avatarUrl: annotationData.userAvatar())
+        }
+    }
+    
+    private func bindCompany(_ annotationData: ZnaidyAnnotationData) {
+        let typeChanged = self.annotationData?.markerType != annotationData.markerType
+        if (typeChanged) {
+            markerBackground.image = MediaProvider.image(named: "znaidy_marker_company")
+            stickerCounter.isHidden = true
+            speedView.isHidden = true
+            glowView.isHidden = true
+            glowView.stopAnimation()
+        }
+        if (typeChanged || self.annotationData?.companySize != annotationData.companySize) {
+            companyCounter.text = String(annotationData.companySize)
+            companyCounter.isHidden = false
+        }
+        if (typeChanged || self.annotationData?.avatarUrls != annotationData.avatarUrls) {
+            setCompanyAvatars(avatars: annotationData.avatarUrls)
+        }
+    }
+    
+    private func setOnlineStatus(onlineStatus: ZnaidyOnlineStatus) {
+        switch (onlineStatus) {
+            case .online:
+                glowView.setColor(color: ZnaidyConstants.znaidyGray)
+                glowView.isHidden = false
+                glowView.startAnimation()
+            case .inApp:
+                glowView.setColor(color: ZnaidyConstants.znaidyBlue)
+                glowView.isHidden = false
+                glowView.startAnimation()
+            case .offline:
+                glowView.stopAnimation()
+                glowView.isHidden = true
+                break
+        }
+    }
+        
+    private func setAvatar(avatarUrl: String?) {
+        if let avatarUrl = avatarUrl {
+            userAvatar.sd_setImage(
+                with: URL(string: avatarUrl),
+                placeholderImage: MediaProvider.image(named: "avatar_placeholder"),
+                progress: nil
+            )
+        } else {
+            userAvatar.image = MediaProvider.image(named: "avatar_placeholder")
+        }
+    }
+    
+    private func setCompanyAvatars(avatars: [String]) {
+        if (avatars.isEmpty) {
+            userAvatar.image = MediaProvider.image(named: "avatar_placeholder")
+        } else {
+            setAvatar(avatarUrl: avatars.first)
+        }
+    }
+    
+    private func setStickersCount(_ count: Int) {
+        if (count == 0) {
+            stickerCounter.isHidden = true
+        } else {
+            stickerCounter.isHidden = false
+            stickerCounter.text = count > 9 ? "9+" : String(count)
+        }
+    }
+    
+    private func setCurrentSpeed(_ speed: Int) {
+        if (speed == 0) {
+            speedView.isHidden = true
+        } else {
+            speedView.isHidden = false
+            speedView.setSpeed(speed: speed)
+        }
+    }
+}
+
+//animation
+extension ZnaidyAnnotationView {
+    
+    private func markerIdleAnimation() {
+        let keyframes: [NSNumber] = [0.0, NSNumber(value: 1.0/7.0), NSNumber(value: 2.0/7.0), NSNumber(value: 3.0/7.0), NSNumber(value: 4.0/7.0), NSNumber(value: 5.0/7.0), NSNumber(value: 6.0/7.0), NSNumber(value: 7.0/7.0)]
+        let values = [1.0, 1.02, 1.06, 1.0, 0.94, 0.98, 1.0]
+        let reversedValues = [1.0, 0.98, 0.94, 1.0, 1.06, 1.02, 1.0]
+        let duration = 1.5
+        
+        let markerAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
+        markerAnimation.values = values
+        markerAnimation.keyTimes = keyframes
+        markerAnimation.duration = duration
+        markerAnimation.repeatCount = Float.infinity
+        markerBackground.layer.add(markerAnimation, forKey: "idle")
+        
+        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
+        avatarHeightAnimation.values = values
+        markerAnimation.keyTimes = keyframes
+
+        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
+        avatarWidthAnimation.values = reversedValues
+        markerAnimation.keyTimes = keyframes
+
+        let animationGroup = CAAnimationGroup()
+        animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
+        animationGroup.duration = duration
+        animationGroup.repeatCount = Float.infinity
+        userAvatar.layer.add(animationGroup, forKey: "idle")
+    }
+    
+    private func stopIdleAnimation() {
+        markerBackground.layer.removeAnimation(forKey: "idle")
+        userAvatar.layer.removeAnimation(forKey: "idle")
+    }
+    
+    private func setFocusedSize(zoomFactor: Double) {
+        NSLog("\(TAG): setFocusedSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidthFocused)")
+        self.layoutIfNeeded()
+        
+        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthFocused * zoomFactor
+        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightFocused * zoomFactor
+        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeFocused * zoomFactor
+        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeFocused * zoomFactor
+        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSizeFocused / 2 * zoomFactor
+        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    private func setRegularSize(zoomFactor: Double) {
+        NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth)")
+        self.layoutIfNeeded()
+        
+        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidth * zoomFactor
+        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeight * zoomFactor
+        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
+        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
+        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSize / 2 * zoomFactor
+        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+    }
+    
+    private func setOfflineSize(zoomFactor: Double) {
+        NSLog("\(TAG): setOfflineSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidthOffline)")
+        self.layoutIfNeeded()
+        
+        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthOffline * zoomFactor
+        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightOffline * zoomFactor
+        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeOffline * zoomFactor
+        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeOffline * zoomFactor
+        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSizeOffline / 2 * zoomFactor
+        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
+
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
+    }
+}
+
+//layouting
+extension ZnaidyAnnotationView {
     
     private func commonInit() {
         markerBackground = buildMarkerBackground()
@@ -203,104 +401,5 @@ class ZnaidyAnnotationView: UIView {
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
-    }
-    
-    private func markerIdleAnimation() {
-        let keyframes: [NSNumber] = [0.0, NSNumber(value: 1.0/7.0), NSNumber(value: 2.0/7.0), NSNumber(value: 3.0/7.0), NSNumber(value: 4.0/7.0), NSNumber(value: 5.0/7.0), NSNumber(value: 6.0/7.0), NSNumber(value: 7.0/7.0)]
-        let values = [1.0, 1.02, 1.06, 1.0, 0.94, 0.98, 1.0]
-        let reversedValues = [1.0, 0.98, 0.94, 1.0, 1.06, 1.02, 1.0]
-        let duration = 1.5
-        
-        let markerAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        markerAnimation.values = values
-        markerAnimation.keyTimes = keyframes
-        markerAnimation.duration = duration
-        markerAnimation.repeatCount = Float.infinity
-        markerBackground.layer.add(markerAnimation, forKey: "idle")
-        
-        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        avatarHeightAnimation.values = values
-        markerAnimation.keyTimes = keyframes
-
-        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
-        avatarWidthAnimation.values = reversedValues
-        markerAnimation.keyTimes = keyframes
-
-        var animationGroup = CAAnimationGroup()
-        animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
-        animationGroup.duration = duration
-        animationGroup.repeatCount = Float.infinity
-        userAvatar.layer.add(animationGroup, forKey: "idle")
-    }
-    
-    private func stopIdleAnimation() {
-        markerBackground.layer.removeAnimation(forKey: "idle")
-        userAvatar.layer.removeAnimation(forKey: "idle")
-    }
-        
-    private func setAvatar(avatarUrl: String?) {
-        if let avatarUrl = avatarUrl {
-            userAvatar.sd_setImage(
-                with: URL(string: avatarUrl),
-                placeholderImage: MediaProvider.image(named: "avatar_placeholder"),
-                progress: nil
-            )
-        } else {
-            userAvatar.image = MediaProvider.image(named: "avatar_placeholder")
-        }
-    }
-    
-    private func setFocusedSize(zoomFactor: Double) {
-        NSLog("\(TAG): setFocusedSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidthFocused)")
-        self.layoutIfNeeded()
-        
-        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthFocused * zoomFactor
-        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightFocused * zoomFactor
-        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeFocused * zoomFactor
-        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeFocused * zoomFactor
-        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
-        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSizeFocused / 2 * zoomFactor
-        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
-        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
-        
-        UIView.animate(withDuration: 0.2) {
-            self.layoutIfNeeded()
-        }
-    }
-    
-    private func setRegularSize(zoomFactor: Double) {
-        NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth)")
-        self.layoutIfNeeded()
-        
-        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidth * zoomFactor
-        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeight * zoomFactor
-        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
-        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
-        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
-        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSize / 2 * zoomFactor
-        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
-        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
-
-        UIView.animate(withDuration: 0.2) {
-            self.layoutIfNeeded()
-        }
-    }
-    
-    private func setOfflineSize(zoomFactor: Double) {
-        NSLog("\(TAG): setOfflineSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidthOffline)")
-        self.layoutIfNeeded()
-        
-        self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidthOffline * zoomFactor
-        self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeightOffline * zoomFactor
-        self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSizeOffline * zoomFactor
-        self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSizeOffline * zoomFactor
-        self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
-        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSizeOffline / 2 * zoomFactor
-        self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
-        self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
-
-        UIView.animate(withDuration: 0.2) {
-            self.layoutIfNeeded()
-        }
     }
 }
