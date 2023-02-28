@@ -44,6 +44,9 @@ class GlowView: UIView, CAAnimationDelegate {
     }
     
     func startAnimation() {
+        if (gradientLayer.animation(forKey: "glow") != nil) {
+            return
+        }
         let colorsAnimation = CABasicAnimation(keyPath: #keyPath(CAGradientLayer.locations))
         colorsAnimation.fromValue = gradientLayer.locations
         colorsAnimation.toValue = [0, 0.85]

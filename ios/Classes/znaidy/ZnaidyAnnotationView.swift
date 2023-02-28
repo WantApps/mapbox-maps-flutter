@@ -52,10 +52,13 @@ class ZnaidyAnnotationView: UIView {
         self.annotationData = annotationData
         
         if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline) {
-            markerIdleAnimation()
+            startIdleAnimation()
             if (annotationData.markerType != ZnaidyMarkerType.company) {
                 glowView.startAnimation()
             }
+        } else {
+            stopIdleAnimation()
+            glowView.stopAnimation()
         }
     }
     
@@ -216,6 +219,13 @@ extension ZnaidyAnnotationView {
         animationGroup.duration = duration
         animationGroup.repeatCount = Float.infinity
         userAvatar.layer.add(animationGroup, forKey: "idle")
+    }
+    
+    private func startIdleAnimation() {
+        if (markerBackground.isAnimating && userAvatar.isAnimating) {
+            return
+        }
+        markerIdleAnimation()
     }
     
     private func stopIdleAnimation() {
