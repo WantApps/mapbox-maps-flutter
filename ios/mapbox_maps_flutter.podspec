@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.resource_bundle = { 'mapbox_maps_flutter' => 'Assets/**/*.xcassets' }
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
-  s.dependency 'MapboxMaps', '~> 10.9.0'
+  s.dependency 'MapboxMaps', '~> 10.11.1'
   s.dependency 'SDWebImage', '~> 5.0'
 
   # Flutter.framework does not contain a i386 slice.

@@ -48,7 +48,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 geometry: Point(annotationData.geometry),
                 width: ZnaidyConstants.annotationWidth,
                 height: ZnaidyConstants.annotationHeight,
-                allowOverlap: false,
+                associatedFeatureId: pointAnnotation.id,
                 anchor: .bottom,
                 offsetY: ZnaidyConstants.markerOffsetY * -1
             )
