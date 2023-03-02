@@ -67,6 +67,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         anchor(ViewAnnotationAnchor.BOTTOM)
         offsetY(-delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_y_offset))
         associatedFeatureId(pointAnnotation.featureIdentifier)
+        allowOverlap(true)
       }.build()
       val annotationView = viewAnnotationManager.addViewAnnotation(
         R.layout.znaidy_annotation_base,
