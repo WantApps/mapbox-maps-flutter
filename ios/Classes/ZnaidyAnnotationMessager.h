@@ -9,15 +9,17 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, FLTOnlineStatus) {
-  FLTOnlineStatusOnline = 0,
-  FLTOnlineStatusInApp = 1,
-  FLTOnlineStatusOffline = 2,
+  FLTOnlineStatusNone = 0,
+  FLTOnlineStatusOnline = 1,
+  FLTOnlineStatusInApp = 2,
+  FLTOnlineStatusOffline = 3,
 };
 
 typedef NS_ENUM(NSUInteger, FLTMarkerType) {
-  FLTMarkerTypeSelf = 0,
-  FLTMarkerTypeFriend = 1,
-  FLTMarkerTypeCompany = 2,
+  FLTMarkerTypeNone = 0,
+  FLTMarkerTypeSelf = 1,
+  FLTMarkerTypeFriend = 2,
+  FLTMarkerTypeCompany = 3,
 };
 
 @class FLTZnaidyAnnotationOptions;

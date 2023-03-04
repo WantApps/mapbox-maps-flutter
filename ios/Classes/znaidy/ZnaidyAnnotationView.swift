@@ -42,23 +42,27 @@ class ZnaidyAnnotationView: UIView {
                 bindCompany(annotationData)
         }
         
+        let zoomFactor = annotationData.markerType == ._self ? max(annotationData.zoomFactor, 0.5) : annotationData.zoomFactor
+        
         if (annotationData.focused) {
-            setFocusedSize(zoomFactor: annotationData.zoomFactor)
+            setFocusedSize(zoomFactor: zoomFactor)
         } else if (annotationData.onlineStatus == .offline) {
-            setOfflineSize(zoomFactor: annotationData.zoomFactor)
+            setOfflineSize(zoomFactor: zoomFactor)
         } else {
-            setRegularSize(zoomFactor: annotationData.zoomFactor)
+            setRegularSize(zoomFactor: zoomFactor)
         }
         self.annotationData = annotationData
         
-        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline) {
+        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && annotationData.zoomFactor >= 1.0) {
             startIdleAnimation()
             if (annotationData.markerType != ZnaidyMarkerType.company) {
+                glowView.isHidden = false
                 glowView.startAnimation()
             }
         } else {
             stopIdleAnimation()
             glowView.stopAnimation()
+            glowView.isHidden = true
         }
     }
     

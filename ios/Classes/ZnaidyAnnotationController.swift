@@ -51,7 +51,8 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 associatedFeatureId: pointAnnotation.id,
                 allowOverlap: true,
                 anchor: .bottom,
-                offsetY: ZnaidyConstants.markerOffsetY * -1
+                offsetY: ZnaidyConstants.markerOffsetY * -1,
+                selected: annotationData.markerType == ._self
             )
             try delegate?.getViewAnnotationsManager().add(annotationView, options: options)
 
@@ -68,15 +69,37 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 throw AnnotationControllerError.noAnnotationFound
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.updateAnnotation(data: annotationView.annotationData!, options: annotationOptions)
-            if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
-                var startPosition = annotationView.annotationData!.geometry
-                if let lastAnimator = annotationAnimators[annotationId] {
-                    startPosition = lastAnimator.stop()
-                    annotationAnimators.removeValue(forKey: annotationId)
+            if (newAnnotationData.zoomFactor <= 0.5) {
+                var viewAnnotationOptions = ViewAnnotationOptions()
+                if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
+                    guard let pointManager = try delegate?.getManager(managerId: pointManagerId) as? PointAnnotationManager else {
+                        return
+                    }
+                    guard let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
+                        pointAnnotation.id == annotationId
+                    }) else {
+                        throw AnnotationControllerError.noAnnotationFound
+                    }
+                    var pointAnnotation = pointManager.annotations[index]
+                    var newPointAnnotation = pointAnnotation.updateCoordinate(coordinate: newAnnotationData.geometry)
+                    pointManager.annotations[index] = newPointAnnotation
+                    viewAnnotationOptions.geometry = Point(newAnnotationData.geometry).geometry
                 }
-                let animator = ZnaidyPositionAnimator(id: annotationId, from: startPosition, to: newAnnotationData.geometry, duration: locationUpdateRate, delegate: self)
-                animator.start()
-                annotationAnimators[annotationId] = animator
+                let isHidden = newAnnotationData.zoomFactor == 0 && newAnnotationData.markerType != ._self
+                viewAnnotationOptions.visible = !isHidden
+                
+                try delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+            } else {
+                if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
+                    var startPosition = annotationView.annotationData!.geometry
+                    if let lastAnimator = annotationAnimators[annotationId] {
+                        startPosition = lastAnimator.stop()
+                        annotationAnimators.removeValue(forKey: annotationId)
+                    }
+                    let animator = ZnaidyPositionAnimator(id: annotationId, from: startPosition, to: newAnnotationData.geometry, duration: locationUpdateRate, delegate: self)
+                    animator.start()
+                    annotationAnimators[annotationId] = animator
+                }
             }
             annotationView.bind(newAnnotationData)
             completion(nil)

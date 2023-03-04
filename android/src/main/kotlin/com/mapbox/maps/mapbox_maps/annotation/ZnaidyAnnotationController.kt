@@ -6,10 +6,7 @@ import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationOptions
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.mapbox_maps.R
-import com.mapbox.maps.mapbox_maps.annotation.znaidy.OnPositionAnimationListener
-import com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyAnnotationDataMapper
-import com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyAnnotationView
-import com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyPositionAnimator
+import com.mapbox.maps.mapbox_maps.annotation.znaidy.*
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.ZnaidyAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
@@ -50,7 +47,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         PointAnnotationOptions()
           .withPoint(point)
           .withIconImage("dot-11")
-          .withIconOpacity(0.01)
+          .withIconOpacity(0.0)
           .withIconAnchor(IconAnchor.BOTTOM)
           .withIconOffset(listOf(0.0, 0.0))
           .withIconSize(10.0)
@@ -68,6 +65,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         offsetY(-delegate.getContext().resources.getDimensionPixelOffset(R.dimen.annotation_y_offset))
         associatedFeatureId(pointAnnotation.featureIdentifier)
         allowOverlap(true)
+        selected(annotationData.markerType == ZnaidyMarkerType.SELF)
       }.build()
       val annotationView = viewAnnotationManager.addViewAnnotation(
         R.layout.znaidy_annotation_base,
@@ -97,19 +95,35 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             znaidyAnnotationView.annotationData!!,
             annotationOptions
           )
-        if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {
-          val startPosition = annotationAnimations[annotationId]?.let {
-            annotationAnimations.remove(annotationId)
-            it.stop()
-          } ?: znaidyAnnotationView.annotationData!!.geometry
-          val animator = ZnaidyPositionAnimator(
-            annotationId,
-            startPosition,
-            newAnnotationData.geometry,
-            updateRate,
-            this
-          ).apply { start() }
-          annotationAnimations[annotationId] = animator
+        if (newAnnotationData.zoomFactor <= 0.5) {
+          val viewAnnotationManager = delegate.getViewAnnotationManager()
+          val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+          if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {
+            val pointAnnotationManager = delegate.getPointAnnotationManager()
+            viewAnnotationOptionsBuilder.geometry(newAnnotationData.geometry)
+            val pointAnnotation =
+              pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
+            pointAnnotation.geometry = newAnnotationData.geometry
+            pointAnnotationManager.update(pointAnnotation)
+          }
+          val isHidden = newAnnotationData.zoomFactor == 0.0 && newAnnotationData.markerType != ZnaidyMarkerType.SELF
+          viewAnnotationOptionsBuilder.visible(!isHidden)
+          viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptionsBuilder.build())
+        } else {
+          if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {
+            val startPosition = annotationAnimations[annotationId]?.let {
+              annotationAnimations.remove(annotationId)
+              it.stop()
+            } ?: znaidyAnnotationView.annotationData!!.geometry
+            val animator = ZnaidyPositionAnimator(
+              annotationId,
+              startPosition,
+              newAnnotationData.geometry,
+              updateRate,
+              this
+            ).apply { start() }
+            annotationAnimations[annotationId] = animator
+          }
         }
         znaidyAnnotationView.bind(newAnnotationData)
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))

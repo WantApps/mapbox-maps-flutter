@@ -44,13 +44,13 @@ class ZnaidyAnnotationData {
 }
 
 enum ZnaidyOnlineStatus: Int {
-    case online = 0
-    case inApp = 1
-    case offline = 2
+    case online = 1
+    case inApp = 2
+    case offline = 3
 }
 
 enum ZnaidyMarkerType: Int {
-    case _self = 0
-    case friend = 1
-    case company = 2
+    case _self = 1
+    case friend = 2
+    case company = 3
 }

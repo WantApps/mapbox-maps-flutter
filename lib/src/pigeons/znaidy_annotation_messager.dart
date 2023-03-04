@@ -1,17 +1,18 @@
 part of mapbox_maps_flutter;
 
 enum OnlineStatus {
+  none,
   online,
   inApp,
   offline,
 }
 
 enum MarkerType {
+  none,
   self,
   friend,
   company,
 }
-
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
     this.geometry,

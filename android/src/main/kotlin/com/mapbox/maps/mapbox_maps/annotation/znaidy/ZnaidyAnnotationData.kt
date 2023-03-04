@@ -18,12 +18,14 @@ data class ZnaidyAnnotationData(
 }
 
 enum class ZnaidyOnlineStatus {
+  NONE,
   ONLINE,
   INAPP,
   OFFLINE
 }
 
 enum class ZnaidyMarkerType {
+  NONE,
   SELF,
   FRIEND,
   COMPANY

@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 
@@ -41,11 +42,16 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     Log.d(TAG, "onViewAttachedToWindow: ")
     animator.animateCreation {
       annotationData?.let {
-        if (it.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
-          animator.startIdleAnimation()
-          if (it.markerType != ZnaidyMarkerType.COMPANY) {
-            animator.startGlowAnimation()
+        if (it.zoomFactor >= 1) {
+          if (it.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
+            animator.startIdleAnimation()
+            if (it.markerType != ZnaidyMarkerType.COMPANY) {
+              animator.startGlowAnimation()
+            }
           }
+        } else {
+          animator.stopIdleAnimation()
+          animator.hideGlowAnimation()
         }
       }
     }
@@ -59,7 +65,11 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   fun bind(annotation: ZnaidyAnnotationData) {
     Log.d(TAG, "bind: $annotation")
     val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
-    constraintAnimationBuilder.zoomFactor = annotation.zoomFactor;
+    if (annotation.markerType != ZnaidyMarkerType.SELF) {
+      constraintAnimationBuilder.zoomFactor = annotation.zoomFactor
+    } else {
+      constraintAnimationBuilder.zoomFactor = max(0.5, annotation.zoomFactor)
+    }
     when (annotation.markerType) {
       ZnaidyMarkerType.SELF -> bindSelf(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.FRIEND -> bindFriend(annotation, constraintAnimationBuilder)
@@ -79,13 +89,22 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       }
     } else if (annotation.onlineStatus == ZnaidyOnlineStatus.OFFLINE && annotation.markerType != ZnaidyMarkerType.COMPANY) {
       setOfflineSize(constraintAnimationBuilder)
-      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
+      if (annotationData != null && annotation.zoomFactor >= 1.0) constraintAnimationBuilder.onAnimationEnd = {
         animator.stopIdleAnimation()
       }
     } else {
       setRegularSize(constraintAnimationBuilder)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
-        animator.startIdleAnimation()
+        if (annotation.zoomFactor >= 1.0) {
+          animator.startIdleAnimation()
+          animator.showGlowAnimation()
+          if (annotation.markerType != ZnaidyMarkerType.COMPANY) {
+            animator.startGlowAnimation()
+          }
+        } else {
+          animator.stopIdleAnimation()
+          animator.hideGlowAnimation()
+        }
       }
     }
 

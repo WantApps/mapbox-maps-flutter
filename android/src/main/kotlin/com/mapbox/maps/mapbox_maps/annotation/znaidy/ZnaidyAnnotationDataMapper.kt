@@ -34,8 +34,20 @@ object ZnaidyAnnotationDataMapper {
   ): ZnaidyAnnotationData {
     return data.copy(
       geometry = options.geometry?.toPoint() ?: data.geometry,
-      markerType = options.markerType?.let { mapFromTunnelMarkerType(it) } ?: data.markerType,
-      onlineStatus = options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) }
+      markerType = options.markerType?.let {
+        if (it != MarkerType.none) {
+          mapFromTunnelMarkerType(it)
+        } else {
+          data.markerType
+        }
+      } ?: data.markerType,
+      onlineStatus = options.onlineStatus?.let {
+        if (it != OnlineStatus.none) {
+          mapFromTunnelOnlineStatus(it)
+        } else {
+          data.onlineStatus
+        }
+      }
         ?: data.onlineStatus,
       avatarUrls = options.userAvatars ?: data.avatarUrls,
       stickersCount = options.stickerCount?.toInt() ?: data.stickersCount,
@@ -49,14 +61,6 @@ object ZnaidyAnnotationDataMapper {
     return ZnaidyAnnotationOptions.Builder().apply {
       setGeometry(data.geometry.toMap())
     }.build()
-  }
-
-  private fun mapToTunnelOnlineStatus(status: ZnaidyOnlineStatus): OnlineStatus {
-    return when (status) {
-      ZnaidyOnlineStatus.ONLINE -> OnlineStatus.online
-      ZnaidyOnlineStatus.INAPP -> OnlineStatus.inApp
-      ZnaidyOnlineStatus.OFFLINE -> OnlineStatus.offline
-    }
   }
 
   private fun mapFromTunnelOnlineStatus(status: OnlineStatus): ZnaidyOnlineStatus {

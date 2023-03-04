@@ -23,9 +23,10 @@ import java.util.HashMap;
 public class FLTZnaidyAnnotationMessager {
 
   public enum OnlineStatus {
-    online(0),
-    inApp(1),
-    offline(2);
+    none(0),
+    online(1),
+    inApp(2),
+    offline(3);
 
     private int index;
     private OnlineStatus(final int index) {
@@ -34,9 +35,10 @@ public class FLTZnaidyAnnotationMessager {
   }
 
   public enum MarkerType {
-    self(0),
-    friend(1),
-    company(2);
+    none(0),
+    self(1),
+    friend(2),
+    company(3);
 
     private int index;
     private MarkerType(final int index) {

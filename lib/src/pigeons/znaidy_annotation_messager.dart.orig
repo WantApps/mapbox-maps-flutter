@@ -8,12 +8,14 @@ import 'package:flutter/foundation.dart' show WriteBuffer, ReadBuffer;
 import 'package:flutter/services.dart';
 
 enum OnlineStatus {
+  none,
   online,
   inApp,
   offline,
 }
 
 enum MarkerType {
+  none,
   self,
   friend,
   company,

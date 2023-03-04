@@ -1,12 +1,14 @@
 import 'package:pigeon/pigeon.dart';
 
 enum OnlineStatus {
+  none,
   online,
   inApp,
   offline,
 }
 
 enum MarkerType {
+  none,
   self,
   friend,
   company,

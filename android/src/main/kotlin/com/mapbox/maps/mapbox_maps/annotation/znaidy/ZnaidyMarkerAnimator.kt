@@ -47,6 +47,17 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
     glowAnimator?.cancel()
   }
 
+  fun showGlowAnimation() {
+    val glowView = annotationView.findViewById<View>(R.id.glow)
+    glowView.visibility = View.VISIBLE
+  }
+
+  fun hideGlowAnimation() {
+    stopGlowAnimation()
+    val glowView = annotationView.findViewById<View>(R.id.glow)
+    glowView.visibility = View.GONE
+  }
+
   fun startIdleAnimation() {
     startIdleAnimation(1.0f)
   }

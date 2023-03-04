@@ -33,8 +33,8 @@ class ZnaidyAnnotationDataMapper {
         return ZnaidyAnnotationData(
             id: data.id,
             geometry: convertDictionaryToCLLocationCoordinate2D(dict: options.geometry) ?? data.geometry,
-            markerType: ZnaidyMarkerType(rawValue: Int(options.markerType.rawValue)) ?? data.markerType,
-            onlineStatus: ZnaidyOnlineStatus(rawValue: Int(options.onlineStatus.rawValue)) ?? data.onlineStatus,
+            markerType: options.markerType != FLTMarkerType.none ? (ZnaidyMarkerType(rawValue: Int(options.markerType.rawValue)) ?? data.markerType) : data.markerType,
+            onlineStatus: options.onlineStatus != FLTOnlineStatus.none ? (ZnaidyOnlineStatus(rawValue: Int(options.onlineStatus.rawValue)) ?? data.onlineStatus) : data.onlineStatus,
             avatartUrls: options.userAvatars ?? data.avatarUrls,
             stickerCount: Int(truncating: options.stickerCount ?? data.stickerCount as NSNumber),
             companySize: Int(truncating: options.companySize ?? data.companySize as NSNumber),
