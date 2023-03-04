@@ -74,25 +74,26 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       ZnaidyMarkerType.SELF -> bindSelf(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.FRIEND -> bindFriend(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.COMPANY -> bindCompany(annotation, constraintAnimationBuilder)
+      else -> Unit
     }
 
-    if (annotation.focused && annotation.onlineStatus == ZnaidyOnlineStatus.INAPP && annotation.markerType != ZnaidyMarkerType.COMPANY) {
-      showInApp(constraintAnimationBuilder)
-    } else {
-      hideInApp(constraintAnimationBuilder)
-    }
+//    if (annotation.focused && annotation.onlineStatus == ZnaidyOnlineStatus.INAPP && annotation.markerType != ZnaidyMarkerType.COMPANY) {
+//      showInApp(constraintAnimationBuilder)
+//    } else {
+//      hideInApp(constraintAnimationBuilder)
+//    }
 
-    if (annotation.focused) {
-      setFocusedSize(constraintAnimationBuilder)
-      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
-        animator.startIdleAnimation()
-      }
-    } else if (annotation.onlineStatus == ZnaidyOnlineStatus.OFFLINE && annotation.markerType != ZnaidyMarkerType.COMPANY) {
-      setOfflineSize(constraintAnimationBuilder)
-      if (annotationData != null && annotation.zoomFactor >= 1.0) constraintAnimationBuilder.onAnimationEnd = {
-        animator.stopIdleAnimation()
-      }
-    } else {
+//    if (annotation.focused) {
+//      setFocusedSize(constraintAnimationBuilder)
+//      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
+//        animator.startIdleAnimation()
+//      }
+//    } else if (annotation.onlineStatus == ZnaidyOnlineStatus.OFFLINE && annotation.markerType != ZnaidyMarkerType.COMPANY) {
+//      setOfflineSize(constraintAnimationBuilder)
+//      if (annotationData != null && annotation.zoomFactor >= 1.0) constraintAnimationBuilder.onAnimationEnd = {
+//        animator.stopIdleAnimation()
+//      }
+//    } else {
       setRegularSize(constraintAnimationBuilder)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
         if (annotation.zoomFactor >= 1.0) {
@@ -106,7 +107,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
           animator.hideGlowAnimation()
         }
       }
-    }
+//    }
 
     val animation = constraintAnimationBuilder.build()
     Log.d(TAG, "bind: constraintAnimation hasChanges=${animation.hasChanges} (${animation.changesCount})")
@@ -235,7 +236,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   private fun setRegularSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
     val markerBackground = findViewById<View>(R.id.markerBackground)
-    if (markerBackground.width != getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor)) {
+//    if (markerBackground.width != getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor)) {
       constraintAnimationBuilder.addChange { constraintSet ->
         constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
         constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, constraintAnimationBuilder.zoomFactor))
@@ -246,7 +247,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
         constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
       }
-    }
+//    }
   }
 
   private fun setOfflineSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
