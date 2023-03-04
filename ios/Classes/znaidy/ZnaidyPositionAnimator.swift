@@ -35,7 +35,7 @@ class ZnaidyPositionAnimator {
         self.id = id
         self.from = from
         self.to = to
-        self.duration = duration
+        self.duration = duration + 1
         self.animationCurveFunction = animationCurveFunction
         self.delegate = delegate
         self.currentPosition = from
