@@ -1,30 +1,30 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="1463dp"
-    android:height="1500dp"
-    android:viewportWidth="1463"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="1500"
     android:viewportHeight="1500">
   <path
-      android:pathData="M-37,0h1500v1500h-1500z"
-      android:fillColor="#0F0F0F"/>
+      android:pathData="M0,750a750,750 0,1 0,1500 0a750,750 0,1 0,-1500 0z"
+      android:fillColor="#0f0f0f"/>
   <path
-      android:pathData="M778,750a175,200 0,1 0,350 0a175,200 0,1 0,-350 0z"
+      android:pathData="M815,750a175,200 0,1 0,350 0a175,200 0,1 0,-350 0z"
       android:fillColor="#716969"/>
   <path
-      android:pathData="M1103,750C1103,791.4 1069.4,825 1028,825C986.6,825 953,791.4 953,750C953,708.6 986.6,675 1028,675C1069.4,675 1103,708.6 1103,750Z"
+      android:pathData="M1140,750C1140,791.4 1106.4,825 1065,825C1023.6,825 990,791.4 990,750C990,708.6 1023.6,675 1065,675C1106.4,675 1140,708.6 1140,750Z"
       android:fillColor="#D9D9D9"/>
   <path
-      android:pathData="M923,230L983,230A140,140 0,0 1,1123 370L1123,1130A140,140 0,0 1,983 1270L923,1270A140,140 0,0 1,783 1130L783,370A140,140 0,0 1,923 230z"
+      android:pathData="M960,230L1020,230A140,140 0,0 1,1160 370L1160,1130A140,140 0,0 1,1020 1270L960,1270A140,140 0,0 1,820 1130L820,370A140,140 0,0 1,960 230z"
       android:strokeWidth="40"
       android:fillColor="#00000000"
       android:strokeColor="#BCABAE"/>
   <path
-      android:pathData="M298,750a175,200 0,1 0,350 0a175,200 0,1 0,-350 0z"
+      android:pathData="M335,750a175,200 0,1 0,350 0a175,200 0,1 0,-350 0z"
       android:fillColor="#716969"/>
   <path
-      android:pathData="M623,750C623,791.4 589.4,825 548,825C506.6,825 473,791.4 473,750C473,708.6 506.6,675 548,675C589.4,675 623,708.6 623,750Z"
+      android:pathData="M660,750C660,791.4 626.4,825 585,825C543.6,825 510,791.4 510,750C510,708.6 543.6,675 585,675C626.4,675 660,708.6 660,750Z"
       android:fillColor="#D9D9D9"/>
   <path
-      android:pathData="M443,230L503,230A140,140 0,0 1,643 370L643,1130A140,140 0,0 1,503 1270L443,1270A140,140 0,0 1,303 1130L303,370A140,140 0,0 1,443 230z"
+      android:pathData="M480,230L540,230A140,140 0,0 1,680 370L680,1130A140,140 0,0 1,540 1270L480,1270A140,140 0,0 1,340 1130L340,370A140,140 0,0 1,480 230z"
       android:strokeWidth="40"
       android:fillColor="#00000000"
       android:strokeColor="#BCABAE"/>
