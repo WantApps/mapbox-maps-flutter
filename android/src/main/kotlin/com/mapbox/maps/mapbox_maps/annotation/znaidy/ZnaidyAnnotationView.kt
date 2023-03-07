@@ -83,17 +83,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 //      hideInApp(constraintAnimationBuilder)
 //    }
 
-//    if (annotation.focused) {
-//      setFocusedSize(constraintAnimationBuilder)
-//      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
-//        animator.startIdleAnimation()
-//      }
-//    } else if (annotation.onlineStatus == ZnaidyOnlineStatus.OFFLINE && annotation.markerType != ZnaidyMarkerType.COMPANY) {
-//      setOfflineSize(constraintAnimationBuilder)
-//      if (annotationData != null && annotation.zoomFactor >= 1.0) constraintAnimationBuilder.onAnimationEnd = {
-//        animator.stopIdleAnimation()
-//      }
-//    } else {
+    if (annotation.zoomFactor != 0.0) {
       setRegularSize(constraintAnimationBuilder)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
         if (annotation.zoomFactor >= 1.0) {
@@ -107,7 +97,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
           animator.hideGlowAnimation()
         }
       }
-//    }
+    } else {
+      animator.stopIdleAnimation()
+      animator.hideGlowAnimation()
+    }
 
     val animation = constraintAnimationBuilder.build()
     Log.d(TAG, "bind: constraintAnimation hasChanges=${animation.hasChanges} (${animation.changesCount})")
@@ -237,16 +230,17 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   private fun setRegularSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
     val markerBackground = findViewById<View>(R.id.markerBackground)
 //    if (markerBackground.width != getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor)) {
-      constraintAnimationBuilder.addChange { constraintSet ->
-        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
-        constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-        constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-        val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
-        constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
-      }
+    constraintAnimationBuilder.addChange { constraintSet ->
+      constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
+      constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, constraintAnimationBuilder.zoomFactor))
+      constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
+      constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
+      constraintSet.setMargin(R.id.avatar, ConstraintSet.BOTTOM, getDimen(R.dimen.avatar_offset, constraintAnimationBuilder.zoomFactor))
+      constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+      constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
+      val glowMargin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
+      constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - glowMargin)
+    }
 //    }
   }
 

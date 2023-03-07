@@ -42,7 +42,7 @@ class ZnaidyAnnotationView: UIView {
                 bindCompany(annotationData)
         }
         
-        let zoomFactor = annotationData.markerType == ._self ? max(annotationData.zoomFactor, 0.5) : annotationData.zoomFactor
+        let zoomFactor = annotationData.markerType == ._self ? max(annotationData.zoomFactor, 0.5) : max(annotationData.zoomFactor, 0.2)
         
         if (annotationData.focused) {
             setFocusedSize(zoomFactor: zoomFactor)
@@ -68,6 +68,12 @@ class ZnaidyAnnotationView: UIView {
     
     func animateReceiveSticker() {
         
+    }
+    
+    func animateHide(completion: @escaping () -> Void) {
+        setRegularSize(zoomFactor: 0.2) { bool in
+            completion()
+        }
     }
     
     override init(frame: CGRect) {
@@ -255,8 +261,8 @@ extension ZnaidyAnnotationView {
         }
     }
     
-    private func setRegularSize(zoomFactor: Double) {
-        NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth)")
+    private func setRegularSize(zoomFactor: Double, completion: ((Bool) -> Void)? = nil) {
+        NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth), zoomFactor=\(zoomFactor)")
         self.layoutIfNeeded()
         
         self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidth * zoomFactor
@@ -264,13 +270,13 @@ extension ZnaidyAnnotationView {
         self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
         self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
         self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
-        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSize / 2 * zoomFactor
+        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSize / 2 * max(zoomFactor, 0.5)
         self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
         self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
 
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
-        }
+        }, completion: completion)
     }
     
     private func setOfflineSize(zoomFactor: Double) {

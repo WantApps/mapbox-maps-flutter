@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="@id/markerBackground"
         app:layout_constraintStart_toStartOf="@id/markerBackground"
         app:layout_constraintEnd_toEndOf="@id/markerBackground"
-        android:layout_marginBottom="7dp"
+        android:layout_marginBottom="@dimen/avatar_offset"
         />
 
     <include

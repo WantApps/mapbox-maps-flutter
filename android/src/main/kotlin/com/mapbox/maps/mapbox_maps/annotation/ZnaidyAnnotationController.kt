@@ -107,7 +107,15 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             pointAnnotationManager.update(pointAnnotation)
           }
           val isHidden = newAnnotationData.zoomFactor == 0.0 && newAnnotationData.markerType != ZnaidyMarkerType.SELF
-          viewAnnotationOptionsBuilder.visible(!isHidden)
+          if (isHidden) {
+            znaidyAnnotationView.delete {
+              val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+              viewAnnotationOptionsBuilder.visible(false)
+              viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptionsBuilder.build())
+            }
+          } else {
+            viewAnnotationOptionsBuilder.visible(true)
+          }
           viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptionsBuilder.build())
         } else {
           if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {

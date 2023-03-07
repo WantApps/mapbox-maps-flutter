@@ -85,9 +85,21 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                     pointManager.annotations[index] = newPointAnnotation
                     viewAnnotationOptions.geometry = Point(newAnnotationData.geometry).geometry
                 }
-                let isHidden = newAnnotationData.zoomFactor == 0 && newAnnotationData.markerType != ._self
-                viewAnnotationOptions.visible = !isHidden
                 
+                let isHidden = newAnnotationData.zoomFactor == 0 && newAnnotationData.markerType != ._self
+                if (isHidden) {
+                    annotationView.animateHide {
+                        do {
+                            var viewAnnotationOptions = ViewAnnotationOptions()
+                            viewAnnotationOptions.visible = false
+                            try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+                        } catch {
+                            
+                        }
+                    }
+                } else {
+                    viewAnnotationOptions.visible = true
+                }
                 try delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
             } else {
                 if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
