@@ -79,8 +79,8 @@
         android:layout_height="@dimen/current_speed_height"
         app:layout_constraintBottom_toBottomOf="@id/markerBackground"
         app:layout_constraintStart_toStartOf="@id/markerBackground"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"
+        android:layout_marginBottom="@dimen/current_speed_offset_vertical"
+        android:layout_marginStart="@dimen/current_speed_offset_horizontal"
         />
 
     <include

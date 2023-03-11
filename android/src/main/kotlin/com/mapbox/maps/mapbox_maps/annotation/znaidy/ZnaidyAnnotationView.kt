@@ -3,6 +3,7 @@ package com.mapbox.maps.mapbox_maps.annotation.znaidy
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -77,14 +78,8 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       else -> Unit
     }
 
-//    if (annotation.focused && annotation.onlineStatus == ZnaidyOnlineStatus.INAPP && annotation.markerType != ZnaidyMarkerType.COMPANY) {
-//      showInApp(constraintAnimationBuilder)
-//    } else {
-//      hideInApp(constraintAnimationBuilder)
-//    }
-
     if (annotation.zoomFactor != 0.0) {
-      setRegularSize(constraintAnimationBuilder)
+      setLayout(constraintAnimationBuilder, annotation)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
         if (annotation.zoomFactor >= 1.0) {
           animator.startIdleAnimation()
@@ -126,13 +121,15 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       setMarkerBackground(R.drawable.znaidy_marker_self)
       hideStickersCount(constraintAnimationBuilder)
       hideCompanySize(constraintAnimationBuilder)
-      hideCurrentSpeed(constraintAnimationBuilder)
     }
     if (typeChanged || annotationData?.userAvatar != annotation.userAvatar) {
       setAvatar(annotation.userAvatar)
     }
     if (typeChanged || annotationData?.onlineStatus != annotation.onlineStatus || annotationData?.focused != annotation.focused) {
       setOnlineStatus(annotation.onlineStatus)
+    }
+    if (typeChanged || annotationData?.currentSpeed != annotation.currentSpeed) {
+      setCurrentSpeed(annotation.currentSpeed)
     }
   }
 
@@ -157,7 +154,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       setStickersCount(annotation.stickersCount, constraintAnimationBuilder)
     }
     if (typeChanged || annotationData?.currentSpeed != annotation.currentSpeed) {
-      setCurrentSpeed(annotation.currentSpeed, constraintAnimationBuilder)
+      setCurrentSpeed(annotation.currentSpeed)
     }
   }
 
@@ -170,7 +167,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       setMarkerBackground(R.drawable.znaidy_marker_company)
       showCompanyGlow()
       hideStickersCount(constraintAnimationBuilder)
-      hideCurrentSpeed(constraintAnimationBuilder)
     }
     if (typeChanged || annotationData?.avatarUrls != annotation.avatarUrls) {
       setCompanyAvatars(annotation.avatarUrls)
@@ -211,51 +207,37 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     setViewVisibility(R.id.inApp, View.GONE, constraintAnimationBuilder)
   }
 
-  private fun setFocusedSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    val markerBackground = findViewById<View>(R.id.markerBackground)
-    if (markerBackground.width != getDimen(R.dimen.marker_width_focused, constraintAnimationBuilder.zoomFactor)) {
-      constraintAnimationBuilder.addChange { constraintSet ->
-        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width_focused, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height_focused, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size_focused, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size_focused, constraintAnimationBuilder.zoomFactor))
-        constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-        constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-        val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
-        constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
-      }
-    }
-  }
-
-  private fun setRegularSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    val markerBackground = findViewById<View>(R.id.markerBackground)
-//    if (markerBackground.width != getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor)) {
+  private fun setLayout(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder, annotationData: ZnaidyAnnotationData) {
     constraintAnimationBuilder.addChange { constraintSet ->
       constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
       constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, constraintAnimationBuilder.zoomFactor))
+
       constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
       constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
       constraintSet.setMargin(R.id.avatar, ConstraintSet.BOTTOM, getDimen(R.dimen.avatar_offset, constraintAnimationBuilder.zoomFactor))
+
       constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
       constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
       val glowMargin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
       constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - glowMargin)
-    }
-//    }
-  }
 
-  private fun setOfflineSize(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    val markerBackground = findViewById<View>(R.id.markerBackground)
-    if (markerBackground.width != getDimen(R.dimen.marker_width_offline, constraintAnimationBuilder.zoomFactor)) {
-      constraintAnimationBuilder.addChange { constraintSet ->
-        constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width_offline, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height_offline, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size_offline, constraintAnimationBuilder.zoomFactor))
-        constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size_offline, constraintAnimationBuilder.zoomFactor))
-        constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-        constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-        val margin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
-        constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - margin)
+      if (constraintAnimationBuilder.zoomFactor <= 0.5 || annotationData.currentSpeed == 0) {
+        constraintSet.setVisibility(R.id.speed, View.GONE)
+      } else {
+        constraintSet.setVisibility(R.id.speed, View.VISIBLE)
+        val speedZoomFactor = if (constraintAnimationBuilder.zoomFactor >= 1.0) 1.0 else 0.7
+        constraintSet.constrainWidth(R.id.speed, getDimen(R.dimen.current_speed_width, speedZoomFactor))
+        constraintSet.constrainHeight(R.id.speed, getDimen(R.dimen.current_speed_height, speedZoomFactor))
+        constraintSet.setMargin(R.id.speed, ConstraintSet.BOTTOM, getDimen(R.dimen.current_speed_offset_vertical, speedZoomFactor))
+        constraintSet.setMargin(R.id.speed, ConstraintSet.START, if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_offset_horizontal) else getDimen(R.dimen.current_speed_offset_horizontal_small))
+        findViewById<TextView>(R.id.currentSpeedText).setTextSize(
+          TypedValue.COMPLEX_UNIT_PX,
+          (if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_text_number) else getDimen(R.dimen.current_speed_text_number_small)).toFloat()
+        )
+        findViewById<TextView>(R.id.currentSpeedUnits).setTextSize(
+          TypedValue.COMPLEX_UNIT_PX,
+          (if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_text_units) else getDimen(R.dimen.current_speed_text_units_small)).toFloat()
+        )
       }
     }
   }
@@ -340,24 +322,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   private fun setCurrentSpeed(
     currentSpeed: Int,
-    constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder
   ) {
     val speedLabel = findViewById<TextView>(R.id.currentSpeedText)
 
     if (currentSpeed == 0) {
-      hideCurrentSpeed(constraintAnimationBuilder)
     } else {
-      showCurrentSpeed(constraintAnimationBuilder)
       speedLabel.text = currentSpeed.toString()
     }
-  }
-
-  private fun hideCurrentSpeed(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    setViewVisibility(R.id.speed, View.GONE, constraintAnimationBuilder)
-  }
-
-  private fun showCurrentSpeed(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    setViewVisibility(R.id.speed, View.VISIBLE, constraintAnimationBuilder)
   }
 
   private fun setViewVisibility(

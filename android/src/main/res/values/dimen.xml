@@ -21,8 +21,17 @@
     <dimen name="avatar_offset">7dp</dimen>
     <dimen name="stickers_count_size">30dp</dimen>
     <dimen name="company_count_size">24dp</dimen>
-    <dimen name="current_speed_width">24dp</dimen>
-    <dimen name="current_speed_height">27dp</dimen>
+
+    <dimen name="current_speed_width">36dp</dimen>
+    <dimen name="current_speed_height">36dp</dimen>
+    <dimen name="current_speed_offset_vertical">8dp</dimen>
+    <dimen name="current_speed_offset_horizontal">-4dp</dimen>
+    <dimen name="current_speed_offset_horizontal_small">2dp</dimen>
+    <dimen name="current_speed_text_number">16dp</dimen>
+    <dimen name="current_speed_text_units">8dp</dimen>
+    <dimen name="current_speed_text_number_small">13dp</dimen>
+    <dimen name="current_speed_text_units_small">6dp</dimen>
+
     <dimen name="in_app_width">80dp</dimen>
     <dimen name="in_app_height">33dp</dimen>
 </resources>
