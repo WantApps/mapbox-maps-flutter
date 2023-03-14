@@ -47,10 +47,10 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         PointAnnotationOptions()
           .withPoint(point)
           .withIconImage("dot-11")
-          .withIconOpacity(0.01)
+          .withIconOpacity(0.00)
           .withIconAnchor(IconAnchor.BOTTOM)
           .withIconOffset(listOf(0.0, 0.0))
-          .withIconSize(10.0)
+          .withIconSize(5.0)
       )
 
       val annotationData = ZnaidyAnnotationDataMapper.createAnnotation(
@@ -235,6 +235,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     Log.d(TAG, "onAnnotationClick: $annotation")
     viewAnnotations[annotation.id.toString()]?.annotationData?.let { annotationData ->
       Log.d(TAG, "onAnnotationClick: $annotationData")
+      if (annotationData.zoomFactor < 0.5 && annotationData.markerType != ZnaidyMarkerType.SELF) return true;
       flutterClickCallback?.onZnaidyAnnotationClick(
         annotationData.id,
         ZnaidyAnnotationDataMapper.mapToOptions(annotationData)

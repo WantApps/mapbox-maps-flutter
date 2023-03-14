@@ -35,8 +35,8 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             var pointAnnotation = PointAnnotation(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
             pointAnnotation.iconImage = "dot-11"
             pointAnnotation.iconAnchor = IconAnchor.bottom
-            pointAnnotation.iconOpacity = 0.01
-            pointAnnotation.iconSize = 10
+            pointAnnotation.iconOpacity = 0.00
+            pointAnnotation.iconSize = 5
             pointManager.annotations.append(pointAnnotation)
             
             let annotationData = ZnaidyAnnotationDataMapper.createAnnotation(id: pointAnnotation.id, options: annotationOptions)
@@ -228,12 +228,13 @@ extension ZnaidyAnnotationController: AnnotationInteractionDelegate {
             return
         }
         NSLog("\(TAG): onPointAnnotationClick: \(annotation.id)")
-        guard let znaidyAnnotation = viewAnnotations[annotation.id] else {
+        guard let znaidyAnnotation = viewAnnotations[annotation.id], let annotationData = znaidyAnnotation.annotationData else {
             return
         }
-        NSLog("\(TAG): onPointAnnotationClick: \(annotation.id), \(String(describing: znaidyAnnotation.annotationData))")
-        flutterClickListener?.onZnaidyAnnotationClickAnnotationId(annotation.id, annotationOptions: ZnaidyAnnotationDataMapper.mapToOptions(data: znaidyAnnotation.annotationData!), completion: { error in
-            NSLog("\(self.TAG): onPointAnnotationClick: \(String(describing: error))")
+        NSLog("\(TAG): onPointAnnotationClick: \(annotation.id), \(annotationData.toString())")
+        if (annotationData.zoomFactor < 0.5 && annotationData.markerType != ._self) { return }
+        flutterClickListener?.onZnaidyAnnotationClickAnnotationId(annotation.id, annotationOptions: ZnaidyAnnotationDataMapper.mapToOptions(data: annotationData), completion: { error in
+            NSLog("\(self.TAG): onAnnotationClick platform done")
         })
     }
 }
