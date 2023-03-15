@@ -100,6 +100,7 @@
         layout="@layout/znaidy_battery"
         android:layout_width="@dimen/battery_width"
         android:layout_height="@dimen/battery_height"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

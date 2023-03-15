@@ -391,7 +391,7 @@ extension ZnaidyAnnotationView {
             batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batteryWidth),
             batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batteryHeight),
             batteryView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
-            batteryView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            batteryView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
         ])
         
         markerIdleAnimation()
