@@ -20,6 +20,8 @@ object ZnaidyAnnotationDataMapper {
       options.stickerCount?.toInt() ?: 0,
       options.companySize?.toInt() ?: 0,
       options.currentSpeed?.toInt() ?: 0,
+      options.batteryLevel?.toInt() ?: 0,
+      options.batteryCharging ?: false,
       options.zoomFactor ?: 1.0,
     )
   }
@@ -47,12 +49,13 @@ object ZnaidyAnnotationDataMapper {
         } else {
           data.onlineStatus
         }
-      }
-        ?: data.onlineStatus,
+      } ?: data.onlineStatus,
       avatarUrls = options.userAvatars ?: data.avatarUrls,
       stickersCount = options.stickerCount?.toInt() ?: data.stickersCount,
       companySize = options.companySize?.toInt() ?: data.companySize,
       currentSpeed = options.currentSpeed?.toInt() ?: data.currentSpeed,
+      batteryLevel = options.batteryLevel?.toInt() ?: data.batteryLevel,
+      batteryCharging = options.batteryCharging ?: data.batteryCharging,
       zoomFactor = options.zoomFactor ?: data.zoomFactor,
     )
   }

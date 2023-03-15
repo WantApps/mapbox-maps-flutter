@@ -4,6 +4,8 @@
     <color name="inAppColor">#80009BCC</color>
     <color name="znaidy_gray">#BCABAE</color>
     <color name="znaidy_black">#1B1B1B</color>
-    <color name="speed_text">#FBFBFB</color>
+    <color name="regular_text">#FBFBFB</color>
     <color name="speed_text_units">#B2FBFBFB</color>
+    <color name="battery_charging">#8E9E61</color>
+    <color name="battery_low">#C50000</color>
 </resources>

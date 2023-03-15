@@ -22,6 +22,8 @@ class ZnaidyAnnotationOptions {
     this.userAvatars,
     this.stickerCount,
     this.companySize,
+    this.batteryLevel,
+    this.batteryCharging,
     this.currentSpeed,
 });
 
@@ -32,6 +34,8 @@ class ZnaidyAnnotationOptions {
   int? stickerCount;
   int? companySize;
   int? currentSpeed;
+  int? batteryLevel;
+  bool? batteryCharging;
   double? zoomFactor;
 }
 

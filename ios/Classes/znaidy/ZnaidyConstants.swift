@@ -39,6 +39,9 @@ class ZnaidyConstants {
     static let inAppWidth = 80.0
     static let inAppHeight = 33.0
     
+    static let batteryWidth = 72.0
+    static let batteryHeight = 30.0
+    
     
     static let znaidyBlue = UIColor(red: 0.0, green: 155.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     static let inAppColor = UIColor(red: 0.0, green: 155.0/255.0, blue: 204.0/255.0, alpha: 0.5)
@@ -46,4 +49,6 @@ class ZnaidyConstants {
     static let znaidyBlack = UIColor(red: 27.0/255.0, green: 27.0/255.0, blue: 27.0/255.0, alpha: 1.0)
     static let mainTextColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)
     static let secondaryTextColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 0.7)
+    static let batteryChargingColor = UIColor(red: 142.0/255.0, green: 158.0/255.0, blue: 97.0/255.0, alpha: 1.0)
+    static let batteryLowColor = UIColor(red: 197.0/255.0, green: 0.0, blue: 0.0, alpha: 1.0)
 }

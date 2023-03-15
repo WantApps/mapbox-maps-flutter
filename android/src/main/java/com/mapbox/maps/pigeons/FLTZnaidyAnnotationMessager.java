@@ -90,6 +90,18 @@ public class FLTZnaidyAnnotationMessager {
       this.currentSpeed = setterArg;
     }
 
+    private @Nullable Long batteryLevel;
+    public @Nullable Long getBatteryLevel() { return batteryLevel; }
+    public void setBatteryLevel(@Nullable Long setterArg) {
+      this.batteryLevel = setterArg;
+    }
+
+    private @Nullable Boolean batteryCharging;
+    public @Nullable Boolean getBatteryCharging() { return batteryCharging; }
+    public void setBatteryCharging(@Nullable Boolean setterArg) {
+      this.batteryCharging = setterArg;
+    }
+
     private @Nullable Double zoomFactor;
     public @Nullable Double getZoomFactor() { return zoomFactor; }
     public void setZoomFactor(@Nullable Double setterArg) {
@@ -132,6 +144,16 @@ public class FLTZnaidyAnnotationMessager {
         this.currentSpeed = setterArg;
         return this;
       }
+      private @Nullable Long batteryLevel;
+      public @NonNull Builder setBatteryLevel(@Nullable Long setterArg) {
+        this.batteryLevel = setterArg;
+        return this;
+      }
+      private @Nullable Boolean batteryCharging;
+      public @NonNull Builder setBatteryCharging(@Nullable Boolean setterArg) {
+        this.batteryCharging = setterArg;
+        return this;
+      }
       private @Nullable Double zoomFactor;
       public @NonNull Builder setZoomFactor(@Nullable Double setterArg) {
         this.zoomFactor = setterArg;
@@ -146,6 +168,8 @@ public class FLTZnaidyAnnotationMessager {
         pigeonReturn.setStickerCount(stickerCount);
         pigeonReturn.setCompanySize(companySize);
         pigeonReturn.setCurrentSpeed(currentSpeed);
+        pigeonReturn.setBatteryLevel(batteryLevel);
+        pigeonReturn.setBatteryCharging(batteryCharging);
         pigeonReturn.setZoomFactor(zoomFactor);
         return pigeonReturn;
       }
@@ -159,6 +183,8 @@ public class FLTZnaidyAnnotationMessager {
       toMapResult.put("stickerCount", stickerCount);
       toMapResult.put("companySize", companySize);
       toMapResult.put("currentSpeed", currentSpeed);
+      toMapResult.put("batteryLevel", batteryLevel);
+      toMapResult.put("batteryCharging", batteryCharging);
       toMapResult.put("zoomFactor", zoomFactor);
       return toMapResult;
     }
@@ -178,6 +204,10 @@ public class FLTZnaidyAnnotationMessager {
       pigeonResult.setCompanySize((companySize == null) ? null : ((companySize instanceof Integer) ? (Integer)companySize : (Long)companySize));
       Object currentSpeed = map.get("currentSpeed");
       pigeonResult.setCurrentSpeed((currentSpeed == null) ? null : ((currentSpeed instanceof Integer) ? (Integer)currentSpeed : (Long)currentSpeed));
+      Object batteryLevel = map.get("batteryLevel");
+      pigeonResult.setBatteryLevel((batteryLevel == null) ? null : ((batteryLevel instanceof Integer) ? (Integer)batteryLevel : (Long)batteryLevel));
+      Object batteryCharging = map.get("batteryCharging");
+      pigeonResult.setBatteryCharging((Boolean)batteryCharging);
       Object zoomFactor = map.get("zoomFactor");
       pigeonResult.setZoomFactor((Double)zoomFactor);
       return pigeonResult;

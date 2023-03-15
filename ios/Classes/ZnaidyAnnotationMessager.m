@@ -45,6 +45,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed
+    batteryLevel:(nullable NSNumber *)batteryLevel
+    batteryCharging:(nullable NSNumber *)batteryCharging
     zoomFactor:(nullable NSNumber *)zoomFactor {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
   pigeonResult.geometry = geometry;
@@ -54,6 +56,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.stickerCount = stickerCount;
   pigeonResult.companySize = companySize;
   pigeonResult.currentSpeed = currentSpeed;
+  pigeonResult.batteryLevel = batteryLevel;
+  pigeonResult.batteryCharging = batteryCharging;
   pigeonResult.zoomFactor = zoomFactor;
   return pigeonResult;
 }
@@ -66,6 +70,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.stickerCount = GetNullableObject(dict, @"stickerCount");
   pigeonResult.companySize = GetNullableObject(dict, @"companySize");
   pigeonResult.currentSpeed = GetNullableObject(dict, @"currentSpeed");
+  pigeonResult.batteryLevel = GetNullableObject(dict, @"batteryLevel");
+  pigeonResult.batteryCharging = GetNullableObject(dict, @"batteryCharging");
   pigeonResult.zoomFactor = GetNullableObject(dict, @"zoomFactor");
   return pigeonResult;
 }
@@ -79,6 +85,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     @"stickerCount" : (self.stickerCount ?: [NSNull null]),
     @"companySize" : (self.companySize ?: [NSNull null]),
     @"currentSpeed" : (self.currentSpeed ?: [NSNull null]),
+    @"batteryLevel" : (self.batteryLevel ?: [NSNull null]),
+    @"batteryCharging" : (self.batteryCharging ?: [NSNull null]),
     @"zoomFactor" : (self.zoomFactor ?: [NSNull null]),
   };
 }

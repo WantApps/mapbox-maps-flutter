@@ -20,6 +20,7 @@ class ZnaidyAnnotationView: UIView {
     private var speedView: ZnaidySpeedView!
     private var glowView: GlowView!
     private var inAppView: UILabel!
+    private var batteryView: ZnaidyBatteryView!
     
     private var markerBackgrounsWidthConstraint: NSLayoutConstraint!
     private var markerBackgroundHeightConstraint: NSLayoutConstraint!
@@ -115,6 +116,9 @@ extension ZnaidyAnnotationView {
         if (typeChanged || self.annotationData?.currentSpeed != annotationData.currentSpeed) {
             setCurrentSpeed(annotationData.currentSpeed)
         }
+        if (typeChanged || self.annotationData?.batteryLevel != annotationData.batteryLevel || self.annotationData?.batteryCharging != annotationData.batteryCharging) {
+            setBattery(level: annotationData.batteryLevel, charging: annotationData.batteryCharging)
+        }
     }
     
     private func bindFriend(_ annotationData: ZnaidyAnnotationData) {
@@ -135,6 +139,9 @@ extension ZnaidyAnnotationView {
         if (typeChanged || self.annotationData?.userAvatar() != annotationData.userAvatar()) {
             setAvatar(avatarUrl: annotationData.userAvatar())
         }
+        if (typeChanged || self.annotationData?.batteryLevel != annotationData.batteryLevel || self.annotationData?.batteryCharging != annotationData.batteryCharging) {
+            setBattery(level: annotationData.batteryLevel, charging: annotationData.batteryCharging)
+        }
     }
     
     private func bindCompany(_ annotationData: ZnaidyAnnotationData) {
@@ -144,6 +151,7 @@ extension ZnaidyAnnotationView {
             stickerCounter.isHidden = true
             speedView.isHidden = true
             glowView.isHidden = true
+            batteryView.isHidden = true
             glowView.stopAnimation()
         }
         if (typeChanged || self.annotationData?.companySize != annotationData.companySize) {
@@ -208,6 +216,10 @@ extension ZnaidyAnnotationView {
             speedView.isHidden = false
             speedView.setSpeed(speed: speed)
         }
+    }
+    
+    private func setBattery(level: Int, charging: Bool) {
+        batteryView.setBatteryLevel(level: level, charging: charging)
     }
 }
 
@@ -286,6 +298,12 @@ extension ZnaidyAnnotationView {
         } else {
             inAppView.isHidden = true
         }
+        
+        if (zoomFactor > 1.0) {
+            batteryView.isHidden = false
+        } else {
+            batteryView.isHidden = true
+        }
 
         UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
@@ -304,6 +322,7 @@ extension ZnaidyAnnotationView {
         speedView = ZnaidySpeedView()
         glowView = GlowView()
         inAppView = buildInAppView()
+        batteryView = ZnaidyBatteryView()
         addSubview(glowView)
         addSubview(markerBackground)
         addSubview(userAvatar)
@@ -311,10 +330,12 @@ extension ZnaidyAnnotationView {
         addSubview(companyCounter)
         addSubview(speedView)
         addSubview(inAppView)
+        addSubview(batteryView)
         companyCounter.isHidden = true
         speedView.isHidden = true
         stickerCounter.isHidden = true
         inAppView.isHidden = true
+        batteryView.isHidden = true
         
         markerBackgrounsWidthConstraint = markerBackground.widthAnchor.constraint(equalToConstant: ZnaidyConstants.markerWidth)
         markerBackgroundHeightConstraint = markerBackground.heightAnchor.constraint(equalToConstant: ZnaidyConstants.markerHeight)
@@ -366,6 +387,11 @@ extension ZnaidyAnnotationView {
             inAppView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.inAppHeight),
             inAppView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
             inAppView.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: -10.0),
+            
+            batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batteryWidth),
+            batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batteryHeight),
+            batteryView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
+            batteryView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
         
         markerIdleAnimation()

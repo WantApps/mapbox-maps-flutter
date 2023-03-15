@@ -13,6 +13,7 @@ enum MarkerType {
   friend,
   company,
 }
+
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
     this.geometry,
@@ -22,6 +23,8 @@ class ZnaidyAnnotationOptions {
     this.stickerCount,
     this.companySize,
     this.currentSpeed,
+    this.batteryLevel,
+    this.batteryCharging,
     this.zoomFactor,
   });
 
@@ -32,6 +35,8 @@ class ZnaidyAnnotationOptions {
   int? stickerCount;
   int? companySize;
   int? currentSpeed;
+  int? batteryLevel;
+  bool? batteryCharging;
   double? zoomFactor;
 
   Object encode() {
@@ -43,6 +48,8 @@ class ZnaidyAnnotationOptions {
     pigeonMap['stickerCount'] = stickerCount;
     pigeonMap['companySize'] = companySize;
     pigeonMap['currentSpeed'] = currentSpeed;
+    pigeonMap['batteryLevel'] = batteryLevel;
+    pigeonMap['batteryCharging'] = batteryCharging;
     pigeonMap['zoomFactor'] = zoomFactor;
     return pigeonMap;
   }
@@ -61,6 +68,8 @@ class ZnaidyAnnotationOptions {
       stickerCount: pigeonMap['stickerCount'] as int?,
       companySize: pigeonMap['companySize'] as int?,
       currentSpeed: pigeonMap['currentSpeed'] as int?,
+      batteryLevel: pigeonMap['batteryLevel'] as int?,
+      batteryCharging: pigeonMap['batteryCharging'] as bool?,
       zoomFactor: pigeonMap['zoomFactor'] as double?,
     );
   }

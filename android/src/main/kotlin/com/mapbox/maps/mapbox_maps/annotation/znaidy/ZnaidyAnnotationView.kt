@@ -1,6 +1,8 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
@@ -16,6 +18,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
+import com.mapbox.maps.extension.style.expressions.dsl.generated.switchCase
 import com.mapbox.maps.mapbox_maps.R
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -138,6 +141,9 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     if (typeChanged || annotationData?.currentSpeed != annotation.currentSpeed) {
       setCurrentSpeed(annotation.currentSpeed)
     }
+    if (typeChanged || annotationData?.batteryLevel != annotation.batteryLevel || annotationData?.batteryCharging != annotation.batteryCharging) {
+      setBatteryLevel(annotation.batteryLevel, annotation.batteryCharging)
+    }
   }
 
 
@@ -244,6 +250,12 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       } else {
         constraintSet.setVisibility(R.id.inApp, View.GONE)
       }
+
+      if (constraintAnimationBuilder.zoomFactor > 1.0) {
+        constraintSet.setVisibility(R.id.battery, View.VISIBLE)
+      } else {
+        constraintSet.setVisibility(R.id.battery, View.GONE)
+      }
     }
   }
 
@@ -329,10 +341,35 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     currentSpeed: Int,
   ) {
     val speedLabel = findViewById<TextView>(R.id.currentSpeedText)
+    speedLabel.text = currentSpeed.toString()
+  }
 
-    if (currentSpeed == 0) {
+  @SuppressLint("SetTextI18n")
+  private fun setBatteryLevel(batteryLevel: Int, charging: Boolean) {
+    val batteryText = findViewById<TextView>(R.id.battery_text)
+    val batteryIcon = findViewById<ImageView>(R.id.battery_icon)
+
+    val icon = when {
+      charging -> R.drawable.icon_battery_capsule_plugged_size_16
+      batteryLevel == 0 -> R.drawable.icon_battery_capsule_unplugged_0_size_16
+      batteryLevel in 0 .. 20 -> R.drawable.icon_battery_capsule_unplugged_1_size_16
+      batteryLevel in 20 .. 50 -> R.drawable.icon_battery_capsule_unplugged_2_size_16
+      batteryLevel in 50 .. 90 -> R.drawable.icon_battery_capsule_unplugged_3_size_16
+      batteryLevel in 90 .. 100 -> R.drawable.icon_battery_capsule_unplugged_4_size_16
+      else -> R.drawable.icon_battery_capsule_unplugged_4_size_16
+    }
+    val textColor = when {
+      charging -> R.color.battery_charging
+      batteryLevel in 0 .. 20 -> R.color.battery_low
+      else -> R.color.regular_text
+    }
+
+    batteryIcon.setImageResource(icon)
+    batteryText.text = "$batteryLevel%"
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      batteryText.setTextColor(context.resources.getColor(textColor, null))
     } else {
-      speedLabel.text = currentSpeed.toString()
+      batteryText.setTextColor(context.resources.getColor(textColor))
     }
   }
 

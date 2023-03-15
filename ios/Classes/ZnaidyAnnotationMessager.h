@@ -32,6 +32,8 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
     stickerCount:(nullable NSNumber *)stickerCount
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed
+    batteryLevel:(nullable NSNumber *)batteryLevel
+    batteryCharging:(nullable NSNumber *)batteryCharging
     zoomFactor:(nullable NSNumber *)zoomFactor;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
 @property(nonatomic, assign) FLTMarkerType markerType;
@@ -40,6 +42,8 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
 @property(nonatomic, strong, nullable) NSNumber * stickerCount;
 @property(nonatomic, strong, nullable) NSNumber * companySize;
 @property(nonatomic, strong, nullable) NSNumber * currentSpeed;
+@property(nonatomic, strong, nullable) NSNumber * batteryLevel;
+@property(nonatomic, strong, nullable) NSNumber * batteryCharging;
 @property(nonatomic, strong, nullable) NSNumber * zoomFactor;
 @end
 
