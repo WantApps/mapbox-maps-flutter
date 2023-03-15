@@ -17,7 +17,8 @@ class ZnaidyAnnotationManager extends BaseAnnotationManager {
   Future<void> delete(String annotationId, bool animated) =>
       messager.delete(id, annotationId, animated);
 
-  Future<void> select(String annotationId) => messager.select(id, annotationId);
+  Future<void> select(String annotationId, double bottomPadding) =>
+      messager.select(id, annotationId, bottomPadding);
 
   Future<void> resetSelection(String annotationId) =>
       messager.resetSelection(id, annotationId);

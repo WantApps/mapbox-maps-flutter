@@ -34,7 +34,7 @@ class MapboxMapController(
   private val projectionController: MapProjectionController = MapProjectionController(mapboxMap)
   private val mapInterfaceController: MapInterfaceController = MapInterfaceController(mapboxMap)
   private val animationController: AnimationController = AnimationController(mapboxMap)
-  private val annotationController: AnnotationController = AnnotationController(mapView, mapboxMap)
+  private val annotationController: AnnotationController = AnnotationController(mapView, mapboxMap, animationController)
   private val locationComponentController = LocationComponentController(mapView)
   private val gestureController = GestureController(mapView)
   private val logoController = LogoController(mapView)

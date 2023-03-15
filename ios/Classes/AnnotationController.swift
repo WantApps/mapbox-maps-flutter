@@ -11,6 +11,7 @@ public enum AnnotationControllerError: Error {
 public protocol ControllerDelegate: class {
     func getManager(managerId: String) throws -> AnnotationManager
     func getViewAnnotationsManager() -> ViewAnnotationManager
+    func getMapView() -> MapView
 }
 
 extension AnnotationController: AnnotationInteractionDelegate {
@@ -124,5 +125,9 @@ class AnnotationController: ControllerDelegate {
     
     func getViewAnnotationsManager() -> ViewAnnotationManager {
         return mapView.viewAnnotations
+    }
+    
+    func getMapView() -> MapView {
+        return mapView
     }
 }

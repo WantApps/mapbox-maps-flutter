@@ -3,6 +3,7 @@ package com.mapbox.maps.mapbox_maps.annotation
 import android.content.Context
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.mapbox_maps.AnimationController
 import com.mapbox.maps.pigeons.*
 import com.mapbox.maps.plugin.annotation.AnnotationManager
 import com.mapbox.maps.plugin.annotation.annotations
@@ -12,7 +13,11 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-class AnnotationController(private val mapView: MapView, private val mapboxMap: MapboxMap) :
+class AnnotationController(
+  private val mapView: MapView,
+  private val mapboxMap: MapboxMap,
+  private val animationController: AnimationController
+) :
   ControllerDelegate {
 
   companion object {
@@ -156,5 +161,13 @@ class AnnotationController(private val mapView: MapView, private val mapboxMap: 
 
   override fun getContext(): Context {
     return mapView.context
+  }
+
+  override fun getMapboxMap(): MapboxMap {
+    return mapboxMap;
+  }
+
+  override fun getCameraAnimationController(): AnimationController {
+    return animationController
   }
 }

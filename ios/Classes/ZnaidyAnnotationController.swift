@@ -22,6 +22,8 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     private var viewAnnotations: [String: ZnaidyAnnotationView] = [:]
     private var annotationAnimators: [String:ZnaidyPositionAnimator] = [:]
     
+    private var trackingCameraOptions: CameraOptions?
+    
     init(withDelegate delegate: ControllerDelegate) {
         self.delegate = delegate
     }
@@ -145,13 +147,16 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
         }
     }
     
-    func selectManagerId(_ managerId: String, annotationId: String, completion: @escaping (FlutterError?) -> Void) {
+    func selectManagerId(_ managerId: String, annotationId: String, bottomPadding: NSNumber, completion: @escaping (FlutterError?) -> Void) {
         do {
             guard let annotationView = viewAnnotations[annotationId], let annotationData = annotationView.annotationData else {
                 throw AnnotationControllerError.noAnnotationFound
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: true)
             annotationView.bind(newAnnotationData)
+            let padding = UIEdgeInsets(top: 0.0, left: 0.0, bottom: CGFloat(bottomPadding.doubleValue), right: 0.0)
+            self.trackingCameraOptions = CameraOptions(center: newAnnotationData.geometry, padding: padding, zoom: 15, bearing: 0.0, pitch: 0.0)
+            delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: 1.0)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -208,6 +213,12 @@ extension ZnaidyAnnotationController: ZnaidyPositionAnimationDelegate {
             pointManager.annotations[index] = newPointAnnotation
             
             try delegate?.getViewAnnotationsManager().update(annotationView, options: ViewAnnotationOptions(geometry: Point(position)))
+            
+            if (annotationView.annotationData?.focused != true) { return }
+            
+            self.trackingCameraOptions?.center = position
+            delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: 0)
+
         } catch {
             NSLog("\(TAG): onAnimationUpdate: \(error)")
             if let animator = annotationAnimators[id] {

@@ -7,6 +7,10 @@ import com.mapbox.maps.ViewAnnotationOptions
 import com.mapbox.maps.extension.style.layers.properties.generated.IconAnchor
 import com.mapbox.maps.mapbox_maps.R
 import com.mapbox.maps.mapbox_maps.annotation.znaidy.*
+import com.mapbox.maps.mapbox_maps.toMap
+import com.mapbox.maps.pigeons.FLTMapInterfaces.CameraOptions
+import com.mapbox.maps.pigeons.FLTMapInterfaces.MapAnimationOptions
+import com.mapbox.maps.pigeons.FLTMapInterfaces.MbxEdgeInsets
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.ZnaidyAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
@@ -28,6 +32,8 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   private var updateRate: Long = 2000L
   private val viewAnnotations = mutableMapOf<String, ZnaidyAnnotationView>()
   private val annotationAnimations = mutableMapOf<String, ZnaidyPositionAnimator>()
+
+  private var trackingCameraOptionsBuilder: CameraOptions.Builder? = null
 
   override fun create(
     managerId: String,
@@ -178,12 +184,35 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   override fun select(
     managerId: String,
     annotationId: String,
+    bottomPadding: Double,
     result: FLTZnaidyAnnotationMessager.Result<Void>?
   ) {
     try {
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
         val newAnnotationData = znaidyAnnotationView.annotationData?.copy(focused = true)
-        newAnnotationData?.let { znaidyAnnotationView.bind(it) }
+        newAnnotationData?.let { annotationData ->
+          znaidyAnnotationView.bind(annotationData)
+          val padding = MbxEdgeInsets.Builder().apply {
+            setBottom(bottomPadding)
+            setTop(0.0)
+            setLeft(0.0)
+            setRight(0.0)
+          }.build()
+          trackingCameraOptionsBuilder = CameraOptions.Builder().apply {
+            setCenter(annotationData.geometry.toMap())
+            setBearing(0.0)
+            setZoom(15.0)
+            setPadding(padding)
+          }
+          val cameraOptions = trackingCameraOptionsBuilder!!.build()
+          val animationOptions = MapAnimationOptions.Builder().apply {
+            setDuration(1000)
+          }.build()
+          delegate.getCameraAnimationController().flyTo(
+            cameraOptions,
+            animationOptions
+          )
+        }
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
       Log.e(TAG, "select: ", ex)
@@ -198,8 +227,11 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   ) {
     try {
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
-        val newAnnotationData = znaidyAnnotationView.annotationData?.copy(focused = false)
-        newAnnotationData?.let { znaidyAnnotationView.bind(it) }
+        Log.d(TAG, "resetSelection: annotationData.focused=${znaidyAnnotationView.annotationData?.focused}")
+        znaidyAnnotationView.annotationData?.let { annotationData ->
+          val newAnnotationData = annotationData.copy(focused = false)
+          znaidyAnnotationView.bind(newAnnotationData)
+        }
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
       Log.e(TAG, "resetSelection: ", ex)
@@ -259,6 +291,14 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
           pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
         pointAnnotation.geometry = position
         pointAnnotationManager.update(pointAnnotation)
+        Log.d(TAG, "onAnimationUpdate: focused=${znaidyAnnotationView.annotationData?.focused}")
+        if (znaidyAnnotationView.annotationData?.focused != true) return
+        trackingCameraOptionsBuilder?.let { cameraOptionsBuilder ->
+          cameraOptionsBuilder.setCenter(position.toMap())
+          val cameraOptions = cameraOptionsBuilder.build()
+          val animationOptions = MapAnimationOptions.Builder().apply { setDuration(0) }.build()
+          delegate.getCameraAnimationController().flyTo(cameraOptions, animationOptions)
+        }
       }
     } catch (ex: Exception) {
       Log.e(TAG, "onPositionAnimationUpdate: ", ex)
