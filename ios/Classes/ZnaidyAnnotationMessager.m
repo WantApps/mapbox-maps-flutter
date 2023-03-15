@@ -287,13 +287,15 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         binaryMessenger:binaryMessenger
         codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
     if (api) {
-      NSCAssert([api respondsToSelector:@selector(selectManagerId:annotationId:bottomPadding:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(selectManagerId:annotationId:bottomPadding:completion:)", api);
+      NSCAssert([api respondsToSelector:@selector(selectManagerId:annotationId:bottomPadding:animationDuration:zoom:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(selectManagerId:annotationId:bottomPadding:animationDuration:zoom:completion:)", api);
       [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
         NSArray *args = message;
         NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
         NSString *arg_annotationId = GetNullableObjectAtIndex(args, 1);
         NSNumber *arg_bottomPadding = GetNullableObjectAtIndex(args, 2);
-        [api selectManagerId:arg_managerId annotationId:arg_annotationId bottomPadding:arg_bottomPadding completion:^(FlutterError *_Nullable error) {
+        NSNumber *arg_animationDuration = GetNullableObjectAtIndex(args, 3);
+        NSNumber *arg_zoom = GetNullableObjectAtIndex(args, 4);
+        [api selectManagerId:arg_managerId annotationId:arg_annotationId bottomPadding:arg_bottomPadding animationDuration:arg_animationDuration zoom:arg_zoom completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

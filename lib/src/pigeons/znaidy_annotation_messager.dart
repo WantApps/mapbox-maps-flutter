@@ -221,11 +221,11 @@ class _ZnaidyAnnotationMessager {
     }
   }
 
-  Future<void> select(String arg_managerId, String arg_annotationId, double arg_bottomPadding) async {
+  Future<void> select(String arg_managerId, String arg_annotationId, double arg_bottomPadding, int arg_animationDuration, double arg_zoom) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.select', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-    await channel.send(<Object?>[arg_managerId, arg_annotationId, arg_bottomPadding]) as Map<Object?, Object?>?;
+    await channel.send(<Object?>[arg_managerId, arg_annotationId, arg_bottomPadding, arg_animationDuration, arg_zoom]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

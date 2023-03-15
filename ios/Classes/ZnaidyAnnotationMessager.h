@@ -57,7 +57,7 @@ NSObject<FlutterMessageCodec> *FLT_ZnaidyAnnotationMessagerGetCodec(void);
 - (void)createManagerId:(NSString *)managerId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(NSString *_Nullable, FlutterError *_Nullable))completion;
 - (void)updateManagerId:(NSString *)managerId annotationId:(NSString *)annotationId annotationOptions:(FLTZnaidyAnnotationOptions *)annotationOptions completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)deleteManagerId:(NSString *)managerId annotationId:(NSString *)annotationId animated:(NSNumber *)animated completion:(void(^)(FlutterError *_Nullable))completion;
-- (void)selectManagerId:(NSString *)managerId annotationId:(NSString *)annotationId bottomPadding:(NSNumber *)bottomPadding completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)selectManagerId:(NSString *)managerId annotationId:(NSString *)annotationId bottomPadding:(NSNumber *)bottomPadding animationDuration:(NSNumber *)animationDuration zoom:(NSNumber *)zoom completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)resetSelectionManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)sendStickerManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)setUpdateRateManagerId:(NSString *)managerId rate:(NSNumber *)rate completion:(void(^)(FlutterError *_Nullable))completion;

@@ -266,7 +266,7 @@ public class FLTZnaidyAnnotationMessager {
     void create(@NonNull String managerId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<String> result);
     void update(@NonNull String managerId, @NonNull String annotationId, @NonNull ZnaidyAnnotationOptions annotationOptions, Result<Void> result);
     void delete(@NonNull String managerId, @NonNull String annotationId, @NonNull Boolean animated, Result<Void> result);
-    void select(@NonNull String managerId, @NonNull String annotationId, @NonNull Double bottomPadding, Result<Void> result);
+    void select(@NonNull String managerId, @NonNull String annotationId, @NonNull Double bottomPadding, @NonNull Long animationDuration, @NonNull Double zoom, Result<Void> result);
     void resetSelection(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void sendSticker(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void setUpdateRate(@NonNull String managerId, @NonNull Long rate, Result<Void> result);
@@ -420,6 +420,14 @@ public class FLTZnaidyAnnotationMessager {
               if (bottomPaddingArg == null) {
                 throw new NullPointerException("bottomPaddingArg unexpectedly null.");
               }
+              Number animationDurationArg = (Number)args.get(3);
+              if (animationDurationArg == null) {
+                throw new NullPointerException("animationDurationArg unexpectedly null.");
+              }
+              Double zoomArg = (Double)args.get(4);
+              if (zoomArg == null) {
+                throw new NullPointerException("zoomArg unexpectedly null.");
+              }
               Result<Void> resultCallback = new Result<Void>() {
                 public void success(Void result) {
                   wrapped.put("result", null);
@@ -431,7 +439,7 @@ public class FLTZnaidyAnnotationMessager {
                 }
               };
 
-              api.select(managerIdArg, annotationIdArg, bottomPaddingArg, resultCallback);
+              api.select(managerIdArg, annotationIdArg, bottomPaddingArg, (animationDurationArg == null) ? null : animationDurationArg.longValue(), zoomArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

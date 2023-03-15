@@ -185,6 +185,8 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     managerId: String,
     annotationId: String,
     bottomPadding: Double,
+    animationDuration: Long,
+    zoom: Double,
     result: FLTZnaidyAnnotationMessager.Result<Void>?
   ) {
     try {
@@ -201,12 +203,12 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
           trackingCameraOptionsBuilder = CameraOptions.Builder().apply {
             setCenter(annotationData.geometry.toMap())
             setBearing(0.0)
-            setZoom(15.0)
+            setZoom(zoom)
             setPadding(padding)
           }
           val cameraOptions = trackingCameraOptionsBuilder!!.build()
           val animationOptions = MapAnimationOptions.Builder().apply {
-            setDuration(1000)
+            setDuration(animationDuration)
           }.build()
           delegate.getCameraAnimationController().flyTo(
             cameraOptions,

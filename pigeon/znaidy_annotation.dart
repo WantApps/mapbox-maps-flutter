@@ -52,7 +52,7 @@ abstract class _ZnaidyAnnotationMessager {
   void delete(String managerId, String annotationId, bool animated);
 
   @async
-  void select(String managerId, String annotationId, double bottomPadding);
+  void select(String managerId, String annotationId, double bottomPadding, int animationDuration, double zoom);
 
   @async
   void resetSelection(String managerId, String annotationId);

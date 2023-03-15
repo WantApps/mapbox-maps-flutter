@@ -147,7 +147,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
         }
     }
     
-    func selectManagerId(_ managerId: String, annotationId: String, bottomPadding: NSNumber, completion: @escaping (FlutterError?) -> Void) {
+    func selectManagerId(_ managerId: String, annotationId: String, bottomPadding: NSNumber, animationDuration: NSNumber, zoom: NSNumber, completion: @escaping (FlutterError?) -> Void) {
         do {
             guard let annotationView = viewAnnotations[annotationId], let annotationData = annotationView.annotationData else {
                 throw AnnotationControllerError.noAnnotationFound
@@ -155,8 +155,8 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: true)
             annotationView.bind(newAnnotationData)
             let padding = UIEdgeInsets(top: 0.0, left: 0.0, bottom: CGFloat(bottomPadding.doubleValue), right: 0.0)
-            self.trackingCameraOptions = CameraOptions(center: newAnnotationData.geometry, padding: padding, zoom: 15, bearing: 0.0, pitch: 0.0)
-            delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: 1.0)
+            self.trackingCameraOptions = CameraOptions(center: newAnnotationData.geometry, padding: padding, zoom: zoom.doubleValue, bearing: 0.0, pitch: 0.0)
+            delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: Double(animationDuration.intValue) / 1000)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
