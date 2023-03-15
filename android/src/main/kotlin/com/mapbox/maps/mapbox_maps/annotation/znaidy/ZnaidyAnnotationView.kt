@@ -169,6 +169,9 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     if (typeChanged || annotationData?.currentSpeed != annotation.currentSpeed) {
       setCurrentSpeed(annotation.currentSpeed)
     }
+    if (typeChanged || annotationData?.batteryLevel != annotation.batteryLevel || annotationData?.batteryCharging != annotation.batteryCharging) {
+      setBatteryLevel(annotation.batteryLevel, annotation.batteryCharging)
+    }
   }
 
   private fun bindCompany(
