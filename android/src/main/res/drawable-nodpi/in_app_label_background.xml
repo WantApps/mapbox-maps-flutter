@@ -11,7 +11,7 @@
                 />
 
             <solid
-                android:color="@color/znaidy_blue"
+                android:color="@color/inAppColor"
                 />
 
         </shape>

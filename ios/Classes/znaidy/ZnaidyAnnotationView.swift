@@ -46,9 +46,9 @@ class ZnaidyAnnotationView: UIView {
                 bindCompany(annotationData)
         }
         
-        let zoomFactor = annotationData.markerType == ._self ? max(annotationData.zoomFactor, 0.5) : max(annotationData.zoomFactor, 0.2)
+        let zoomFactor = getZoomFactor(annotationData)
         
-        setRegularSize(zoomFactor: zoomFactor)
+        setLayout(zoomFactor: zoomFactor, annotationData: annotationData)
         self.annotationData = annotationData
         
         if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && annotationData.zoomFactor >= 1.0) {
@@ -69,7 +69,7 @@ class ZnaidyAnnotationView: UIView {
     }
     
     func animateHide(completion: @escaping () -> Void) {
-        setRegularSize(zoomFactor: 0.2) { bool in
+        setLayout(zoomFactor: 0.2, annotationData: annotationData!) { bool in
             completion()
         }
     }
@@ -82,6 +82,17 @@ class ZnaidyAnnotationView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
+    }
+    
+    func getZoomFactor(_ annotationData: ZnaidyAnnotationData) -> Double {
+        if (annotationData.focused) {
+            return 1.2
+        }
+        if (annotationData.markerType == ._self) {
+            return max(annotationData.zoomFactor, 0.5)
+        } else {
+            return max(annotationData.zoomFactor, 0.2)
+        }
     }
 }
 
@@ -243,7 +254,7 @@ extension ZnaidyAnnotationView {
         userAvatar.layer.removeAnimation(forKey: "idle")
     }
     
-    private func setRegularSize(zoomFactor: Double, completion: ((Bool) -> Void)? = nil) {
+    private func setLayout(zoomFactor: Double, annotationData: ZnaidyAnnotationData, completion: ((Bool) -> Void)? = nil) {
         NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth), zoomFactor=\(zoomFactor)")
         self.layoutIfNeeded()
         
@@ -260,7 +271,7 @@ extension ZnaidyAnnotationView {
         
         if (zoomFactor <= 0.5) {
             self.speedView.isHidden = true
-        } else if (speedView.speed > 0) {
+        } else if (annotationData.currentSpeed > 0) {
             let speedZoomFactor = zoomFactor >= 1.0 ? 1.0 : 0.7
             speedView.isHidden = false
             speedWidthConstraint.constant = ZnaidyConstants.currentSpeedWidth * speedZoomFactor
@@ -268,6 +279,12 @@ extension ZnaidyAnnotationView {
             speedOffsetYConstraint.constant = ZnaidyConstants.currentSpeedVerticalOffset * speedZoomFactor
             speedOffsetXConstraint.constant = zoomFactor >= 1.0 ? ZnaidyConstants.currentSpeedHorizontalOffset : ZnaidyConstants.currentSpeedHorizontalOffsetSmall
             speedView.setZoomFactor(zoomFactor: zoomFactor)
+        }
+        
+        if (zoomFactor > 1.0 && annotationData.onlineStatus == .inApp) {
+            inAppView.isHidden = false
+        } else {
+            inAppView.isHidden = true
         }
 
         UIView.animate(withDuration: 0.2, animations: {
@@ -401,8 +418,8 @@ extension ZnaidyAnnotationView {
         label .textColor = .white
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 13)
-        label.backgroundColor = ZnaidyConstants.znaidyBlue
-        label.layer.cornerRadius = 4.0
+        label.backgroundColor = ZnaidyConstants.inAppColor
+        label.layer.cornerRadius = 5.0
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

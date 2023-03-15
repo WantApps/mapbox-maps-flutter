@@ -41,6 +41,7 @@ class ZnaidyConstants {
     
     
     static let znaidyBlue = UIColor(red: 0.0, green: 155.0/255.0, blue: 204.0/255.0, alpha: 1.0)
+    static let inAppColor = UIColor(red: 0.0, green: 155.0/255.0, blue: 204.0/255.0, alpha: 0.5)
     static let znaidyGray = UIColor(red: 188.0/256.0, green: 171.0/255.0, blue: 174.0/255.0, alpha: 1.0)
     static let znaidyBlack = UIColor(red: 27.0/255.0, green: 27.0/255.0, blue: 27.0/255.0, alpha: 1.0)
     static let mainTextColor = UIColor(red: 251.0/255.0, green: 251.0/255.0, blue: 251.0/255.0, alpha: 1.0)

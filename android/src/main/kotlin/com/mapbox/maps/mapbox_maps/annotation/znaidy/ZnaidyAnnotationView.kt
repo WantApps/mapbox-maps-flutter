@@ -66,11 +66,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   fun bind(annotation: ZnaidyAnnotationData) {
     Log.d(TAG, "bind: $annotation")
     val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
-    if (annotation.markerType != ZnaidyMarkerType.SELF) {
-      constraintAnimationBuilder.zoomFactor = annotation.zoomFactor
-    } else {
-      constraintAnimationBuilder.zoomFactor = max(0.5, annotation.zoomFactor)
-    }
+    constraintAnimationBuilder.zoomFactor = getZoomFactor(annotation)
     when (annotation.markerType) {
       ZnaidyMarkerType.SELF -> bindSelf(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.FRIEND -> bindFriend(annotation, constraintAnimationBuilder)
@@ -109,6 +105,17 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   fun delete(onAnimationEnd: () -> Unit) {
     animator.animateDeletion(onAnimationEnd)
+  }
+
+  private fun getZoomFactor(annotationData: ZnaidyAnnotationData): Double {
+    if (annotationData.focused) {
+      return 1.2
+    }
+    return if (annotationData.markerType != ZnaidyMarkerType.SELF) {
+      annotationData.zoomFactor
+    } else {
+      max(0.5, annotationData.zoomFactor)
+    }
   }
 
   private fun bindSelf(
@@ -199,14 +206,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
   }
 
-  private fun showInApp(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    setViewVisibility(R.id.inApp, View.VISIBLE, constraintAnimationBuilder)
-  }
-
-  private fun hideInApp(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder) {
-    setViewVisibility(R.id.inApp, View.GONE, constraintAnimationBuilder)
-  }
-
   private fun setLayout(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder, annotationData: ZnaidyAnnotationData) {
     constraintAnimationBuilder.addChange { constraintSet ->
       constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
@@ -238,6 +237,12 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
           TypedValue.COMPLEX_UNIT_PX,
           (if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_text_units) else getDimen(R.dimen.current_speed_text_units_small)).toFloat()
         )
+      }
+
+      if (constraintAnimationBuilder.zoomFactor > 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.INAPP) {
+        constraintSet.setVisibility(R.id.inApp, View.VISIBLE)
+      } else {
+        constraintSet.setVisibility(R.id.inApp, View.GONE)
       }
     }
   }
