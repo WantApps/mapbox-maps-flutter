@@ -35,7 +35,7 @@ class ZnaidyPositionAnimator(
   init {
     animator = ObjectAnimator
       .ofObject(positionEvaluator, startPosition, endPosition)
-      .setDuration(duration + 1000)
+      .setDuration(duration * 2)
     animator.interpolator = LinearInterpolator()
     animator.addUpdateListener(this)
     animator.addListener(this)

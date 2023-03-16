@@ -110,7 +110,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                         startPosition = lastAnimator.stop()
                         annotationAnimators.removeValue(forKey: annotationId)
                     }
-                    let animator = ZnaidyPositionAnimator(id: annotationId, from: startPosition, to: newAnnotationData.geometry, duration: locationUpdateRate, delegate: self)
+                    let animator = ZnaidyPositionAnimator(id: annotationId, from: startPosition, to: newAnnotationData.geometry, duration: locationUpdateRate * 2, delegate: self)
                     animator.start()
                     annotationAnimators[annotationId] = animator
                 }
@@ -215,7 +215,7 @@ extension ZnaidyAnnotationController: ZnaidyPositionAnimationDelegate {
             try delegate?.getViewAnnotationsManager().update(annotationView, options: ViewAnnotationOptions(geometry: Point(position)))
             
             if (annotationView.annotationData?.focused != true) { return }
-            
+
             self.trackingCameraOptions?.center = position
             delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: 0)
 
