@@ -22,7 +22,6 @@ object ZnaidyAnnotationDataMapper {
       options.currentSpeed?.toInt() ?: 0,
       options.batteryLevel?.toInt() ?: 0,
       options.batteryCharging ?: false,
-      options.zoomFactor ?: 1.0,
     )
   }
 
@@ -56,7 +55,6 @@ object ZnaidyAnnotationDataMapper {
       currentSpeed = options.currentSpeed?.toInt() ?: data.currentSpeed,
       batteryLevel = options.batteryLevel?.toInt() ?: data.batteryLevel,
       batteryCharging = options.batteryCharging ?: data.batteryCharging,
-      zoomFactor = options.zoomFactor ?: data.zoomFactor,
     )
   }
 

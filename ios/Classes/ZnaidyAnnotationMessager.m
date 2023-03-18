@@ -46,8 +46,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed
     batteryLevel:(nullable NSNumber *)batteryLevel
-    batteryCharging:(nullable NSNumber *)batteryCharging
-    zoomFactor:(nullable NSNumber *)zoomFactor {
+    batteryCharging:(nullable NSNumber *)batteryCharging {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
   pigeonResult.geometry = geometry;
   pigeonResult.markerType = markerType;
@@ -58,7 +57,6 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.currentSpeed = currentSpeed;
   pigeonResult.batteryLevel = batteryLevel;
   pigeonResult.batteryCharging = batteryCharging;
-  pigeonResult.zoomFactor = zoomFactor;
   return pigeonResult;
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
@@ -72,7 +70,6 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.currentSpeed = GetNullableObject(dict, @"currentSpeed");
   pigeonResult.batteryLevel = GetNullableObject(dict, @"batteryLevel");
   pigeonResult.batteryCharging = GetNullableObject(dict, @"batteryCharging");
-  pigeonResult.zoomFactor = GetNullableObject(dict, @"zoomFactor");
   return pigeonResult;
 }
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
@@ -87,7 +84,6 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     @"currentSpeed" : (self.currentSpeed ?: [NSNull null]),
     @"batteryLevel" : (self.batteryLevel ?: [NSNull null]),
     @"batteryCharging" : (self.batteryCharging ?: [NSNull null]),
-    @"zoomFactor" : (self.zoomFactor ?: [NSNull null]),
   };
 }
 @end
@@ -367,6 +363,27 @@ void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenge
         NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
         NSNumber *arg_rate = GetNullableObjectAtIndex(args, 1);
         [api setUpdateRateManagerId:arg_managerId rate:arg_rate completion:^(FlutterError *_Nullable error) {
+          callback(wrapResult(nil, error));
+        }];
+      }];
+    }
+    else {
+      [channel setMessageHandler:nil];
+    }
+  }
+  {
+    FlutterBasicMessageChannel *channel =
+      [[FlutterBasicMessageChannel alloc]
+        initWithName:@"dev.flutter.pigeon._ZnaidyAnnotationMessager.setZoomFactor"
+        binaryMessenger:binaryMessenger
+        codec:FLT_ZnaidyAnnotationMessagerGetCodec()        ];
+    if (api) {
+      NSCAssert([api respondsToSelector:@selector(setZoomFactorManagerId:zoomFactor:completion:)], @"FLT_ZnaidyAnnotationMessager api (%@) doesn't respond to @selector(setZoomFactorManagerId:zoomFactor:completion:)", api);
+      [channel setMessageHandler:^(id _Nullable message, FlutterReply callback) {
+        NSArray *args = message;
+        NSString *arg_managerId = GetNullableObjectAtIndex(args, 0);
+        NSNumber *arg_zoomFactor = GetNullableObjectAtIndex(args, 1);
+        [api setZoomFactorManagerId:arg_managerId zoomFactor:arg_zoomFactor completion:^(FlutterError *_Nullable error) {
           callback(wrapResult(nil, error));
         }];
       }];

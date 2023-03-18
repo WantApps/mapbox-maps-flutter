@@ -13,7 +13,6 @@ data class ZnaidyAnnotationData(
   val currentSpeed: Int,
   val batteryLevel: Int,
   val batteryCharging: Boolean,
-  val zoomFactor: Double,
   val focused: Boolean = false,
 ) {
   var userAvatar = avatarUrls.firstOrNull()

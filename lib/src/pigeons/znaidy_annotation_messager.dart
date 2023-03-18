@@ -25,7 +25,6 @@ class ZnaidyAnnotationOptions {
     this.currentSpeed,
     this.batteryLevel,
     this.batteryCharging,
-    this.zoomFactor,
   });
 
   Map<String?, Object?>? geometry;
@@ -37,7 +36,6 @@ class ZnaidyAnnotationOptions {
   int? currentSpeed;
   int? batteryLevel;
   bool? batteryCharging;
-  double? zoomFactor;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -50,7 +48,6 @@ class ZnaidyAnnotationOptions {
     pigeonMap['currentSpeed'] = currentSpeed;
     pigeonMap['batteryLevel'] = batteryLevel;
     pigeonMap['batteryCharging'] = batteryCharging;
-    pigeonMap['zoomFactor'] = zoomFactor;
     return pigeonMap;
   }
 
@@ -70,7 +67,6 @@ class ZnaidyAnnotationOptions {
       currentSpeed: pigeonMap['currentSpeed'] as int?,
       batteryLevel: pigeonMap['batteryLevel'] as int?,
       batteryCharging: pigeonMap['batteryCharging'] as bool?,
-      zoomFactor: pigeonMap['zoomFactor'] as double?,
     );
   }
 }
@@ -208,11 +204,11 @@ class _ZnaidyAnnotationMessager {
     }
   }
 
-  Future<void> delete(String arg_managetId, String arg_annotationId, bool arg_animated) async {
+  Future<void> delete(String arg_managerId, String arg_annotationId, bool arg_animated) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.delete', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-    await channel.send(<Object?>[arg_managetId, arg_annotationId, arg_animated]) as Map<Object?, Object?>?;
+    await channel.send(<Object?>[arg_managerId, arg_annotationId, arg_animated]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -301,6 +297,28 @@ class _ZnaidyAnnotationMessager {
         'dev.flutter.pigeon._ZnaidyAnnotationMessager.setUpdateRate', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
     await channel.send(<Object?>[arg_managerId, arg_rate]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setZoomFactor(String arg_managerId, double arg_zoomFactor) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon._ZnaidyAnnotationMessager.setZoomFactor', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+    await channel.send(<Object?>[arg_managerId, arg_zoomFactor]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

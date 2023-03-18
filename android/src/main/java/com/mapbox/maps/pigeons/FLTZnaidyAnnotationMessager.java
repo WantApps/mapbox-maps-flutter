@@ -102,12 +102,6 @@ public class FLTZnaidyAnnotationMessager {
       this.batteryCharging = setterArg;
     }
 
-    private @Nullable Double zoomFactor;
-    public @Nullable Double getZoomFactor() { return zoomFactor; }
-    public void setZoomFactor(@Nullable Double setterArg) {
-      this.zoomFactor = setterArg;
-    }
-
     public static final class Builder {
       private @Nullable Map<String, Object> geometry;
       public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
@@ -154,11 +148,6 @@ public class FLTZnaidyAnnotationMessager {
         this.batteryCharging = setterArg;
         return this;
       }
-      private @Nullable Double zoomFactor;
-      public @NonNull Builder setZoomFactor(@Nullable Double setterArg) {
-        this.zoomFactor = setterArg;
-        return this;
-      }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
         pigeonReturn.setGeometry(geometry);
@@ -170,7 +159,6 @@ public class FLTZnaidyAnnotationMessager {
         pigeonReturn.setCurrentSpeed(currentSpeed);
         pigeonReturn.setBatteryLevel(batteryLevel);
         pigeonReturn.setBatteryCharging(batteryCharging);
-        pigeonReturn.setZoomFactor(zoomFactor);
         return pigeonReturn;
       }
     }
@@ -185,7 +173,6 @@ public class FLTZnaidyAnnotationMessager {
       toMapResult.put("currentSpeed", currentSpeed);
       toMapResult.put("batteryLevel", batteryLevel);
       toMapResult.put("batteryCharging", batteryCharging);
-      toMapResult.put("zoomFactor", zoomFactor);
       return toMapResult;
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
@@ -208,8 +195,6 @@ public class FLTZnaidyAnnotationMessager {
       pigeonResult.setBatteryLevel((batteryLevel == null) ? null : ((batteryLevel instanceof Integer) ? (Integer)batteryLevel : (Long)batteryLevel));
       Object batteryCharging = map.get("batteryCharging");
       pigeonResult.setBatteryCharging((Boolean)batteryCharging);
-      Object zoomFactor = map.get("zoomFactor");
-      pigeonResult.setZoomFactor((Double)zoomFactor);
       return pigeonResult;
     }
   }
@@ -300,6 +285,7 @@ public class FLTZnaidyAnnotationMessager {
     void resetSelection(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void sendSticker(@NonNull String managerId, @NonNull String annotationId, Result<Void> result);
     void setUpdateRate(@NonNull String managerId, @NonNull Long rate, Result<Void> result);
+    void setZoomFactor(@NonNull String managerId, @NonNull Double zoomFactor, Result<Void> result);
 
     /** The codec used by _ZnaidyAnnotationMessager. */
     static MessageCodec<Object> getCodec() {
@@ -584,6 +570,44 @@ public class FLTZnaidyAnnotationMessager {
               };
 
               api.setUpdateRate(managerIdArg, (rateArg == null) ? null : rateArg.longValue(), resultCallback);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+              reply.reply(wrapped);
+            }
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon._ZnaidyAnnotationMessager.setZoomFactor", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              String managerIdArg = (String)args.get(0);
+              if (managerIdArg == null) {
+                throw new NullPointerException("managerIdArg unexpectedly null.");
+              }
+              Double zoomFactorArg = (Double)args.get(1);
+              if (zoomFactorArg == null) {
+                throw new NullPointerException("zoomFactorArg unexpectedly null.");
+              }
+              Result<Void> resultCallback = new Result<Void>() {
+                public void success(Void result) {
+                  wrapped.put("result", null);
+                  reply.reply(wrapped);
+                }
+                public void error(Throwable error) {
+                  wrapped.put("error", wrapError(error));
+                  reply.reply(wrapped);
+                }
+              };
+
+              api.setZoomFactor(managerIdArg, zoomFactorArg, resultCallback);
             }
             catch (Error | RuntimeException exception) {
               wrapped.put("error", wrapError(exception));

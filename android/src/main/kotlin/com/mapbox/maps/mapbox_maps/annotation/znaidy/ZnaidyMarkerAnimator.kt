@@ -63,7 +63,6 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
   }
 
   private fun startIdleAnimation(baseValue: Float) {
-    Log.d(ZnaidyAnnotationView.TAG, "startIdleAnimation: base = $baseValue")
     markerIdleAnimator?.end()
     val background = annotationView.findViewById<View>(R.id.markerBackground)
     val avatar = annotationView.findViewById<View>(R.id.avatar)

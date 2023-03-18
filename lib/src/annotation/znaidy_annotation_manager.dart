@@ -17,7 +17,8 @@ class ZnaidyAnnotationManager extends BaseAnnotationManager {
   Future<void> delete(String annotationId, bool animated) =>
       messager.delete(id, annotationId, animated);
 
-  Future<void> select(String annotationId, double bottomPadding, int animationDuration, double zoom) =>
+  Future<void> select(String annotationId, double bottomPadding,
+          int animationDuration, double zoom) =>
       messager.select(id, annotationId, bottomPadding, animationDuration, zoom);
 
   Future<void> resetSelection(String annotationId) =>
@@ -28,6 +29,9 @@ class ZnaidyAnnotationManager extends BaseAnnotationManager {
 
   Future<void> setLocationUpdateRate(int rate) =>
       messager.setUpdateRate(id, rate);
+
+  Future<void> setZoomFactor(double zoomFactor) =>
+      messager.setZoomFactor(id, zoomFactor);
 
   void addOnAnnotationTapListener(OnZnaidyAnnotationClickListener listener) {
     OnZnaidyAnnotationClickListener.setup(listener);

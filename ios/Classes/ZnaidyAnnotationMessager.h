@@ -33,8 +33,7 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed
     batteryLevel:(nullable NSNumber *)batteryLevel
-    batteryCharging:(nullable NSNumber *)batteryCharging
-    zoomFactor:(nullable NSNumber *)zoomFactor;
+    batteryCharging:(nullable NSNumber *)batteryCharging;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
 @property(nonatomic, assign) FLTMarkerType markerType;
 @property(nonatomic, assign) FLTOnlineStatus onlineStatus;
@@ -44,7 +43,6 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
 @property(nonatomic, strong, nullable) NSNumber * currentSpeed;
 @property(nonatomic, strong, nullable) NSNumber * batteryLevel;
 @property(nonatomic, strong, nullable) NSNumber * batteryCharging;
-@property(nonatomic, strong, nullable) NSNumber * zoomFactor;
 @end
 
 /// The codec used by FLTOnZnaidyAnnotationClickListener.
@@ -65,6 +63,7 @@ NSObject<FlutterMessageCodec> *FLT_ZnaidyAnnotationMessagerGetCodec(void);
 - (void)resetSelectionManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)sendStickerManagerId:(NSString *)managerId annotationId:(NSString *)annotationId completion:(void(^)(FlutterError *_Nullable))completion;
 - (void)setUpdateRateManagerId:(NSString *)managerId rate:(NSNumber *)rate completion:(void(^)(FlutterError *_Nullable))completion;
+- (void)setZoomFactorManagerId:(NSString *)managerId zoomFactor:(NSNumber *)zoomFactor completion:(void(^)(FlutterError *_Nullable))completion;
 @end
 
 extern void FLT_ZnaidyAnnotationMessagerSetup(id<FlutterBinaryMessenger> binaryMessenger, NSObject<FLT_ZnaidyAnnotationMessager> *_Nullable api);

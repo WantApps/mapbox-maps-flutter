@@ -23,7 +23,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   OnPositionAnimationListener {
 
   private companion object {
-    const val TAG = "ZnaidyAnnotationController"
+    const val TAG = "ZnaidyAnnotatController"
   }
 
   var flutterClickCallback: FLTZnaidyAnnotationMessager.OnZnaidyAnnotationClickListener? = null
@@ -32,6 +32,8 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   private var updateRate: Long = 2000L
   private val viewAnnotations = mutableMapOf<String, ZnaidyAnnotationView>()
   private val annotationAnimations = mutableMapOf<String, ZnaidyPositionAnimator>()
+
+  private var zoomFactor = 1.0
 
   private var trackingCameraOptionsBuilder: CameraOptions.Builder? = null
 
@@ -77,7 +79,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         R.layout.znaidy_annotation_base,
         viewAnnotationOptions
       ) as ZnaidyAnnotationView
-      annotationView.bind(annotationData)
+      annotationView.bind(annotationData, zoomFactor)
       viewAnnotations[annotationData.id] = annotationView
       Log.d(TAG, "create: view=$annotationData, point=$pointAnnotation")
       result?.success(annotationData.id)
@@ -101,7 +103,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             znaidyAnnotationView.annotationData!!,
             annotationOptions
           )
-        if (newAnnotationData.zoomFactor <= 0.5) {
+        if (znaidyAnnotationView.annotationZoomFactor <= 0.5) {
           val viewAnnotationManager = delegate.getViewAnnotationManager()
           val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
           if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {
@@ -111,16 +113,6 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
               pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
             pointAnnotation.geometry = newAnnotationData.geometry
             pointAnnotationManager.update(pointAnnotation)
-          }
-          val isHidden = newAnnotationData.zoomFactor == 0.0 && newAnnotationData.markerType != ZnaidyMarkerType.SELF
-          if (isHidden) {
-            znaidyAnnotationView.delete {
-              val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
-              viewAnnotationOptionsBuilder.visible(false)
-              viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptionsBuilder.build())
-            }
-          } else {
-            viewAnnotationOptionsBuilder.visible(true)
           }
           viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptionsBuilder.build())
         } else {
@@ -139,7 +131,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             annotationAnimations[annotationId] = animator
           }
         }
-        znaidyAnnotationView.bind(newAnnotationData)
+        znaidyAnnotationView.bind(newAnnotationData, zoomFactor)
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
       result?.success(null)
     } catch (ex: Exception) {
@@ -193,7 +185,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
         val newAnnotationData = znaidyAnnotationView.annotationData?.copy(focused = true)
         newAnnotationData?.let { annotationData ->
-          znaidyAnnotationView.bind(annotationData)
+          znaidyAnnotationView.bind(annotationData, zoomFactor)
           val padding = MbxEdgeInsets.Builder().apply {
             setBottom(bottomPadding)
             setTop(0.0)
@@ -232,7 +224,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         Log.d(TAG, "resetSelection: annotationData.focused=${znaidyAnnotationView.annotationData?.focused}")
         znaidyAnnotationView.annotationData?.let { annotationData ->
           val newAnnotationData = annotationData.copy(focused = false)
-          znaidyAnnotationView.bind(newAnnotationData)
+          znaidyAnnotationView.bind(newAnnotationData, zoomFactor)
         }
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
@@ -265,16 +257,31 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     result?.success(null)
   }
 
+  override fun setZoomFactor(
+    managerId: String,
+    zoomFactor: Double,
+    result: FLTZnaidyAnnotationMessager.Result<Void>?
+  ) {
+    Log.d(TAG, "setZoomFactor: $zoomFactor")
+    this.zoomFactor = zoomFactor
+    for (annotation in viewAnnotations.values) {
+      updateAnnotationZoomFactor(annotation)
+    }
+    result?.success(null)
+  }
+
   override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
     Log.d(TAG, "onAnnotationClick: $annotation")
-    viewAnnotations[annotation.id.toString()]?.annotationData?.let { annotationData ->
-      Log.d(TAG, "onAnnotationClick: $annotationData")
-      if (annotationData.zoomFactor < 0.5 && annotationData.markerType != ZnaidyMarkerType.SELF) return true;
-      flutterClickCallback?.onZnaidyAnnotationClick(
-        annotationData.id,
-        ZnaidyAnnotationDataMapper.mapToOptions(annotationData)
-      ) {
-        Log.d(TAG, "onAnnotationClick: ${annotationData.id} finished")
+    viewAnnotations[annotation.id.toString()]?.let { znaidyAnnotationView ->
+      znaidyAnnotationView.annotationData?.let { annotationData ->
+        Log.d(TAG, "onAnnotationClick: $annotationData")
+        if (znaidyAnnotationView.annotationZoomFactor < 0.5 && annotationData.markerType != ZnaidyMarkerType.SELF) return true;
+        flutterClickCallback?.onZnaidyAnnotationClick(
+          annotationData.id,
+          ZnaidyAnnotationDataMapper.mapToOptions(annotationData)
+        ) {
+          Log.d(TAG, "onAnnotationClick: ${annotationData.id} finished")
+        }
       }
     }
     return true
@@ -311,5 +318,33 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
 
   override fun onPositionAnimationEnded(id: String) {
     annotationAnimations.remove(id)
+  }
+
+  private fun updateAnnotationZoomFactor(annotationView: ZnaidyAnnotationView) {
+    val previousZoomFactor = annotationView.annotationZoomFactor
+    annotationView.bindZoomFactor(zoomFactor)
+    Log.d(TAG, "updateAnnotationZoomFactor: [${annotationView.annotationData?.id}]: $previousZoomFactor -> ${annotationView.annotationZoomFactor}")
+    when {
+      previousZoomFactor == 0.0 && annotationView.annotationZoomFactor >= 0.5 -> showAnnotation(annotationView)
+      previousZoomFactor > 0.0 && annotationView.annotationZoomFactor == 0.0 -> hideAnnotation(annotationView)
+    }
+  }
+
+  private fun showAnnotation(annotationView: ZnaidyAnnotationView) {
+    Log.d(TAG, "showAnnotation: [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
+    val viewAnnotationManager = delegate.getViewAnnotationManager()
+    val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+    viewAnnotationOptionsBuilder.visible(true)
+    viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
+  }
+
+  private fun hideAnnotation(annotationView: ZnaidyAnnotationView) {
+    Log.d(TAG, "hideAnnotation: [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
+    val viewAnnotationManager = delegate.getViewAnnotationManager()
+    annotationView.delete {
+      val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+      viewAnnotationOptionsBuilder.visible(false)
+      viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
+    }
   }
 }

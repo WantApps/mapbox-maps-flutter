@@ -22,6 +22,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     private var viewAnnotations: [String: ZnaidyAnnotationView] = [:]
     private var annotationAnimators: [String:ZnaidyPositionAnimator] = [:]
     
+    private var zoomFactor: Double = 1.0
     private var trackingCameraOptions: CameraOptions?
     
     init(withDelegate delegate: ControllerDelegate) {
@@ -43,7 +44,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             
             let annotationData = ZnaidyAnnotationDataMapper.createAnnotation(id: pointAnnotation.id, options: annotationOptions)
             let annotationView = ZnaidyAnnotationView()
-            annotationView.bind(annotationData)
+            annotationView.bind(annotationData, zoomFactor: zoomFactor)
             
             //todo add viewAnnotation
             let options = ViewAnnotationOptions(
@@ -71,7 +72,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 throw AnnotationControllerError.noAnnotationFound
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.updateAnnotation(data: annotationView.annotationData!, options: annotationOptions)
-            if (newAnnotationData.zoomFactor <= 0.5) {
+            if (annotationView.annotationZoomFactor <= 0.5) {
                 var viewAnnotationOptions = ViewAnnotationOptions()
                 if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
                     guard let pointManager = try delegate?.getManager(managerId: pointManagerId) as? PointAnnotationManager else {
@@ -87,21 +88,6 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                     pointManager.annotations[index] = newPointAnnotation
                     viewAnnotationOptions.geometry = Point(newAnnotationData.geometry).geometry
                 }
-                
-                let isHidden = newAnnotationData.zoomFactor == 0 && newAnnotationData.markerType != ._self
-                if (isHidden) {
-                    annotationView.animateHide {
-                        do {
-                            var viewAnnotationOptions = ViewAnnotationOptions()
-                            viewAnnotationOptions.visible = false
-                            try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
-                        } catch {
-                            
-                        }
-                    }
-                } else {
-                    viewAnnotationOptions.visible = true
-                }
                 try delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
             } else {
                 if (newAnnotationData.geometry != annotationView.annotationData?.geometry) {
@@ -115,7 +101,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                     annotationAnimators[annotationId] = animator
                 }
             }
-            annotationView.bind(newAnnotationData)
+            annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -153,7 +139,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 throw AnnotationControllerError.noAnnotationFound
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: true)
-            annotationView.bind(newAnnotationData)
+            annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
             let padding = UIEdgeInsets(top: 0.0, left: 0.0, bottom: CGFloat(bottomPadding.doubleValue), right: 0.0)
             self.trackingCameraOptions = CameraOptions(center: newAnnotationData.geometry, padding: padding, zoom: zoom.doubleValue, bearing: 0.0, pitch: 0.0)
             delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: Double(animationDuration.intValue) / 1000)
@@ -169,7 +155,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 throw AnnotationControllerError.noAnnotationFound
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: false)
-            annotationView.bind(newAnnotationData)
+            annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -191,6 +177,41 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     func setUpdateRateManagerId(_ managerId: String, rate: NSNumber, completion: @escaping (FlutterError?) -> Void) {
         locationUpdateRate = TimeInterval(rate.intValue / 1000)
         completion(nil)
+    }
+    
+    func setZoomFactorManagerId(_ managerId: String, zoomFactor: NSNumber, completion: @escaping (FlutterError?) -> Void) {
+        self.zoomFactor = zoomFactor.doubleValue
+        updateAnnotationsZoomFactor()
+        completion(nil)
+    }
+    
+    private func updateAnnotationsZoomFactor() {
+        for (annotationId, annotationView) in viewAnnotations {
+            let previousZoomFactor = annotationView.annotationZoomFactor
+            annotationView.bindZoomFactor(zoomFactor)
+            NSLog("\(TAG): updateAnnotationZoomFactor: [\(annotationId)]: \(previousZoomFactor) -> \(annotationView.annotationZoomFactor)")
+            if (previousZoomFactor < 0.5 && annotationView.annotationZoomFactor >= 0.5) {
+                NSLog("\(TAG): updateAnnotationZoomFactor: show annotation [\(annotationId)]: \(annotationView.annotationZoomFactor)")
+                do {
+                    var viewAnnotationOptions = ViewAnnotationOptions()
+                    viewAnnotationOptions.visible = true
+                    try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+                } catch {
+                    
+                }
+            } else if (previousZoomFactor >= 0.5 && annotationView.annotationZoomFactor < 0.5) {
+                NSLog("\(TAG): updateAnnotationZoomFactor: hideAnnotation [\(annotationId)]: \(annotationView.annotationZoomFactor)")
+                annotationView.animateHide {
+                    do {
+                        var viewAnnotationOptions = ViewAnnotationOptions()
+                        viewAnnotationOptions.visible = false
+                        try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+                    } catch {
+                        
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -243,7 +264,7 @@ extension ZnaidyAnnotationController: AnnotationInteractionDelegate {
             return
         }
         NSLog("\(TAG): onPointAnnotationClick: \(annotation.id), \(annotationData.toString())")
-        if (annotationData.zoomFactor < 0.5 && annotationData.markerType != ._self) { return }
+        if (znaidyAnnotation.annotationZoomFactor < 0.5 && annotationData.markerType != ._self) { return }
         flutterClickListener?.onZnaidyAnnotationClickAnnotationId(annotation.id, annotationOptions: ZnaidyAnnotationDataMapper.mapToOptions(data: annotationData), completion: { error in
             NSLog("\(self.TAG): onAnnotationClick platform done")
         })

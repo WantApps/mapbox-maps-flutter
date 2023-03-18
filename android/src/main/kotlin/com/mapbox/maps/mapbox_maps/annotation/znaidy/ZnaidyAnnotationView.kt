@@ -18,7 +18,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.RequestOptions
-import com.mapbox.maps.extension.style.expressions.dsl.generated.switchCase
 import com.mapbox.maps.mapbox_maps.R
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -30,9 +29,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   companion object {
     const val TAG = "ZnaidyAnnotationView"
+
+    val zoomSteps = listOf(0.0, 0.5, 0.8, 1.0, 1.2)
   }
 
   var annotationData: ZnaidyAnnotationData? = null
+    private set
+  var annotationZoomFactor = 1.0
     private set
 
   private val animator = ZnaidyMarkerAnimator(this)
@@ -46,7 +49,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     Log.d(TAG, "onViewAttachedToWindow: ")
     animator.animateCreation {
       annotationData?.let {
-        if (it.zoomFactor >= 1) {
+        if (annotationZoomFactor >= 1) {
           if (it.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
             animator.startIdleAnimation()
             if (it.markerType != ZnaidyMarkerType.COMPANY) {
@@ -66,10 +69,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     animator.stopAllAnimations()
   }
 
-  fun bind(annotation: ZnaidyAnnotationData) {
+  fun bind(annotation: ZnaidyAnnotationData, zoomFactor: Double) {
     Log.d(TAG, "bind: $annotation")
     val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
-    constraintAnimationBuilder.zoomFactor = getZoomFactor(annotation)
+    setZoomFactor(annotation, zoomFactor)
     when (annotation.markerType) {
       ZnaidyMarkerType.SELF -> bindSelf(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.FRIEND -> bindFriend(annotation, constraintAnimationBuilder)
@@ -77,10 +80,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       else -> Unit
     }
 
-    if (annotation.zoomFactor != 0.0) {
+    if (annotationZoomFactor != 0.0) {
       setLayout(constraintAnimationBuilder, annotation)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
-        if (annotation.zoomFactor >= 1.0) {
+        if (annotationZoomFactor >= 1.0) {
           animator.startIdleAnimation()
           animator.showGlowAnimation()
           if (annotation.markerType != ZnaidyMarkerType.COMPANY) {
@@ -97,9 +100,34 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
 
     val animation = constraintAnimationBuilder.build()
-    Log.d(TAG, "bind: constraintAnimation hasChanges=${animation.hasChanges} (${animation.changesCount})")
+//    Log.d(TAG, "bind: constraintAnimation hasChanges=${animation.hasChanges} (${animation.changesCount})")
     if (animation.hasChanges) animation.run()
     annotationData = annotation
+  }
+
+  fun bindZoomFactor(zoomFactor: Double) {
+    setZoomFactor(annotationData!!, zoomFactor)
+    val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
+    if (annotationZoomFactor != 0.0) {
+      setLayout(constraintAnimationBuilder, annotationData!!)
+      if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
+        if (annotationZoomFactor >= 1.0) {
+          animator.startIdleAnimation()
+          animator.showGlowAnimation()
+          if (annotationData!!.markerType != ZnaidyMarkerType.COMPANY) {
+            animator.startGlowAnimation()
+          }
+        } else {
+          animator.stopIdleAnimation()
+          animator.hideGlowAnimation()
+        }
+      }
+    } else {
+      animator.stopIdleAnimation()
+      animator.hideGlowAnimation()
+    }
+    constraintAnimationBuilder.build().run()
+    Log.d(TAG, "bindZoomFactor: zoomFactor = $annotationZoomFactor")
   }
 
   fun animateReceiveSticker() {
@@ -110,15 +138,18 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     animator.animateDeletion(onAnimationEnd)
   }
 
-  private fun getZoomFactor(annotationData: ZnaidyAnnotationData): Double {
-    if (annotationData.focused) {
-      return 1.2
-    }
-    return if (annotationData.markerType != ZnaidyMarkerType.SELF) {
-      annotationData.zoomFactor
+  private fun setZoomFactor(annotationData: ZnaidyAnnotationData, globalZoomFactor: Double) {
+    var factor = if (annotationData.focused) {
+      1.2
+    } else if (annotationData.markerType != ZnaidyMarkerType.SELF) {
+      globalZoomFactor
     } else {
-      max(0.5, annotationData.zoomFactor)
+      max(0.5, globalZoomFactor)
     }
+    if (annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
+      factor = zoomSteps[max(zoomSteps.indexOf(factor) - 1, 0)]
+    }
+    annotationZoomFactor = factor
   }
 
   private fun bindSelf(
@@ -217,23 +248,23 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   private fun setLayout(constraintAnimationBuilder: ZnaidyConstraintAnimation.Builder, annotationData: ZnaidyAnnotationData) {
     constraintAnimationBuilder.addChange { constraintSet ->
-      constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, constraintAnimationBuilder.zoomFactor))
-      constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, constraintAnimationBuilder.zoomFactor))
+      constraintSet.constrainWidth(R.id.markerBackground, getDimen(R.dimen.marker_width, annotationZoomFactor))
+      constraintSet.constrainHeight(R.id.markerBackground, getDimen(R.dimen.marker_height, annotationZoomFactor))
 
-      constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
-      constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size, constraintAnimationBuilder.zoomFactor))
-      constraintSet.setMargin(R.id.avatar, ConstraintSet.BOTTOM, getDimen(R.dimen.avatar_offset, constraintAnimationBuilder.zoomFactor))
+      constraintSet.constrainWidth(R.id.avatar, getDimen(R.dimen.avatar_size, annotationZoomFactor))
+      constraintSet.constrainHeight(R.id.avatar, getDimen(R.dimen.avatar_size, annotationZoomFactor))
+      constraintSet.setMargin(R.id.avatar, ConstraintSet.BOTTOM, getDimen(R.dimen.avatar_offset, annotationZoomFactor))
 
-      constraintSet.setScaleX(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-      constraintSet.setScaleY(R.id.glow, constraintAnimationBuilder.zoomFactor.toFloat())
-      val glowMargin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, constraintAnimationBuilder.zoomFactor)) / 2
+      constraintSet.setScaleX(R.id.glow, annotationZoomFactor.toFloat())
+      constraintSet.setScaleY(R.id.glow, annotationZoomFactor.toFloat())
+      val glowMargin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, annotationZoomFactor)) / 2
       constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - glowMargin)
 
-      if (constraintAnimationBuilder.zoomFactor <= 0.5 || annotationData.currentSpeed <= 0) {
+      if (annotationZoomFactor <= 0.5 || annotationData.currentSpeed <= 0) {
         constraintSet.setVisibility(R.id.speed, View.GONE)
       } else {
         constraintSet.setVisibility(R.id.speed, View.VISIBLE)
-        val speedZoomFactor = if (constraintAnimationBuilder.zoomFactor >= 1.0) 1.0 else 0.7
+        val speedZoomFactor = if (annotationZoomFactor >= 1.0) 1.0 else 0.7
         constraintSet.constrainWidth(R.id.speed, getDimen(R.dimen.current_speed_width, speedZoomFactor))
         constraintSet.constrainHeight(R.id.speed, getDimen(R.dimen.current_speed_height, speedZoomFactor))
         constraintSet.setMargin(R.id.speed, ConstraintSet.BOTTOM, getDimen(R.dimen.current_speed_offset_vertical, speedZoomFactor))
@@ -248,16 +279,22 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         )
       }
 
-      if (constraintAnimationBuilder.zoomFactor > 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.INAPP) {
+      if (annotationZoomFactor > 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.INAPP) {
         constraintSet.setVisibility(R.id.inApp, View.VISIBLE)
       } else {
         constraintSet.setVisibility(R.id.inApp, View.GONE)
       }
 
-      if (constraintAnimationBuilder.zoomFactor > 1.0) {
+      if (annotationZoomFactor > 1.0 && annotationData.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
         constraintSet.setVisibility(R.id.battery, View.VISIBLE)
       } else {
         constraintSet.setVisibility(R.id.battery, View.GONE)
+      }
+
+      if (annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
+        constraintSet.setVisibility(R.id.speed, View.GONE)
+      } else {
+        constraintSet.setVisibility(R.id.speed, View.VISIBLE)
       }
     }
   }

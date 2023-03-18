@@ -22,7 +22,6 @@ class ZnaidyAnnotationDataMapper {
             currentSpeed: Int(truncating: options.currentSpeed ?? 0),
             batteryLevel: Int(truncating: options.batteryLevel ?? 0),
             batteryCharging: Bool(truncating: options.batteryCharging ?? 0),
-            zoomFactor: Double(truncating: options.zoomFactor ?? 1.0),
             focused: false
         )
     }
@@ -43,7 +42,6 @@ class ZnaidyAnnotationDataMapper {
             currentSpeed: Int(truncating: options.currentSpeed ?? data.currentSpeed as NSNumber),
             batteryLevel: Int(truncating: options.batteryLevel ?? data.batteryLevel as NSNumber),
             batteryCharging: options.batteryCharging != nil ? Bool(truncating: options.batteryCharging ?? 0) : data.batteryCharging,
-            zoomFactor: Double(truncating: options.zoomFactor ?? data.zoomFactor as NSNumber),
             focused: data.focused
         )
     }
@@ -60,7 +58,6 @@ class ZnaidyAnnotationDataMapper {
             currentSpeed: data.currentSpeed,
             batteryLevel: data.batteryLevel,
             batteryCharging: data.batteryCharging,
-            zoomFactor: data.zoomFactor,
             focused: focused
         )
     }
@@ -75,8 +72,7 @@ class ZnaidyAnnotationDataMapper {
             companySize: nil,
             currentSpeed: nil,
             batteryLevel: nil,
-            batteryCharging: nil,
-            zoomFactor: nil
+            batteryCharging: nil
         )
     }
 }

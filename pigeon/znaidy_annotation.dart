@@ -36,7 +36,6 @@ class ZnaidyAnnotationOptions {
   int? currentSpeed;
   int? batteryLevel;
   bool? batteryCharging;
-  double? zoomFactor;
 }
 
 @FlutterApi()
@@ -66,4 +65,7 @@ abstract class _ZnaidyAnnotationMessager {
 
   @async
   void setUpdateRate(String managerId, int rate);
+
+  @async
+  void setZoomFactor(String managerId, double zoomFactor);
 }

@@ -12,6 +12,7 @@ import SDWebImage
 class ZnaidyAnnotationView: UIView {
     
     private let TAG = "ZnaidyAnnotationView"
+    private let zoomSteps = [0.2, 0.5, 0.8, 1.0, 1.2]
     
     private var markerBackground: UIImageView!
     private var userAvatar: UIImageView!
@@ -35,8 +36,9 @@ class ZnaidyAnnotationView: UIView {
     private var speedOffsetXConstraint: NSLayoutConstraint!
     
     private(set) var annotationData: ZnaidyAnnotationData?
+    private(set) var annotationZoomFactor: Double = 1.0
     
-    func bind(_ annotationData: ZnaidyAnnotationData) {
+    func bind(_ annotationData: ZnaidyAnnotationData, zoomFactor: Double) {
         NSLog("\(TAG): bind: \(annotationData.toString())")
         switch (annotationData.markerType) {
             case ._self:
@@ -47,12 +49,31 @@ class ZnaidyAnnotationView: UIView {
                 bindCompany(annotationData)
         }
         
-        let zoomFactor = getZoomFactor(annotationData)
+        setZoomFactor(annotationData: annotationData, zoomFactor: zoomFactor)
         
-        setLayout(zoomFactor: zoomFactor, annotationData: annotationData)
+        setLayout(zoomFactor: annotationZoomFactor, annotationData: annotationData)
         self.annotationData = annotationData
         
-        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && annotationData.zoomFactor >= 1.0) {
+        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && annotationZoomFactor >= 1.0) {
+            startIdleAnimation()
+            if (annotationData.markerType != ZnaidyMarkerType.company) {
+                glowView.isHidden = false
+                glowView.startAnimation()
+            }
+        } else {
+            stopIdleAnimation()
+            glowView.stopAnimation()
+            glowView.isHidden = true
+        }
+    }
+    
+    func bindZoomFactor(_ zoomFactor: Double) {
+        guard let annotationData = self.annotationData else {
+            return
+        }
+        setZoomFactor(annotationData: annotationData, zoomFactor: zoomFactor)
+        setLayout(zoomFactor: annotationZoomFactor, annotationData: annotationData)
+        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && annotationZoomFactor >= 1.0) {
             startIdleAnimation()
             if (annotationData.markerType != ZnaidyMarkerType.company) {
                 glowView.isHidden = false
@@ -85,15 +106,19 @@ class ZnaidyAnnotationView: UIView {
         commonInit()
     }
     
-    func getZoomFactor(_ annotationData: ZnaidyAnnotationData) -> Double {
+    func setZoomFactor(annotationData: ZnaidyAnnotationData, zoomFactor: Double) {
+        var factor = zoomFactor
         if (annotationData.focused) {
-            return 1.2
-        }
-        if (annotationData.markerType == ._self) {
-            return max(annotationData.zoomFactor, 0.5)
+            factor = 1.2
+        } else if (annotationData.markerType == ._self) {
+            factor = max(zoomFactor, 0.5)
         } else {
-            return max(annotationData.zoomFactor, 0.2)
+            factor = max(zoomFactor, 0.2)
         }
+        if (annotationData.onlineStatus == .offline) {
+            factor = zoomSteps[max((zoomSteps.firstIndex(of: factor) ?? 0) - 1, 0)]
+        }
+        annotationZoomFactor = factor
     }
 }
 
@@ -303,6 +328,12 @@ extension ZnaidyAnnotationView {
             batteryView.isHidden = false
         } else {
             batteryView.isHidden = true
+        }
+        
+        if (annotationData.onlineStatus ==.offline) {
+            speedView.isHidden = true
+        } else {
+            speedView.isHidden = false
         }
 
         UIView.animate(withDuration: 0.2, animations: {
