@@ -260,7 +260,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       val glowMargin = (getDimen(R.dimen.annotation_width_focused) - getDimen(R.dimen.annotation_width_focused, annotationZoomFactor)) / 2
       constraintSet.setMargin(R.id.glow, ConstraintSet.BOTTOM, getDimen(R.dimen.glow_y_offset) - glowMargin)
 
-      if (annotationZoomFactor <= 0.5 || annotationData.currentSpeed <= 0) {
+      if (annotationZoomFactor <= 0.5 || annotationData.currentSpeed <= 0 || annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
         constraintSet.setVisibility(R.id.speed, View.GONE)
       } else {
         constraintSet.setVisibility(R.id.speed, View.VISIBLE)
@@ -289,12 +289,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         constraintSet.setVisibility(R.id.battery, View.VISIBLE)
       } else {
         constraintSet.setVisibility(R.id.battery, View.GONE)
-      }
-
-      if (annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
-        constraintSet.setVisibility(R.id.speed, View.GONE)
-      } else {
-        constraintSet.setVisibility(R.id.speed, View.VISIBLE)
       }
     }
   }

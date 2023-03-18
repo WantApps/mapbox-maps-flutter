@@ -306,9 +306,9 @@ extension ZnaidyAnnotationView {
         self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
         self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
         
-        if (zoomFactor <= 0.5) {
+        if (zoomFactor <= 0.5 || annotationData.currentSpeed < 1 || annotationData.onlineStatus == .offline) {
             self.speedView.isHidden = true
-        } else if (annotationData.currentSpeed > 0) {
+        } else {
             let speedZoomFactor = zoomFactor >= 1.0 ? 1.0 : 0.7
             speedView.isHidden = false
             speedWidthConstraint.constant = ZnaidyConstants.currentSpeedWidth * speedZoomFactor
@@ -330,12 +330,6 @@ extension ZnaidyAnnotationView {
             batteryView.isHidden = true
         }
         
-        if (annotationData.onlineStatus ==.offline) {
-            speedView.isHidden = true
-        } else {
-            speedView.isHidden = false
-        }
-
         UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
         }, completion: completion)
