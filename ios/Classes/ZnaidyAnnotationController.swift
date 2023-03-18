@@ -188,20 +188,19 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     private func updateAnnotationsZoomFactor() {
         for (annotationId, annotationView) in viewAnnotations {
             let previousZoomFactor = annotationView.annotationZoomFactor
-            annotationView.bindZoomFactor(zoomFactor)
-            NSLog("\(TAG): updateAnnotationZoomFactor: [\(annotationId)]: \(previousZoomFactor) -> \(annotationView.annotationZoomFactor)")
-            if (previousZoomFactor < 0.5 && annotationView.annotationZoomFactor >= 0.5) {
-                NSLog("\(TAG): updateAnnotationZoomFactor: show annotation [\(annotationId)]: \(annotationView.annotationZoomFactor)")
-                do {
-                    var viewAnnotationOptions = ViewAnnotationOptions()
-                    viewAnnotationOptions.visible = true
-                    try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
-                } catch {
-                    
-                }
-            } else if (previousZoomFactor >= 0.5 && annotationView.annotationZoomFactor < 0.5) {
-                NSLog("\(TAG): updateAnnotationZoomFactor: hideAnnotation [\(annotationId)]: \(annotationView.annotationZoomFactor)")
-                annotationView.animateHide {
+            NSLog("\(self.TAG): updateAnnotationZoomFactor: [\(annotationId)]: \(previousZoomFactor) -> \(annotationView.annotationZoomFactor)")
+            annotationView.bindZoomFactor(zoomFactor) {
+                if (previousZoomFactor < 0.5 && annotationView.annotationZoomFactor >= 0.5) {
+                    NSLog("\(self.TAG): updateAnnotationZoomFactor: show annotation [\(annotationId)]: \(annotationView.annotationZoomFactor)")
+                    do {
+                        var viewAnnotationOptions = ViewAnnotationOptions()
+                        viewAnnotationOptions.visible = true
+                        try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+                    } catch {
+                        
+                    }
+                } else if (previousZoomFactor >= 0.5 && annotationView.annotationZoomFactor < 0.5) {
+                    NSLog("\(self.TAG): updateAnnotationZoomFactor: hideAnnotation start [\(annotationId)]: \(annotationView.annotationZoomFactor)")
                     do {
                         var viewAnnotationOptions = ViewAnnotationOptions()
                         viewAnnotationOptions.visible = false

@@ -67,22 +67,25 @@ class ZnaidyAnnotationView: UIView {
         }
     }
     
-    func bindZoomFactor(_ zoomFactor: Double) {
+    func bindZoomFactor(_ zoomFactor: Double, completion: @escaping () -> Void) {
         guard let annotationData = self.annotationData else {
             return
         }
         setZoomFactor(annotationData: annotationData, zoomFactor: zoomFactor)
-        setLayout(zoomFactor: annotationZoomFactor, annotationData: annotationData)
-        if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && annotationZoomFactor >= 1.0) {
-            startIdleAnimation()
-            if (annotationData.markerType != ZnaidyMarkerType.company) {
-                glowView.isHidden = false
-                glowView.startAnimation()
+        if (annotationZoomFactor >= 0.5) { completion () }
+        setLayout(zoomFactor: annotationZoomFactor, annotationData: annotationData) { bool in
+            if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && self.annotationZoomFactor >= 1.0) {
+                self.startIdleAnimation()
+                if (annotationData.markerType != ZnaidyMarkerType.company) {
+                    self.glowView.isHidden = false
+                    self.glowView.startAnimation()
+                }
+            } else {
+                self.stopIdleAnimation()
+                self.glowView.stopAnimation()
+                self.glowView.isHidden = true
             }
-        } else {
-            stopIdleAnimation()
-            glowView.stopAnimation()
-            glowView.isHidden = true
+            if (self.annotationZoomFactor < 0.5) { completion() }
         }
     }
     
@@ -292,8 +295,7 @@ extension ZnaidyAnnotationView {
     }
     
     private func setLayout(zoomFactor: Double, annotationData: ZnaidyAnnotationData, completion: ((Bool) -> Void)? = nil) {
-        NSLog("\(TAG): setRegularSize: markerWidth=\(markerBackground.frame.width), focusedSize=\(ZnaidyConstants.markerWidth), zoomFactor=\(zoomFactor)")
-        self.layoutIfNeeded()
+        NSLog("\(TAG): setLayout: [\(annotationData.id)], zoomFactor=\(zoomFactor)")
         
         self.markerBackgrounsWidthConstraint.constant = ZnaidyConstants.markerWidth * zoomFactor
         self.markerBackgroundHeightConstraint.constant = ZnaidyConstants.markerHeight * zoomFactor
@@ -324,7 +326,7 @@ extension ZnaidyAnnotationView {
             inAppView.isHidden = true
         }
         
-        if (zoomFactor > 1.0 || (zoomFactor >= 0.8 && annotationData.onlineStatus == .offline)) {
+        if (zoomFactor > 1.0 || (zoomFactor >= 1.0 && annotationData.onlineStatus == .offline)) {
             batteryView.isHidden = false
         } else {
             batteryView.isHidden = true
