@@ -324,7 +324,7 @@ extension ZnaidyAnnotationView {
             inAppView.isHidden = true
         }
         
-        if (zoomFactor > 1.0) {
+        if (zoomFactor > 1.0 || (zoomFactor >= 0.8 && annotationData.onlineStatus == .offline)) {
             batteryView.isHidden = false
         } else {
             batteryView.isHidden = true
