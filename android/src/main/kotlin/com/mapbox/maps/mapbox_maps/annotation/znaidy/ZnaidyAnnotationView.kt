@@ -285,7 +285,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         constraintSet.setVisibility(R.id.inApp, View.GONE)
       }
 
-      if (annotationZoomFactor > 1.0 || (annotationZoomFactor >= 0.8 && annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE)) {
+      if (annotationZoomFactor > 1.0 || (annotationZoomFactor >= 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE)) {
         constraintSet.setVisibility(R.id.battery, View.VISIBLE)
       } else {
         constraintSet.setVisibility(R.id.battery, View.GONE)
