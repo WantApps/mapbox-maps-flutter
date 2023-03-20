@@ -149,7 +149,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     try {
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
         if (animated) {
-          znaidyAnnotationView.delete {
+          znaidyAnnotationView.hide {
             deleteAnnotation(annotationId, znaidyAnnotationView)
           }
         } else {
@@ -206,6 +206,9 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             cameraOptions,
             animationOptions
           )
+          if (znaidyAnnotationView.annotationZoomFactor < 0.5) {
+            showAnnotation(znaidyAnnotationView)
+          }
         }
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
@@ -262,7 +265,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     zoomFactor: Double,
     result: FLTZnaidyAnnotationMessager.Result<Void>?
   ) {
-    Log.d(TAG, "setZoomFactor: $zoomFactor")
+    Log.d(TAG, "[${timestamp()}] setZoomFactor: $zoomFactor")
     this.zoomFactor = zoomFactor
     for (annotation in viewAnnotations.values) {
       updateAnnotationZoomFactor(annotation)
@@ -323,7 +326,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   private fun updateAnnotationZoomFactor(annotationView: ZnaidyAnnotationView) {
     val previousZoomFactor = annotationView.annotationZoomFactor
     annotationView.bindZoomFactor(zoomFactor)
-    Log.d(TAG, "updateAnnotationZoomFactor: [${annotationView.annotationData?.id}]: $previousZoomFactor -> ${annotationView.annotationZoomFactor}")
+    Log.d(TAG, "[${timestamp()}] updateAnnotationZoomFactor: [${annotationView.annotationData?.id}]: $previousZoomFactor -> ${annotationView.annotationZoomFactor}")
     when {
       previousZoomFactor == 0.0 && annotationView.annotationZoomFactor >= 0.5 -> showAnnotation(annotationView)
       previousZoomFactor > 0.0 && annotationView.annotationZoomFactor == 0.0 -> hideAnnotation(annotationView)
@@ -331,20 +334,31 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   }
 
   private fun showAnnotation(annotationView: ZnaidyAnnotationView) {
-    Log.d(TAG, "showAnnotation: [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
+    Log.d(TAG, "[${timestamp()}] showAnnotation: [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
     val viewAnnotationManager = delegate.getViewAnnotationManager()
-    val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
-    viewAnnotationOptionsBuilder.visible(true)
-    viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
+    annotationView.show {
+      Log.d(TAG, "[${timestamp()}] showAnnotation: shown [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
+      val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+      viewAnnotationOptionsBuilder.visible(true)
+      viewAnnotationManager.updateViewAnnotation(
+        annotationView,
+        viewAnnotationOptionsBuilder.build()
+      )
+    }
   }
 
   private fun hideAnnotation(annotationView: ZnaidyAnnotationView) {
-    Log.d(TAG, "hideAnnotation: [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
+    Log.d(TAG, "[${timestamp()}] hideAnnotation: [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
     val viewAnnotationManager = delegate.getViewAnnotationManager()
-    annotationView.delete {
+    annotationView.hide {
+      Log.d(TAG, "[${timestamp()}] hideAnnotation: hidden [${annotationView.annotationData?.id}], zoomFactor=${annotationView.annotationZoomFactor}")
       val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
       viewAnnotationOptionsBuilder.visible(false)
       viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
     }
+  }
+
+  private fun timestamp(): Long {
+    return System.currentTimeMillis()
   }
 }

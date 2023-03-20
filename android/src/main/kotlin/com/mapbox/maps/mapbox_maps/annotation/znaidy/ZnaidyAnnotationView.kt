@@ -46,7 +46,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   }
 
   override fun onViewAttachedToWindow(v: View?) {
-    Log.d(TAG, "onViewAttachedToWindow: ")
+    Log.d(TAG, "onViewAttachedToWindow: [${annotationData?.id}]")
     animator.animateCreation {
       annotationData?.let {
         if (annotationZoomFactor >= 1) {
@@ -65,7 +65,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   }
 
   override fun onViewDetachedFromWindow(v: View?) {
-    Log.d(TAG, "onViewDetachedFromWindow: ")
+    Log.d(TAG, "onViewDetachedFromWindow: [${annotationData?.id}]")
     animator.stopAllAnimations()
   }
 
@@ -127,15 +127,20 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       animator.hideGlowAnimation()
     }
     constraintAnimationBuilder.build().run()
-    Log.d(TAG, "bindZoomFactor: zoomFactor = $annotationZoomFactor")
+    Log.d(TAG, "bindZoomFactor: [${annotationData?.id}] zoomFactor = $annotationZoomFactor")
   }
 
   fun animateReceiveSticker() {
     animator.animateReceiveSticker()
   }
 
-  fun delete(onAnimationEnd: () -> Unit) {
+  fun hide(onAnimationEnd: () -> Unit) {
     animator.animateDeletion(onAnimationEnd)
+  }
+
+  fun show(onAnimationEnd: () -> Unit) {
+    onAnimationEnd()
+    animator.animateCreation {}
   }
 
   private fun setZoomFactor(annotationData: ZnaidyAnnotationData, globalZoomFactor: Double) {

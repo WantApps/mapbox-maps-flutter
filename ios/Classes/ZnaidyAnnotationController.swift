@@ -138,9 +138,13 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             guard let annotationView = viewAnnotations[annotationId], let annotationData = annotationView.annotationData else {
                 throw AnnotationControllerError.noAnnotationFound
             }
+            NSLog("\(TAG): select [\(annotationView.annotationData?.id)], zoom=\(annotationView.annotationZoomFactor)")
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: true)
             annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
             let padding = UIEdgeInsets(top: 0.0, left: 0.0, bottom: CGFloat(bottomPadding.doubleValue), right: 0.0)
+            if (annotationView.annotationZoomFactor < 0.5) {
+                self.showAnnotation(annotationView: annotationView)
+            }
             self.trackingCameraOptions = CameraOptions(center: newAnnotationData.geometry, padding: padding, zoom: zoom.doubleValue, bearing: 0.0, pitch: 0.0)
             delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: Double(animationDuration.intValue) / 1000)
             completion(nil)
@@ -191,25 +195,33 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             NSLog("\(self.TAG): updateAnnotationZoomFactor: [\(annotationId)]: \(previousZoomFactor) -> \(annotationView.annotationZoomFactor)")
             annotationView.bindZoomFactor(zoomFactor) {
                 if (previousZoomFactor < 0.5 && annotationView.annotationZoomFactor >= 0.5) {
-                    NSLog("\(self.TAG): updateAnnotationZoomFactor: show annotation [\(annotationId)]: \(annotationView.annotationZoomFactor)")
-                    do {
-                        var viewAnnotationOptions = ViewAnnotationOptions()
-                        viewAnnotationOptions.visible = true
-                        try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
-                    } catch {
-                        
-                    }
+                    self.showAnnotation(annotationView: annotationView)
                 } else if (previousZoomFactor >= 0.5 && annotationView.annotationZoomFactor < 0.5) {
-                    NSLog("\(self.TAG): updateAnnotationZoomFactor: hideAnnotation start [\(annotationId)]: \(annotationView.annotationZoomFactor)")
-                    do {
-                        var viewAnnotationOptions = ViewAnnotationOptions()
-                        viewAnnotationOptions.visible = false
-                        try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
-                    } catch {
-                        
-                    }
+                    self.hideAnnotation(annotationView: annotationView)
                 }
             }
+        }
+    }
+    
+    private func showAnnotation(annotationView: ZnaidyAnnotationView) {
+        NSLog("\(TAG): updateAnnotationZoomFactor: show annotation [\(annotationView.annotationData?.id)]: \(annotationView.annotationZoomFactor)")
+        do {
+            var viewAnnotationOptions = ViewAnnotationOptions()
+            viewAnnotationOptions.visible = true
+            try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+        } catch {
+            
+        }
+    }
+    
+    private func hideAnnotation(annotationView: ZnaidyAnnotationView) {
+        NSLog("\(self.TAG): updateAnnotationZoomFactor: hideAnnotation start [\(annotationView.annotationData?.id)]: \(annotationView.annotationZoomFactor)")
+        do {
+            var viewAnnotationOptions = ViewAnnotationOptions()
+            viewAnnotationOptions.visible = false
+            try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+        } catch {
+            
         }
     }
 }
