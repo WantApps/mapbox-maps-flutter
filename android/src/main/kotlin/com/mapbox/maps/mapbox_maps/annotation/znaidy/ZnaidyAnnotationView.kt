@@ -248,6 +248,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         markerGlow.setBackgroundResource(0)
         animator.stopGlowAnimation()
       }
+      else -> Unit
     }
   }
 
