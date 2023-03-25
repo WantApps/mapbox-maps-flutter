@@ -25,7 +25,8 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
 @class FLTZnaidyAnnotationOptions;
 
 @interface FLTZnaidyAnnotationOptions : NSObject
-+ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
++ (instancetype)makeWithUserId:(nullable NSString *)userId
+    geometry:(nullable NSDictionary<NSString *, id> *)geometry
     markerType:(FLTMarkerType)markerType
     onlineStatus:(FLTOnlineStatus)onlineStatus
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
@@ -34,6 +35,7 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
     currentSpeed:(nullable NSNumber *)currentSpeed
     batteryLevel:(nullable NSNumber *)batteryLevel
     batteryCharging:(nullable NSNumber *)batteryCharging;
+@property(nonatomic, copy, nullable) NSString * userId;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
 @property(nonatomic, assign) FLTMarkerType markerType;
 @property(nonatomic, assign) FLTOnlineStatus onlineStatus;

@@ -16,6 +16,7 @@ enum MarkerType {
 
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
+    this.userId,
     this.geometry,
     this.markerType,
     this.onlineStatus,
@@ -27,6 +28,7 @@ class ZnaidyAnnotationOptions {
     this.batteryCharging,
   });
 
+  String? userId;
   Map<String?, Object?>? geometry;
   MarkerType? markerType;
   OnlineStatus? onlineStatus;
@@ -39,6 +41,7 @@ class ZnaidyAnnotationOptions {
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
+    pigeonMap['userId'] = userId;
     pigeonMap['geometry'] = geometry;
     pigeonMap['markerType'] = markerType?.index;
     pigeonMap['onlineStatus'] = onlineStatus?.index;
@@ -54,6 +57,7 @@ class ZnaidyAnnotationOptions {
   static ZnaidyAnnotationOptions decode(Object message) {
     final Map<Object?, Object?> pigeonMap = message as Map<Object?, Object?>;
     return ZnaidyAnnotationOptions(
+      userId: pigeonMap['userId'] as String?,
       geometry: (pigeonMap['geometry'] as Map<Object?, Object?>?)?.cast<String?, Object?>(),
       markerType: pigeonMap['markerType'] != null
           ? MarkerType.values[pigeonMap['markerType']! as int]

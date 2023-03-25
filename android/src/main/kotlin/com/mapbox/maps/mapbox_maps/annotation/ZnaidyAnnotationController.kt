@@ -46,6 +46,16 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   ) {
     if (annotationOptions.geometry == null) {
       result?.error(IllegalArgumentException("Coordinate is required to create annotation"))
+      return
+    }
+    if (annotationOptions.userId == null) {
+      result?.error(IllegalArgumentException("UserId is required to create annotation"))
+      return
+    }
+    val annotation = viewAnnotations.values.firstOrNull { it.annotationData?.userId == annotationOptions.userId };
+    if (annotation != null) {
+      result?.success(annotation.annotationData!!.id)
+      return
     }
     try {
       val viewAnnotationManager = delegate.getViewAnnotationManager()

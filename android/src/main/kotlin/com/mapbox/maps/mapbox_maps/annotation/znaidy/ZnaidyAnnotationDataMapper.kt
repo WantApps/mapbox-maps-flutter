@@ -12,6 +12,7 @@ object ZnaidyAnnotationDataMapper {
   fun createAnnotation(id: String, options: ZnaidyAnnotationOptions): ZnaidyAnnotationData {
     return ZnaidyAnnotationData(
       id,
+      options.userId!!,
       options.geometry?.toPoint() ?: Point.fromLngLat(0.0, 0.0),
       options.markerType?.let { mapFromTunnelMarkerType(it) } ?: ZnaidyMarkerType.FRIEND,
       options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) }

@@ -13,6 +13,7 @@ class ZnaidyAnnotationDataMapper {
     static func createAnnotation(id: String, options: FLTZnaidyAnnotationOptions) -> ZnaidyAnnotationData {
         return ZnaidyAnnotationData(
             id: id,
+            userId: options.userId!,
             geometry: convertDictionaryToCLLocationCoordinate2D(dict: options.geometry) ?? CLLocationCoordinate2D.init(latitude: 0, longitude: 0),
             markerType: ZnaidyMarkerType(rawValue: Int(options.markerType.rawValue)) ?? ZnaidyMarkerType.friend,
             onlineStatus: ZnaidyOnlineStatus(rawValue: Int(options.onlineStatus.rawValue)) ?? ZnaidyOnlineStatus.offline,
@@ -33,6 +34,7 @@ class ZnaidyAnnotationDataMapper {
     static func updateAnnotation(data: ZnaidyAnnotationData, options: FLTZnaidyAnnotationOptions) -> ZnaidyAnnotationData {
         return ZnaidyAnnotationData(
             id: data.id,
+            userId: data.userId,
             geometry: convertDictionaryToCLLocationCoordinate2D(dict: options.geometry) ?? data.geometry,
             markerType: options.markerType != FLTMarkerType.none ? (ZnaidyMarkerType(rawValue: Int(options.markerType.rawValue)) ?? data.markerType) : data.markerType,
             onlineStatus: options.onlineStatus != FLTOnlineStatus.none ? (ZnaidyOnlineStatus(rawValue: Int(options.onlineStatus.rawValue)) ?? data.onlineStatus) : data.onlineStatus,
@@ -49,6 +51,7 @@ class ZnaidyAnnotationDataMapper {
     static func udpateAnnotationFocused(data: ZnaidyAnnotationData, focused: Bool) -> ZnaidyAnnotationData {
         return ZnaidyAnnotationData(
             id: data.id,
+            userId: data.userId,
             geometry: data.geometry,
             markerType: data.markerType,
             onlineStatus: data.onlineStatus,
@@ -64,7 +67,8 @@ class ZnaidyAnnotationDataMapper {
     
     static func mapToOptions(data: ZnaidyAnnotationData) -> FLTZnaidyAnnotationOptions {
         return FLTZnaidyAnnotationOptions.make(
-            withGeometry: data.geometry.toDict(),
+            withUserId: data.userId,
+            geometry: data.geometry.toDict(),
             markerType: FLTMarkerType(rawValue: UInt(data.markerType.rawValue))!,
             onlineStatus: FLTOnlineStatus(rawValue: UInt(data.onlineStatus.rawValue))!,
             userAvatars: nil,

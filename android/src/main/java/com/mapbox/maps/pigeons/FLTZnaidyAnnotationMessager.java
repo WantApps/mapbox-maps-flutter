@@ -48,6 +48,12 @@ public class FLTZnaidyAnnotationMessager {
 
   /** Generated class from Pigeon that represents data sent in messages. */
   public static class ZnaidyAnnotationOptions {
+    private @Nullable String userId;
+    public @Nullable String getUserId() { return userId; }
+    public void setUserId(@Nullable String setterArg) {
+      this.userId = setterArg;
+    }
+
     private @Nullable Map<String, Object> geometry;
     public @Nullable Map<String, Object> getGeometry() { return geometry; }
     public void setGeometry(@Nullable Map<String, Object> setterArg) {
@@ -103,6 +109,11 @@ public class FLTZnaidyAnnotationMessager {
     }
 
     public static final class Builder {
+      private @Nullable String userId;
+      public @NonNull Builder setUserId(@Nullable String setterArg) {
+        this.userId = setterArg;
+        return this;
+      }
       private @Nullable Map<String, Object> geometry;
       public @NonNull Builder setGeometry(@Nullable Map<String, Object> setterArg) {
         this.geometry = setterArg;
@@ -150,6 +161,7 @@ public class FLTZnaidyAnnotationMessager {
       }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
+        pigeonReturn.setUserId(userId);
         pigeonReturn.setGeometry(geometry);
         pigeonReturn.setMarkerType(markerType);
         pigeonReturn.setOnlineStatus(onlineStatus);
@@ -164,6 +176,7 @@ public class FLTZnaidyAnnotationMessager {
     }
     @NonNull Map<String, Object> toMap() {
       Map<String, Object> toMapResult = new HashMap<>();
+      toMapResult.put("userId", userId);
       toMapResult.put("geometry", geometry);
       toMapResult.put("markerType", markerType == null ? null : markerType.index);
       toMapResult.put("onlineStatus", onlineStatus == null ? null : onlineStatus.index);
@@ -177,6 +190,8 @@ public class FLTZnaidyAnnotationMessager {
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
       ZnaidyAnnotationOptions pigeonResult = new ZnaidyAnnotationOptions();
+      Object userId = map.get("userId");
+      pigeonResult.setUserId((String)userId);
       Object geometry = map.get("geometry");
       pigeonResult.setGeometry((Map<String, Object>)geometry);
       Object markerType = map.get("markerType");

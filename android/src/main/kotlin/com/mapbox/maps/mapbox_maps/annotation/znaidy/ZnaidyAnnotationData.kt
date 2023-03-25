@@ -5,6 +5,7 @@ import kotlin.math.max
 
 data class ZnaidyAnnotationData(
   val id: String,
+  val userId: String,
   val geometry: Point,
   val markerType: ZnaidyMarkerType,
   val onlineStatus: ZnaidyOnlineStatus,

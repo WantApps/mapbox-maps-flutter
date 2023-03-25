@@ -21,6 +21,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     var pointManagerId: String!
     
     private var locationUpdateRate: TimeInterval = 2.0
+    private var userAnnotations: [String: String] = [:] //userId : annotationId
     private var viewAnnotations: [String: ZnaidyAnnotationView] = [:]
     private var annotationAnimators: [String:ZnaidyPositionAnimator] = [:]
     
@@ -37,6 +38,15 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: "No manager found with id: \(managerId)", details: nil))
                 return
             }
+            guard let userId = annotationOptions.userId else {
+                completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: "Should pass userId when creating annotation", details: nil))
+                return
+            }
+            if let annotation = userAnnotations[userId] {
+                completion(annotation, nil)
+                return
+            }
+            
             var pointAnnotation = PointAnnotation(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
             pointAnnotation.iconImage = "dot-11"
             pointAnnotation.iconAnchor = IconAnchor.bottom
@@ -63,6 +73,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             try delegate?.getViewAnnotationsManager().add(annotationView, options: options)
 
             viewAnnotations[annotationData.id] = annotationView
+            userAnnotations[userId] = annotationData.id
             updatePointAnnotationSize(annotationView: annotationView)
             completion(pointAnnotation.id, nil)
         } catch {
@@ -132,9 +143,10 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 throw AnnotationControllerError.noAnnotationFound
             }
             pointManager.annotations.remove(at: index!)
-            
+            let userId = annotationView.annotationData!.userId
             try delegate?.getViewAnnotationsManager().remove(annotationView)
             viewAnnotations.removeValue(forKey: annotationId)
+            userAnnotations.removeValue(forKey: userId)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))

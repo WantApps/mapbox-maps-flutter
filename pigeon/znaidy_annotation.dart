@@ -16,6 +16,7 @@ enum MarkerType {
 
 class ZnaidyAnnotationOptions {
   ZnaidyAnnotationOptions({
+    this.userId,
     this.geometry,
     this.markerType,
     this.onlineStatus,
@@ -27,6 +28,7 @@ class ZnaidyAnnotationOptions {
     this.currentSpeed,
 });
 
+  String? userId;
   Map<String?, Object?>? geometry;
   MarkerType? markerType;
   OnlineStatus? onlineStatus;

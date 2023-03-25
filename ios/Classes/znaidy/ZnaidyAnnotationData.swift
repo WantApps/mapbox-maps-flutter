@@ -10,8 +10,9 @@ import Turf
 import MapboxMaps
 
 class ZnaidyAnnotationData {
-    init(id: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, focused: Bool) {
+    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, focused: Bool) {
         self.id = id
+        self.userId = userId
         self.geometry = geometry
         self.markerType = markerType
         self.onlineStatus = onlineStatus
@@ -25,6 +26,7 @@ class ZnaidyAnnotationData {
     }
     
     let id: String
+    let userId: String
     let geometry: CLLocationCoordinate2D
     let markerType: ZnaidyMarkerType
     let onlineStatus: ZnaidyOnlineStatus
@@ -58,7 +60,7 @@ class ZnaidyAnnotationData {
     }
     
     func toString() -> String {
-        return "ZnaidyAnnotationData(id=\(id), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), focused=\(focused))"
+        return "ZnaidyAnnotationData(id=\(id), userId=\(userId), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), focused=\(focused))"
     }
 }
 

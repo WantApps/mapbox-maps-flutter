@@ -38,7 +38,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 @end
 
 @implementation FLTZnaidyAnnotationOptions
-+ (instancetype)makeWithGeometry:(nullable NSDictionary<NSString *, id> *)geometry
++ (instancetype)makeWithUserId:(nullable NSString *)userId
+    geometry:(nullable NSDictionary<NSString *, id> *)geometry
     markerType:(FLTMarkerType)markerType
     onlineStatus:(FLTOnlineStatus)onlineStatus
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
@@ -48,6 +49,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     batteryLevel:(nullable NSNumber *)batteryLevel
     batteryCharging:(nullable NSNumber *)batteryCharging {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
+  pigeonResult.userId = userId;
   pigeonResult.geometry = geometry;
   pigeonResult.markerType = markerType;
   pigeonResult.onlineStatus = onlineStatus;
@@ -61,6 +63,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
   FLTZnaidyAnnotationOptions *pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
+  pigeonResult.userId = GetNullableObject(dict, @"userId");
   pigeonResult.geometry = GetNullableObject(dict, @"geometry");
   pigeonResult.markerType = [GetNullableObject(dict, @"markerType") integerValue];
   pigeonResult.onlineStatus = [GetNullableObject(dict, @"onlineStatus") integerValue];
@@ -75,6 +78,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
 - (NSDictionary *)toMap {
   return @{
+    @"userId" : (self.userId ?: [NSNull null]),
     @"geometry" : (self.geometry ?: [NSNull null]),
     @"markerType" : @(self.markerType),
     @"onlineStatus" : @(self.onlineStatus),
