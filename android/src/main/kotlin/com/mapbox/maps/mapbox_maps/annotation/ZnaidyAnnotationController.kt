@@ -211,9 +211,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             cameraOptions,
             animationOptions
           )
-          if (znaidyAnnotationView.annotationZoomFactor < 0.5) {
-            showAnnotation(znaidyAnnotationView)
-          }
+          focusAnnotation(znaidyAnnotationView)
         }
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
@@ -234,6 +232,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
           val newAnnotationData = annotationData.copy(focused = false)
           znaidyAnnotationView.bind(newAnnotationData, zoomFactor)
         }
+        unfocusAnnotation(znaidyAnnotationView)
       } ?: result?.error(IllegalArgumentException("Annotation with id [$annotationId] not found"))
     } catch (ex: Exception) {
       Log.e(TAG, "resetSelection: ", ex)
@@ -361,6 +360,21 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       viewAnnotationOptionsBuilder.visible(false)
       viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
     }
+  }
+
+  private fun focusAnnotation(annotationView: ZnaidyAnnotationView) {
+    val viewAnnotationManager = delegate.getViewAnnotationManager()
+    val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+    viewAnnotationOptionsBuilder.selected(true)
+    viewAnnotationOptionsBuilder.visible(true)
+    viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
+  }
+
+  private fun unfocusAnnotation(annotationView: ZnaidyAnnotationView) {
+    val viewAnnotationManager = delegate.getViewAnnotationManager()
+    val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
+    viewAnnotationOptionsBuilder.selected(false)
+    viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
   }
 
   private fun timestamp(): Long {

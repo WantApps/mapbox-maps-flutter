@@ -146,11 +146,9 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: true)
             annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
             let padding = UIEdgeInsets(top: 0.0, left: 0.0, bottom: CGFloat(bottomPadding.doubleValue), right: 0.0)
-            if (annotationView.annotationZoomFactor < 0.5) {
-                self.showAnnotation(annotationView: annotationView)
-            }
             self.trackingCameraOptions = CameraOptions(center: newAnnotationData.geometry, padding: padding, zoom: zoom.doubleValue, bearing: 0.0, pitch: 0.0)
             delegate?.getMapView().camera.fly(to: self.trackingCameraOptions!, duration: Double(animationDuration.intValue) / 1000)
+            focusAnnotation(annotationView: annotationView)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -164,6 +162,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             }
             let newAnnotationData = ZnaidyAnnotationDataMapper.udpateAnnotationFocused(data: annotationData, focused: false)
             annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
+            unfocusAnnotation(annotationView: annotationView)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -223,6 +222,27 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
         do {
             var viewAnnotationOptions = ViewAnnotationOptions()
             viewAnnotationOptions.visible = false
+            try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+        } catch {
+            
+        }
+    }
+    
+    private func focusAnnotation(annotationView: ZnaidyAnnotationView) {
+        do {
+            var viewAnnotationOptions = ViewAnnotationOptions()
+            viewAnnotationOptions.selected = true
+            viewAnnotationOptions.visible = true
+            try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
+        } catch {
+            
+        }
+    }
+    
+    private func unfocusAnnotation(annotationView: ZnaidyAnnotationView) {
+        do {
+            var viewAnnotationOptions = ViewAnnotationOptions()
+            viewAnnotationOptions.selected = false
             try self.delegate?.getViewAnnotationsManager().update(annotationView, options: viewAnnotationOptions)
         } catch {
             
