@@ -53,6 +53,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 height: ZnaidyConstants.annotationHeight,
                 associatedFeatureId: pointAnnotation.id,
                 allowOverlap: true,
+                visible: annotationData.applyZoomFactor(zoomFactor: zoomFactor) >= 0.5,
                 anchor: .bottom,
                 offsetY: ZnaidyConstants.markerOffsetY * -1,
                 selected: annotationData.markerType == ._self
@@ -116,6 +117,9 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             guard let pointManager = try delegate?.getManager(managerId: managerId) as? PointAnnotationManager else {
                 completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: "No manager found with id: \(managerId)", details: nil))
                 return
+            }
+            if let animation = annotationAnimators[annotationId] {
+                animation.stop()
             }
             let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
                 pointAnnotation.id == annotationId

@@ -135,7 +135,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
   fun animateCreation(onAnimationEnd: () -> Unit) {
     creationAnimator?.cancel()
     creationAnimator = ValueAnimator.ofFloat(0.0f, 1.0f).apply {
-      duration = 500L
+      duration = 200L
       addUpdateListener { animator ->
         val value = animator.animatedValue.toString().toFloatOrNull() ?: 1f
         annotationView.alpha = value
@@ -151,7 +151,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
     creationAnimator?.cancel()
     stopAllAnimations()
     creationAnimator = ValueAnimator.ofFloat(1.0f, 0.0f).apply {
-      duration = 500L
+      duration = 200L
       addUpdateListener { animator ->
         val value = animator.animatedValue.toString().toFloatOrNull() ?: 0f
         annotationView.alpha = value

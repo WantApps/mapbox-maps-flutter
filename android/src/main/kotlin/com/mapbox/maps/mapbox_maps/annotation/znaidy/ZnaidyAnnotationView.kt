@@ -29,8 +29,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
 
   companion object {
     const val TAG = "ZnaidyAnnotationView"
-
-    val zoomSteps = listOf(0.0, 0.5, 0.8, 1.0, 1.2)
   }
 
   var annotationData: ZnaidyAnnotationData? = null
@@ -72,7 +70,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   fun bind(annotation: ZnaidyAnnotationData, zoomFactor: Double) {
     Log.d(TAG, "bind: $annotation")
     val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
-    setZoomFactor(annotation, zoomFactor)
+    annotationZoomFactor = annotation.applyZoomFactor(zoomFactor)
     when (annotation.markerType) {
       ZnaidyMarkerType.SELF -> bindSelf(annotation, constraintAnimationBuilder)
       ZnaidyMarkerType.FRIEND -> bindFriend(annotation, constraintAnimationBuilder)
@@ -106,7 +104,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   }
 
   fun bindZoomFactor(zoomFactor: Double) {
-    setZoomFactor(annotationData!!, zoomFactor)
+    annotationZoomFactor = annotationData!!.applyZoomFactor(zoomFactor)
     val constraintAnimationBuilder = ZnaidyConstraintAnimation.Builder(this)
     if (annotationZoomFactor != 0.0) {
       setLayout(constraintAnimationBuilder, annotationData!!)
@@ -141,20 +139,6 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   fun show(onAnimationEnd: () -> Unit) {
     onAnimationEnd()
     animator.animateCreation {}
-  }
-
-  private fun setZoomFactor(annotationData: ZnaidyAnnotationData, globalZoomFactor: Double) {
-    var factor = if (annotationData.focused) {
-      1.2
-    } else if (annotationData.markerType != ZnaidyMarkerType.SELF) {
-      globalZoomFactor
-    } else {
-      max(0.5, globalZoomFactor)
-    }
-    if (annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
-      factor = zoomSteps[max(zoomSteps.indexOf(factor) - 1, 0)]
-    }
-    annotationZoomFactor = factor
   }
 
   private fun bindSelf(

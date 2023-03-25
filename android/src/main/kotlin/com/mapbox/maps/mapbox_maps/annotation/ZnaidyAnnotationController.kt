@@ -74,6 +74,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         associatedFeatureId(pointAnnotation.featureIdentifier)
         allowOverlap(true)
         selected(annotationData.markerType == ZnaidyMarkerType.SELF)
+        visible(annotationData.applyZoomFactor(zoomFactor) >= 0.5)
       }.build()
       val annotationView = viewAnnotationManager.addViewAnnotation(
         R.layout.znaidy_annotation_base,
@@ -97,18 +98,20 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   ) {
     try {
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
-        Log.d(TAG, "update: $annotationOptions")
+        Log.d(TAG, "update: $annotationId")
         val newAnnotationData =
           ZnaidyAnnotationDataMapper.updateAnnotation(
             znaidyAnnotationView.annotationData!!,
             annotationOptions
           )
-        if (znaidyAnnotationView.annotationZoomFactor <= 0.5) {
+        val annotationZoomFactor = newAnnotationData.applyZoomFactor(zoomFactor)
+        if (newAnnotationData.applyZoomFactor(zoomFactor) <= 0.5) {
           val viewAnnotationManager = delegate.getViewAnnotationManager()
           val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
           if (newAnnotationData.geometry != znaidyAnnotationView.annotationData!!.geometry) {
             val pointAnnotationManager = delegate.getPointAnnotationManager()
             viewAnnotationOptionsBuilder.geometry(newAnnotationData.geometry)
+            viewAnnotationOptionsBuilder.visible(annotationZoomFactor >= 0.5)
             val pointAnnotation =
               pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
             pointAnnotation.geometry = newAnnotationData.geometry
@@ -148,6 +151,8 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   ) {
     try {
       viewAnnotations[annotationId]?.let { znaidyAnnotationView ->
+        Log.d(TAG, "delete: $annotationId")
+        annotationAnimations.remove(annotationId)?.stop()
         if (animated) {
           znaidyAnnotationView.hide {
             deleteAnnotation(annotationId, znaidyAnnotationView)

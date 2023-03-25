@@ -40,6 +40,23 @@ class ZnaidyAnnotationData {
         return avatarUrls.first
     }
     
+    private let zoomSteps = [0.2, 0.5, 0.8, 1.0, 1.2]
+    
+    func applyZoomFactor(zoomFactor: Double) -> Double {
+        var factor = zoomFactor
+        if (focused) {
+            factor = 1.2
+        } else if (markerType == ._self) {
+            factor = max(zoomFactor, 0.5)
+        } else {
+            factor = max(zoomFactor, 0.2)
+        }
+        if (onlineStatus == .offline) {
+            factor = zoomSteps[max((zoomSteps.firstIndex(of: factor) ?? 0) - 1, 0)]
+        }
+        return factor
+    }
+    
     func toString() -> String {
         return "ZnaidyAnnotationData(id=\(id), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), focused=\(focused))"
     }

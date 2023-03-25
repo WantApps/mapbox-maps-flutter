@@ -12,7 +12,6 @@ import SDWebImage
 class ZnaidyAnnotationView: UIView {
     
     private let TAG = "ZnaidyAnnotationView"
-    private let zoomSteps = [0.2, 0.5, 0.8, 1.0, 1.2]
     
     private var markerBackground: UIImageView!
     private var userAvatar: UIImageView!
@@ -49,8 +48,8 @@ class ZnaidyAnnotationView: UIView {
                 bindCompany(annotationData)
         }
         
-        setZoomFactor(annotationData: annotationData, zoomFactor: zoomFactor)
-        
+        annotationZoomFactor = annotationData.applyZoomFactor(zoomFactor: zoomFactor)
+
         setLayout(zoomFactor: annotationZoomFactor, annotationData: annotationData)
         self.annotationData = annotationData
         
@@ -71,7 +70,7 @@ class ZnaidyAnnotationView: UIView {
         guard let annotationData = self.annotationData else {
             return
         }
-        setZoomFactor(annotationData: annotationData, zoomFactor: zoomFactor)
+        annotationZoomFactor = annotationData.applyZoomFactor(zoomFactor: zoomFactor)
         if (annotationZoomFactor >= 0.5) { completion () }
         setLayout(zoomFactor: annotationZoomFactor, annotationData: annotationData) { bool in
             if (annotationData.onlineStatus != ZnaidyOnlineStatus.offline && self.annotationZoomFactor >= 1.0) {
@@ -107,21 +106,6 @@ class ZnaidyAnnotationView: UIView {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
-    }
-    
-    func setZoomFactor(annotationData: ZnaidyAnnotationData, zoomFactor: Double) {
-        var factor = zoomFactor
-        if (annotationData.focused) {
-            factor = 1.2
-        } else if (annotationData.markerType == ._self) {
-            factor = max(zoomFactor, 0.5)
-        } else {
-            factor = max(zoomFactor, 0.2)
-        }
-        if (annotationData.onlineStatus == .offline) {
-            factor = zoomSteps[max((zoomSteps.firstIndex(of: factor) ?? 0) - 1, 0)]
-        }
-        annotationZoomFactor = factor
     }
 }
 
