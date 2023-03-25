@@ -40,7 +40,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             var pointAnnotation = PointAnnotation(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
             pointAnnotation.iconImage = "dot-11"
             pointAnnotation.iconAnchor = IconAnchor.bottom
-//            pointAnnotation.iconOpacity = 0.00
+            pointAnnotation.iconOpacity = 0.00
             pointAnnotation.iconSize = basePointSize
             pointManager.annotations.append(pointAnnotation)
             
