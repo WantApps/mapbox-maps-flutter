@@ -12,6 +12,8 @@ import MapboxMaps
 class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
     private let TAG = "ZnaidyAnnotationController"
     private static let errorCode = "0"
+    private let basePointSize = 7.0
+    
     private weak var delegate: ControllerDelegate?
     
     weak var flutterClickListener: FLTOnZnaidyAnnotationClickListener?
@@ -38,8 +40,8 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             var pointAnnotation = PointAnnotation(coordinate: ZnaidyAnnotationDataMapper.coordinatesFromOptions(options: annotationOptions))
             pointAnnotation.iconImage = "dot-11"
             pointAnnotation.iconAnchor = IconAnchor.bottom
-            pointAnnotation.iconOpacity = 0.00
-            pointAnnotation.iconSize = 5
+//            pointAnnotation.iconOpacity = 0.00
+            pointAnnotation.iconSize = basePointSize
             pointManager.annotations.append(pointAnnotation)
             
             let annotationData = ZnaidyAnnotationDataMapper.createAnnotation(id: pointAnnotation.id, options: annotationOptions)
@@ -61,6 +63,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             try delegate?.getViewAnnotationsManager().add(annotationView, options: options)
 
             viewAnnotations[annotationData.id] = annotationView
+            updatePointAnnotationSize(annotationView: annotationView)
             completion(pointAnnotation.id, nil)
         } catch {
             completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -103,6 +106,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
                 }
             }
             annotationView.bind(newAnnotationData, zoomFactor: zoomFactor)
+            updatePointAnnotationSize(annotationView: annotationView)
             completion(nil)
         } catch {
             completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
@@ -197,6 +201,9 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             let previousZoomFactor = annotationView.annotationZoomFactor
             NSLog("\(self.TAG): updateAnnotationZoomFactor: [\(annotationId)]: \(previousZoomFactor) -> \(annotationView.annotationZoomFactor)")
             annotationView.bindZoomFactor(zoomFactor) {
+                if (annotationView.annotationZoomFactor != previousZoomFactor) {
+                    self.updatePointAnnotationSize(annotationView: annotationView)
+                }
                 if (previousZoomFactor < 0.5 && annotationView.annotationZoomFactor >= 0.5) {
                     self.showAnnotation(annotationView: annotationView)
                 } else if (previousZoomFactor >= 0.5 && annotationView.annotationZoomFactor < 0.5) {
@@ -247,6 +254,31 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
         } catch {
             
         }
+    }
+    
+    private func updatePointAnnotationSize(annotationView: ZnaidyAnnotationView) {
+        do {
+            let desiredSize = basePointSize * annotationView.annotationZoomFactor
+            guard let annotationData = annotationView.annotationData else {
+                return
+            }
+            guard let pointManager = try delegate?.getManager(managerId: pointManagerId) as? PointAnnotationManager else {
+                return
+            }
+            guard let index = pointManager.annotations.firstIndex(where: { pointAnnotation in
+                pointAnnotation.id == annotationData.id
+            }) else {
+                return
+            }
+            var pointAnnotation = pointManager.annotations[index]
+            if (pointAnnotation.iconSize != desiredSize) {
+                pointAnnotation.iconSize = desiredSize
+                pointManager.annotations[index] = pointAnnotation
+            }
+        } catch {
+            NSLog("\(TAG): updatePointAnnotationSize")
+        }
+
     }
 }
 

@@ -24,6 +24,8 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
 
   private companion object {
     const val TAG = "ZnaidyAnnotatController"
+
+    const val basePointSize = 8.0
   }
 
   var flutterClickCallback: FLTZnaidyAnnotationMessager.OnZnaidyAnnotationClickListener? = null
@@ -55,10 +57,10 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
         PointAnnotationOptions()
           .withPoint(point)
           .withIconImage("dot-11")
-          .withIconOpacity(0.00)
+//          .withIconOpacity(0.00)
           .withIconAnchor(IconAnchor.BOTTOM)
           .withIconOffset(listOf(0.0, 0.0))
-          .withIconSize(5.0)
+          .withIconSize(basePointSize)
       )
 
       val annotationData = ZnaidyAnnotationDataMapper.createAnnotation(
@@ -82,6 +84,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
       ) as ZnaidyAnnotationView
       annotationView.bind(annotationData, zoomFactor)
       viewAnnotations[annotationData.id] = annotationView
+      updatePointAnnotationSize(annotationView)
       Log.d(TAG, "create: view=$annotationData, point=$pointAnnotation")
       result?.success(annotationData.id)
     } catch (ex: Exception) {
@@ -115,6 +118,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
             val pointAnnotation =
               pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
             pointAnnotation.geometry = newAnnotationData.geometry
+            pointAnnotation.iconSize = basePointSize * annotationZoomFactor
             pointAnnotationManager.update(pointAnnotation)
           }
           viewAnnotationManager.updateViewAnnotation(znaidyAnnotationView, viewAnnotationOptionsBuilder.build())
@@ -330,10 +334,24 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
   private fun updateAnnotationZoomFactor(annotationView: ZnaidyAnnotationView) {
     val previousZoomFactor = annotationView.annotationZoomFactor
     annotationView.bindZoomFactor(zoomFactor)
+    if (annotationView.annotationZoomFactor != previousZoomFactor) {
+      updatePointAnnotationSize(annotationView)
+    }
     Log.d(TAG, "[${timestamp()}] updateAnnotationZoomFactor: [${annotationView.annotationData?.id}]: $previousZoomFactor -> ${annotationView.annotationZoomFactor}")
     when {
       previousZoomFactor == 0.0 && annotationView.annotationZoomFactor >= 0.5 -> showAnnotation(annotationView)
       previousZoomFactor > 0.0 && annotationView.annotationZoomFactor == 0.0 -> hideAnnotation(annotationView)
+    }
+  }
+
+  private fun updatePointAnnotationSize(annotationView: ZnaidyAnnotationView) {
+    val desirableSize = basePointSize * annotationView.annotationZoomFactor
+    val pointAnnotationManager = delegate.getPointAnnotationManager()
+    val pointAnnotation =
+      pointAnnotationManager.annotations.first { it.id.toString() == annotationView.annotationData!!.id }
+    if (pointAnnotation.iconSize != desirableSize) {
+      pointAnnotation.iconSize = desirableSize
+      pointAnnotationManager.update(pointAnnotation)
     }
   }
 
@@ -368,6 +386,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     viewAnnotationOptionsBuilder.selected(true)
     viewAnnotationOptionsBuilder.visible(true)
     viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
+    updatePointAnnotationSize(annotationView)
   }
 
   private fun unfocusAnnotation(annotationView: ZnaidyAnnotationView) {
@@ -375,6 +394,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
     val viewAnnotationOptionsBuilder = ViewAnnotationOptions.Builder()
     viewAnnotationOptionsBuilder.selected(false)
     viewAnnotationManager.updateViewAnnotation(annotationView, viewAnnotationOptionsBuilder.build())
+    updatePointAnnotationSize(annotationView)
   }
 
   private fun timestamp(): Long {
