@@ -89,7 +89,7 @@ class ZnaidyAnnotationView: UIView {
     }
     
     func animateReceiveSticker() {
-        
+        stickerAnimation()
     }
     
     func animateHide(completion: @escaping () -> Void) {
@@ -278,6 +278,31 @@ extension ZnaidyAnnotationView {
         userAvatar.layer.removeAnimation(forKey: "idle")
     }
     
+    private func stickerAnimation() {
+        let keyframes: [NSNumber] = [0.0, NSNumber(value: 1.0/8.0), NSNumber(value: 2.0/8.0), NSNumber(value: 3.0/8.0), NSNumber(value: 4.0/8.0), NSNumber(value: 5.0/8.0), NSNumber(value: 6.0/8.0), NSNumber(value: 7.0/8.0), NSNumber(value: 8.0/8.0)]
+        let values = [1.0, 0.97, 0.96, 0.9, 1.1, 0.99, 1.01, 1.0]
+        let duration = 0.2
+
+        let markerAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
+        markerAnimation.values = values
+        markerAnimation.keyTimes = keyframes
+        markerAnimation.duration = duration
+        markerBackground.layer.add(markerAnimation, forKey: "sticker")
+        
+        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
+        avatarHeightAnimation.values = values
+        markerAnimation.keyTimes = keyframes
+
+        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
+        avatarWidthAnimation.values = values
+        markerAnimation.keyTimes = keyframes
+
+        let animationGroup = CAAnimationGroup()
+        animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
+        animationGroup.duration = duration
+        userAvatar.layer.add(animationGroup, forKey: "sticker")
+    }
+    
     private func setLayout(zoomFactor: Double, annotationData: ZnaidyAnnotationData, completion: ((Bool) -> Void)? = nil) {
         NSLog("\(TAG): setLayout: [\(annotationData.id)], zoomFactor=\(zoomFactor)")
         
@@ -315,7 +340,7 @@ extension ZnaidyAnnotationView {
             batteryView.isHidden = true
         }
         
-        if (zoomFactor <= 0.5 || annotationData.stickerCount == 0) {
+        if (zoomFactor <= 0.5 || annotationData.stickerCount == 0 || annotationData.focused) {
             self.stickerCounter.isHidden = true
         } else {
             self.stickerCounter.isHidden = false

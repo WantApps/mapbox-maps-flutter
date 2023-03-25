@@ -284,7 +284,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         constraintSet.setVisibility(R.id.battery, View.GONE)
       }
 
-      if (annotationZoomFactor <= 0.5 || annotationData.stickersCount == 0) {
+      if (annotationZoomFactor <= 0.5 || annotationData.stickersCount == 0 || annotationData.focused) {
         constraintSet.setVisibility(R.id.stickers, View.GONE)
       } else {
         constraintSet.setVisibility(R.id.stickers, View.VISIBLE)

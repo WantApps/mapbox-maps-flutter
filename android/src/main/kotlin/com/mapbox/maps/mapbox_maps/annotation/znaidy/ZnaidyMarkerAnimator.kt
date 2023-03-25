@@ -120,7 +120,8 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
     val avatar = annotationView.findViewById<View>(R.id.avatar)
 
     stickerReceiveAnimator = ValueAnimator.ofFloat(1.0f, 0.97f, 0.96f, 0.9f, 1.1f, 0.99f, 1.01f, 1.0f).apply {
-      duration = 500L
+      interpolator = LinearInterpolator()
+      duration = 200L
       addUpdateListener { animator ->
         val value = animator.animatedValue.toString().toFloatOrNull() ?: 1f
         background.scaleX = value
