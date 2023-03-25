@@ -9,12 +9,12 @@
 
     <TextView
         android:id="@+id/inAppLabel"
+        style="@style/MarkerTextBase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textStyle="bold"
-        android:textSize="13dp"
-        android:text="in app"
+        android:textSize="10dp"
+        android:text="IN APP"
         android:textColor="@android:color/white"
         />
 

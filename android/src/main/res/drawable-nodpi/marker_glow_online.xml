@@ -11,7 +11,7 @@
                 android:centerY="0.5"
                 android:endColor="@android:color/transparent"
                 android:gradientRadius="@dimen/glow_gradient_radius"
-                android:startColor="@color/znaidy_gray"
+                android:startColor="@color/online_glow"
                 android:type="radial"
                 />
 

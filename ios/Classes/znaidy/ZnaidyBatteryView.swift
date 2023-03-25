@@ -10,6 +10,7 @@ import UIKit
 
 class ZnaidyBatteryView : UIView {
     
+    private var backgroundView: UIImageView!
     private var batteryIcon: UIImageView!
     private var batteryText: UILabel!
     
@@ -24,28 +25,32 @@ class ZnaidyBatteryView : UIView {
     }
 
     private func commonInit() {
+        backgroundView = UIImageView(image: MediaProvider.image(named: "battery_background"))
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(backgroundView)
         translatesAutoresizingMaskIntoConstraints = false
         batteryIcon = UIImageView()
         batteryIcon.translatesAutoresizingMaskIntoConstraints = false
+        batteryIcon.contentMode = .scaleAspectFit
         addSubview(batteryIcon)
         batteryText = UILabel()
         batteryText.textColor = ZnaidyConstants.secondaryTextColor
         batteryText.textAlignment = .center
         batteryText.lineBreakMode = .byClipping
-        batteryText.font = .systemFont(ofSize: 14, weight: .bold)
+        batteryText.font = .systemFont(ofSize: 10)
         batteryText.translatesAutoresizingMaskIntoConstraints = false
         addSubview(batteryText)
         NSLayoutConstraint.activate([
-            batteryIcon.widthAnchor.constraint(equalToConstant: 30),
-            batteryIcon.heightAnchor.constraint(equalToConstant: 30),
-            batteryIcon.leftAnchor.constraint(equalTo: leftAnchor),
-            batteryIcon.topAnchor.constraint(equalTo: topAnchor),
+            backgroundView.widthAnchor.constraint(equalTo: widthAnchor),
+            backgroundView.heightAnchor.constraint(equalTo: heightAnchor),
+            
+            batteryIcon.widthAnchor.constraint(equalToConstant: 13),
+            batteryIcon.heightAnchor.constraint(equalToConstant: 13),
+            batteryIcon.centerXAnchor.constraint(equalTo: centerXAnchor),
             batteryIcon.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            batteryText.topAnchor.constraint(equalTo: topAnchor),
-            batteryText.bottomAnchor.constraint(equalTo: bottomAnchor),
-            batteryText.rightAnchor.constraint(equalTo: rightAnchor),
-            batteryText.leftAnchor.constraint(equalTo: batteryIcon.rightAnchor)
+            batteryText.centerXAnchor.constraint(equalTo: centerXAnchor),
+            batteryText.bottomAnchor.constraint(equalTo: batteryIcon.topAnchor)
         ])
     }
     
@@ -57,28 +62,19 @@ class ZnaidyBatteryView : UIView {
     
     private func getImageName(level: Int, charging: Bool) -> String {
         if (charging) {
-            return "icon_battery_capsule_plugged"
-        } else if (level == 0) {
-            return "icon_battery_capsule_unplugged_0"
+            return "battery_charging"
         } else if (0...20 ~= level) {
-            return "icon_battery_capsule_unplugged_1"
-        } else if (20...50 ~= level) {
-            return "icon_battery_capsule_unplugged_2"
-        } else if (50...90 ~= level) {
-            return "icon_battery_capsule_unplugged_3"
-        } else if (90...100 ~= level) {
-            return "icon_battery_capsule_unplugged_4"
+            return "battery_low"
+        } else {
+            return "battery_default"
         }
-        return "icon_battery_capsule_unplugged_4"
     }
     
     private func getTextColor(level: Int, charging: Bool) -> UIColor {
-        if (charging) {
-            return ZnaidyConstants.batteryChargingColor
-        } else if (0...20 ~= level) {
+        if (0...20 ~= level) {
             return ZnaidyConstants.batteryLowColor
         } else {
-            return ZnaidyConstants.mainTextColor
+            return UIColor.black
         }
     }
     

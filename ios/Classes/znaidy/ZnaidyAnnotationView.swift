@@ -15,7 +15,7 @@ class ZnaidyAnnotationView: UIView {
     
     private var markerBackground: UIImageView!
     private var userAvatar: UIImageView!
-    private var stickerCounter: UILabel!
+    private var stickerCounter: ZnaidyStickersView!
     private var companyCounter: UILabel!
     private var speedView: ZnaidySpeedView!
     private var glowView: GlowView!
@@ -115,7 +115,7 @@ extension ZnaidyAnnotationView {
     private func bindSelf(_ annotationData: ZnaidyAnnotationData) {
         let typeChanged = self.annotationData?.markerType != annotationData.markerType
         if (typeChanged) {
-            markerBackground.image = MediaProvider.image(named: "znaidy_marker_self")
+            markerBackground.image = MediaProvider.image(named: "default_marker")
             companyCounter.isHidden = true
             stickerCounter.isHidden = true
         }
@@ -136,7 +136,7 @@ extension ZnaidyAnnotationView {
     private func bindFriend(_ annotationData: ZnaidyAnnotationData) {
         let typeChanged = self.annotationData?.markerType != annotationData.markerType
         if (typeChanged) {
-            markerBackground.image = MediaProvider.image(named: "znaidy_marker_friend")
+            markerBackground.image = MediaProvider.image(named: "default_marker")
             companyCounter.isHidden = true
         }
         if (typeChanged || self.annotationData?.onlineStatus != annotationData.onlineStatus) {
@@ -159,7 +159,7 @@ extension ZnaidyAnnotationView {
     private func bindCompany(_ annotationData: ZnaidyAnnotationData) {
         let typeChanged = self.annotationData?.markerType != annotationData.markerType
         if (typeChanged) {
-            markerBackground.image = MediaProvider.image(named: "znaidy_marker_company")
+            markerBackground.image = MediaProvider.image(named: "default_marker")
             stickerCounter.isHidden = true
             speedView.isHidden = true
             glowView.isHidden = true
@@ -178,11 +178,11 @@ extension ZnaidyAnnotationView {
     private func setOnlineStatus(onlineStatus: ZnaidyOnlineStatus) {
         switch (onlineStatus) {
             case .online:
-                glowView.setColor(color: ZnaidyConstants.znaidyGray)
+                glowView.setColor(color: ZnaidyConstants.onlineGlowColor)
                 glowView.isHidden = false
                 glowView.startAnimation()
             case .inApp:
-                glowView.setColor(color: ZnaidyConstants.znaidyBlue)
+                glowView.setColor(color: ZnaidyConstants.inAppGlowOutColor)
                 glowView.isHidden = false
                 glowView.startAnimation()
             case .offline:
@@ -217,7 +217,7 @@ extension ZnaidyAnnotationView {
             stickerCounter.isHidden = true
         } else {
             stickerCounter.isHidden = false
-            stickerCounter.text = count > 9 ? "9+" : String(count)
+            stickerCounter.setStickersCount(count)
         }
     }
     
@@ -287,7 +287,6 @@ extension ZnaidyAnnotationView {
         self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
         self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
         self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
-        self.userAvatar.layer.cornerRadius = ZnaidyConstants.avatarSize / 2 * max(zoomFactor, 0.5)
 
         self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
         self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
@@ -316,9 +315,29 @@ extension ZnaidyAnnotationView {
             batteryView.isHidden = true
         }
         
+        if (zoomFactor <= 0.5 || annotationData.stickerCount == 0) {
+            self.stickerCounter.isHidden = true
+        } else {
+            self.stickerCounter.isHidden = false
+        }
+        
         UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
-        }, completion: completion)
+        }, completion: { result in
+            let maskImage = MediaProvider.image(named: "avatar_mask")!
+            let layer = CALayer()
+            layer.contents = maskImage.cgImage
+            layer.contentsCenter = CGRect(
+                    x: ((maskImage.size.width/2) - 1)/maskImage.size.width,
+                    y: ((maskImage.size.height/2) - 1)/maskImage.size.height,
+                    width: 1 / maskImage.size.width,
+                    height: 1 / maskImage.size.height)
+            layer.frame = self.userAvatar.bounds.insetBy(dx: 0.0, dy: 0.0)
+            self.userAvatar.layer.mask = layer
+            if let completion = completion {
+                completion(result)
+            }
+        })
     }
 }
 
@@ -328,7 +347,7 @@ extension ZnaidyAnnotationView {
     private func commonInit() {
         markerBackground = buildMarkerBackground()
         userAvatar = buildUserAvatar()
-        stickerCounter = buildStickersCounter()
+        stickerCounter = ZnaidyStickersView()
         companyCounter = buildCompanySizeCounter()
         speedView = ZnaidySpeedView()
         glowView = GlowView()
@@ -381,8 +400,8 @@ extension ZnaidyAnnotationView {
             
             stickerCounter.widthAnchor.constraint(equalToConstant: ZnaidyConstants.stickerCountSize),
             stickerCounter.heightAnchor.constraint(equalToConstant: ZnaidyConstants.stickerCountSize),
-            stickerCounter.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: 30.0),
-            stickerCounter.leftAnchor.constraint(equalTo: markerBackground.rightAnchor, constant: -27.0),
+            stickerCounter.topAnchor.constraint(equalTo: markerBackground.topAnchor),
+            stickerCounter.rightAnchor.constraint(equalTo: markerBackground.rightAnchor, constant: ZnaidyConstants.stickersHorizontalOffset),
             
             companyCounter.widthAnchor.constraint(equalToConstant: ZnaidyConstants.companyCountSize),
             companyCounter.heightAnchor.constraint(equalToConstant: ZnaidyConstants.companyCountSize),
@@ -399,10 +418,10 @@ extension ZnaidyAnnotationView {
             inAppView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
             inAppView.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: -10.0),
             
-            batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batteryWidth),
-            batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batteryHeight),
-            batteryView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
-            batteryView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -16)
+            batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize),
+            batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize),
+            batteryView.rightAnchor.constraint(equalTo: markerBackground.rightAnchor, constant: ZnaidyConstants.batteryHoryzontalOffset),
+            batteryView.bottomAnchor.constraint(equalTo: markerBackground.bottomAnchor)
         ])
         
         markerIdleAnimation()
@@ -418,22 +437,7 @@ extension ZnaidyAnnotationView {
     private func buildUserAvatar() -> UIImageView {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.layer.cornerRadius = ZnaidyConstants.avatarSize / 2
-        imageView.layer.masksToBounds = true
         return imageView
-    }
-    
-    private func buildStickersCounter() -> UILabel {
-        let label = UILabel()
-        label.text = "9+"
-        label.textColor = .white
-        label.textAlignment = .center
-        label.font = .systemFont(ofSize: 13)
-        label.backgroundColor = ZnaidyConstants.znaidyBlue
-        label.layer.cornerRadius = ZnaidyConstants.stickerCountSize / 2
-        label.layer.masksToBounds = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
     }
     
     private func buildCompanySizeCounter() -> UILabel {
@@ -451,12 +455,12 @@ extension ZnaidyAnnotationView {
     
     private func buildInAppView() -> UILabel {
         let label = UILabel()
-        label.text = "in app"
+        label.text = "IN APP"
         label .textColor = .white
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 13)
+        label.font = .systemFont(ofSize: 10)
         label.backgroundColor = ZnaidyConstants.inAppColor
-        label.layer.cornerRadius = 5.0
+        label.layer.cornerRadius = 6.7
         label.layer.masksToBounds = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

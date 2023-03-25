@@ -54,10 +54,10 @@
         layout="@layout/znaidy_sticker_counter"
         android:layout_width="@dimen/stickers_count_size"
         android:layout_height="@dimen/stickers_count_size"
-        app:layout_constraintBottom_toTopOf="@id/markerBackground"
-        app:layout_constraintStart_toEndOf="@id/markerBackground"
-        android:layout_marginStart="-30dp"
-        android:layout_marginBottom="-27dp"
+        app:layout_constraintTop_toTopOf="@id/markerBackground"
+        app:layout_constraintEnd_toEndOf="@id/markerBackground"
+        android:layout_marginEnd="@dimen/stickers_offset_horizontal"
+        android:layout_marginTop="@dimen/stickers_offset_vertical"
         android:visibility="gone"
         />
 
@@ -89,21 +89,22 @@
         layout="@layout/znaidy_in_app"
         android:layout_width="@dimen/in_app_width"
         android:layout_height="@dimen/in_app_height"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/markerBackground"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="@dimen/in_app_vertical_offset"
         android:visibility="gone"
         />
 
     <include
         android:id="@+id/battery"
         layout="@layout/znaidy_battery"
-        android:layout_width="@dimen/battery_width"
-        android:layout_height="@dimen/battery_height"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="@dimen/battery_size"
+        android:layout_height="@dimen/battery_size"
+        app:layout_constraintBottom_toBottomOf="@id/markerBackground"
+        app:layout_constraintEnd_toEndOf="@id/markerBackground"
+        android:layout_marginEnd="@dimen/battery_horizontal_offset"
+        android:layout_marginBottom="@dimen/battery_vertical_offset"
         android:visibility="gone"
         />
 

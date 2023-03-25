@@ -17,8 +17,11 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
+import jp.wasabeef.glide.transformations.MaskTransformation
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -148,7 +151,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     val typeChanged = annotationData?.markerType != annotation.markerType
     if (typeChanged) {
       animator.stopAvatarAnimation()
-      setMarkerBackground(R.drawable.znaidy_marker_self)
+      setMarkerBackground(R.drawable.znaidy_marker_friend)
       hideStickersCount(constraintAnimationBuilder)
       hideCompanySize(constraintAnimationBuilder)
     }
@@ -280,6 +283,12 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       } else {
         constraintSet.setVisibility(R.id.battery, View.GONE)
       }
+
+      if (annotationZoomFactor <= 0.5 || annotationData.stickersCount == 0) {
+        constraintSet.setVisibility(R.id.stickers, View.GONE)
+      } else {
+        constraintSet.setVisibility(R.id.stickers, View.VISIBLE)
+      }
     }
   }
 
@@ -318,16 +327,10 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   private fun setAvatar(avatarUrl: String?) {
     val avatarView = findViewById<ImageView>(R.id.profileIcon)
 
-    val request = if (avatarUrl != null) {
-      Glide.with(this)
-        .load(avatarUrl)
-    } else {
-      Glide.with(this)
-        .load(R.drawable.avatar_placeholder)
-    }
-    request
+    Glide.with(this)
+      .load(avatarUrl)
       .error(R.drawable.avatar_placeholder)
-      .apply(RequestOptions.bitmapTransform(CircleCrop()))
+      .apply(RequestOptions.bitmapTransform(MaskTransformation(R.drawable.avatar_mask)))
       .into(avatarView)
   }
 
@@ -374,18 +377,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     val batteryIcon = findViewById<ImageView>(R.id.battery_icon)
 
     val icon = when {
-      charging -> R.drawable.icon_battery_capsule_plugged_size_16
-      batteryLevel == 0 -> R.drawable.icon_battery_capsule_unplugged_0_size_16
-      batteryLevel in 0 .. 20 -> R.drawable.icon_battery_capsule_unplugged_1_size_16
-      batteryLevel in 20 .. 50 -> R.drawable.icon_battery_capsule_unplugged_2_size_16
-      batteryLevel in 50 .. 90 -> R.drawable.icon_battery_capsule_unplugged_3_size_16
-      batteryLevel in 90 .. 100 -> R.drawable.icon_battery_capsule_unplugged_4_size_16
-      else -> R.drawable.icon_battery_capsule_unplugged_4_size_16
+      charging -> R.drawable.battery_charging
+      batteryLevel in 0 .. 20 -> R.drawable.battery_low
+      else -> R.drawable.battery_full
     }
-    val textColor = when {
-      charging -> R.color.battery_charging
-      batteryLevel in 0 .. 20 -> R.color.battery_low
-      else -> R.color.regular_text
+    val textColor = when (batteryLevel) {
+        in 0 .. 20 -> R.color.battery_low
+        else -> android.R.color.black
     }
 
     batteryIcon.setImageResource(icon)

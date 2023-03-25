@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 class ZnaidySpeedView : UIView {
-    
+    private var backgroundView: UIImageView!
     private var speedLabel: UILabel!
     private var unitsLabel: UILabel!
     
@@ -26,25 +26,28 @@ class ZnaidySpeedView : UIView {
     }
     
     private func commonInit() {
-        backgroundColor = ZnaidyConstants.znaidyBlack
-        layer.cornerRadius = 4.0
-        layer.masksToBounds = true
+        backgroundView = UIImageView(image: MediaProvider.image(named: "speed_background"))
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(backgroundView)
         translatesAutoresizingMaskIntoConstraints = false
         speedLabel = UILabel()
         speedLabel.text = "2"
         speedLabel.textColor = ZnaidyConstants.mainTextColor
         speedLabel.textAlignment = .center
-        speedLabel.font = .systemFont(ofSize: 16, weight: UIFont.Weight.bold)
+        speedLabel.font = .systemFont(ofSize: 13, weight: UIFont.Weight.bold)
         speedLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(speedLabel)
         unitsLabel = UILabel()
         unitsLabel.text = "km/h"
         unitsLabel.textColor = ZnaidyConstants.secondaryTextColor
         unitsLabel.textAlignment = .center
-        unitsLabel.font = .systemFont(ofSize: 8)
+        unitsLabel.font = .systemFont(ofSize: 6)
         unitsLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(unitsLabel)
         NSLayoutConstraint.activate([
+            backgroundView.widthAnchor.constraint(equalTo: widthAnchor),
+            backgroundView.heightAnchor.constraint(equalTo: heightAnchor),
+
             speedLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             speedLabel.bottomAnchor.constraint(equalTo: unitsLabel.topAnchor, constant: 2),
             unitsLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -54,10 +57,10 @@ class ZnaidySpeedView : UIView {
     
     func setZoomFactor(zoomFactor: Double) {
         if (zoomFactor >= 1.0) {
-            speedLabel.font = .systemFont(ofSize: 16, weight: UIFont.Weight.bold)
-            unitsLabel.font = .systemFont(ofSize: 8)
+            speedLabel.font = .systemFont(ofSize: 13, weight: UIFont.Weight.bold)
+            unitsLabel.font = .systemFont(ofSize: 6)
         } else {
-            speedLabel.font = .systemFont(ofSize: 12, weight: UIFont.Weight.bold)
+            speedLabel.font = .systemFont(ofSize: 10, weight: UIFont.Weight.bold)
             unitsLabel.font = .systemFont(ofSize: 6)
         }
     }

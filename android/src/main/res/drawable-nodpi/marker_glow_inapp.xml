@@ -9,9 +9,10 @@
             <gradient
                 android:centerX="0.5"
                 android:centerY="0.5"
+                android:centerColor="@color/in_app_glow_out"
                 android:endColor="@android:color/transparent"
                 android:gradientRadius="@dimen/glow_gradient_radius"
-                android:startColor="@color/znaidy_blue"
+                android:startColor="@color/in_app_glow_in"
                 android:type="radial"
                 />
 
