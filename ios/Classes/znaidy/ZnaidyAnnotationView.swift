@@ -15,6 +15,7 @@ class ZnaidyAnnotationView: UIView {
     
     private var markerBackground: UIImageView!
     private var userAvatar: UIImageView!
+    private var avatarMask: CALayer!
     private var stickerCounter: ZnaidyStickersView!
     private var companyCounter: UILabel!
     private var speedView: ZnaidySpeedView!
@@ -319,7 +320,8 @@ extension ZnaidyAnnotationView {
         self.avatarWidthConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
         self.avatarHeightConstraint.constant = ZnaidyConstants.avatarSize * zoomFactor
         self.avatarBottomOffsetConstraint.constant = ZnaidyConstants.avatarOffset * zoomFactor
-
+        self.avatarMask.frame = CGRect(origin: self.userAvatar.bounds.origin, size: CGSize(width: ZnaidyConstants.avatarSize * zoomFactor, height: ZnaidyConstants.avatarSize * zoomFactor))
+        
         self.glowWidthConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
         self.glowHeightConstraint.constant = ZnaidyConstants.annotationWidth * zoomFactor
         
@@ -356,16 +358,16 @@ extension ZnaidyAnnotationView {
         UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
         }, completion: { result in
-            let maskImage = MediaProvider.image(named: "avatar_mask")!
-            let layer = CALayer()
-            layer.contents = maskImage.cgImage
-            layer.contentsCenter = CGRect(
-                    x: ((maskImage.size.width/2) - 1)/maskImage.size.width,
-                    y: ((maskImage.size.height/2) - 1)/maskImage.size.height,
-                    width: 1 / maskImage.size.width,
-                    height: 1 / maskImage.size.height)
-            layer.frame = self.userAvatar.bounds.insetBy(dx: 0.0, dy: 0.0)
-            self.userAvatar.layer.mask = layer
+//            let maskImage = MediaProvider.image(named: "avatar_mask")!
+//            let layer = CALayer()
+//            layer.contents = maskImage.cgImage
+//            layer.contentsCenter = CGRect(
+//                    x: ((maskImage.size.width/2) - 1)/maskImage.size.width,
+//                    y: ((maskImage.size.height/2) - 1)/maskImage.size.height,
+//                    width: 1 / maskImage.size.width,
+//                    height: 1 / maskImage.size.height)
+//            layer.frame = self.userAvatar.bounds.insetBy(dx: 0.0, dy: 0.0)
+//            self.userAvatar.layer.mask = layer
             if let completion = completion {
                 completion(result)
             }
@@ -469,6 +471,16 @@ extension ZnaidyAnnotationView {
     private func buildUserAvatar() -> UIImageView {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        let maskImage = MediaProvider.image(named: "avatar_mask")!
+        avatarMask = CALayer()
+        avatarMask.contents = maskImage.cgImage
+        avatarMask.contentsCenter = CGRect(
+                x: ((maskImage.size.width/2) - 1)/maskImage.size.width,
+                y: ((maskImage.size.height/2) - 1)/maskImage.size.height,
+                width: 1 / maskImage.size.width,
+                height: 1 / maskImage.size.height)
+        avatarMask.frame = imageView.bounds
+        imageView.layer.mask = avatarMask
         return imageView
     }
     
