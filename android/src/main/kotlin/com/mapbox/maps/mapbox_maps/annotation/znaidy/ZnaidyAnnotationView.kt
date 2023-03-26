@@ -387,7 +387,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
 
     batteryIcon.setImageResource(icon)
-    batteryText.text = "$batteryLevel%"
+    batteryText.text = "${max(batteryLevel, 0)}%"
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       batteryText.setTextColor(context.resources.getColor(textColor, null))
     } else {
