@@ -57,7 +57,7 @@ class ZnaidyBatteryView : UIView {
     func setBatteryLevel(level: Int, charging: Bool) {
         batteryIcon.image = MediaProvider.image(named: getImageName(level: level, charging: charging))
         batteryText.textColor = getTextColor(level: level, charging: charging)
-        batteryText.text = "\(min(level, 0))%"
+        batteryText.text = "\(max(level, 0))%"
     }
     
     private func getImageName(level: Int, charging: Bool) -> String {
