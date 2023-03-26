@@ -84,7 +84,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
         background.scaleX = value
         background.scaleY = baseValue
         avatar.scaleX = value
-        avatar.scaleY = baseValue / value
+//        avatar.scaleY = baseValue / value
       }
     }
     markerIdleAnimator?.start()

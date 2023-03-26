@@ -251,16 +251,16 @@ extension ZnaidyAnnotationView {
         markerAnimation.repeatCount = Float.infinity
         markerBackground.layer.add(markerAnimation, forKey: "idle")
         
-        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        avatarHeightAnimation.values = values
-        markerAnimation.keyTimes = keyframes
+//        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
+//        avatarHeightAnimation.values = values
+//        markerAnimation.keyTimes = keyframes
 
-        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
-        avatarWidthAnimation.values = reversedValues
-        markerAnimation.keyTimes = keyframes
+        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
+        avatarWidthAnimation.values = values
+        avatarWidthAnimation.keyTimes = keyframes
 
         let animationGroup = CAAnimationGroup()
-        animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
+        animationGroup.animations = [avatarWidthAnimation]
         animationGroup.duration = duration
         animationGroup.repeatCount = Float.infinity
         userAvatar.layer.add(animationGroup, forKey: "idle")
@@ -283,19 +283,26 @@ extension ZnaidyAnnotationView {
         let values = [1.0, 0.97, 0.96, 0.9, 1.1, 0.99, 1.01, 1.0]
         let duration = 0.2
 
-        let markerAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        markerAnimation.values = values
-        markerAnimation.keyTimes = keyframes
-        markerAnimation.duration = duration
-        markerBackground.layer.add(markerAnimation, forKey: "sticker")
+        let markerWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
+        markerWidthAnimation.values = values
+        markerWidthAnimation.keyTimes = keyframes
+
+        let markerHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
+        markerHeightAnimation.values = values
+        markerHeightAnimation.keyTimes = keyframes
+
+        let markerAnimationGroup = CAAnimationGroup()
+        markerAnimationGroup.animations = [markerWidthAnimation, markerHeightAnimation]
+        markerAnimationGroup.duration = duration
+        markerBackground.layer.add(markerAnimationGroup, forKey: "sticker")
         
         let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
         avatarHeightAnimation.values = values
-        markerAnimation.keyTimes = keyframes
+        avatarHeightAnimation.keyTimes = keyframes
 
         let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
         avatarWidthAnimation.values = values
-        markerAnimation.keyTimes = keyframes
+        avatarWidthAnimation.keyTimes = keyframes
 
         let animationGroup = CAAnimationGroup()
         animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
