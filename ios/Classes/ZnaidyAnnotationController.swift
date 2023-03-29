@@ -77,7 +77,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             updatePointAnnotationSize(annotationView: annotationView)
             completion(pointAnnotation.id, nil)
         } catch {
-            completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+            completion(nil, FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: nil))
         }
     }
     
@@ -120,7 +120,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             updatePointAnnotationSize(annotationView: annotationView)
             completion(nil)
         } catch {
-            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: nil))
         }
     }
     
@@ -149,7 +149,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             userAnnotations.removeValue(forKey: userId)
             completion(nil)
         } catch {
-            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: nil))
         }
     }
     
@@ -167,7 +167,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             focusAnnotation(annotationView: annotationView)
             completion(nil)
         } catch {
-            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: nil))
         }
     }
 
@@ -181,7 +181,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             unfocusAnnotation(annotationView: annotationView)
             completion(nil)
         } catch {
-            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: nil))
         }
     }
 
@@ -193,7 +193,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             annotationView.animateReceiveSticker()
             completion(nil)
         } catch {
-            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: error))
+            completion(FlutterError(code: ZnaidyAnnotationController.errorCode, message: error.localizedDescription, details: nil))
         }
     }
     
