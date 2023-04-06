@@ -116,7 +116,7 @@ extension ZnaidyAnnotationView {
     private func bindSelf(_ annotationData: ZnaidyAnnotationData) {
         let typeChanged = self.annotationData?.markerType != annotationData.markerType
         if (typeChanged) {
-            markerBackground.image = MediaProvider.image(named: "default_marker")
+            markerBackground.image = MediaProvider.image(named: annotationData.markerStyle.getImageName())
             companyCounter.isHidden = true
             stickerCounter.isHidden = true
         }
@@ -137,7 +137,7 @@ extension ZnaidyAnnotationView {
     private func bindFriend(_ annotationData: ZnaidyAnnotationData) {
         let typeChanged = self.annotationData?.markerType != annotationData.markerType
         if (typeChanged) {
-            markerBackground.image = MediaProvider.image(named: "default_marker")
+            markerBackground.image = MediaProvider.image(named: annotationData.markerStyle.getImageName())
             companyCounter.isHidden = true
         }
         if (typeChanged || self.annotationData?.onlineStatus != annotationData.onlineStatus) {
@@ -160,7 +160,7 @@ extension ZnaidyAnnotationView {
     private func bindCompany(_ annotationData: ZnaidyAnnotationData) {
         let typeChanged = self.annotationData?.markerType != annotationData.markerType
         if (typeChanged) {
-            markerBackground.image = MediaProvider.image(named: "default_marker")
+            markerBackground.image = MediaProvider.image(named: annotationData.markerStyle.getImageName())
             stickerCounter.isHidden = true
             speedView.isHidden = true
             glowView.isHidden = true

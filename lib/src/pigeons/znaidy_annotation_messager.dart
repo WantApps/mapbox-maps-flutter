@@ -19,6 +19,7 @@ class ZnaidyAnnotationOptions {
     this.userId,
     this.geometry,
     this.markerType,
+    this.markerStyle,
     this.onlineStatus,
     this.userAvatars,
     this.stickerCount,
@@ -31,6 +32,7 @@ class ZnaidyAnnotationOptions {
   String? userId;
   Map<String?, Object?>? geometry;
   MarkerType? markerType;
+  String? markerStyle;
   OnlineStatus? onlineStatus;
   List<String?>? userAvatars;
   int? stickerCount;
@@ -44,6 +46,7 @@ class ZnaidyAnnotationOptions {
     pigeonMap['userId'] = userId;
     pigeonMap['geometry'] = geometry;
     pigeonMap['markerType'] = markerType?.index;
+    pigeonMap['markerStyle'] = markerStyle;
     pigeonMap['onlineStatus'] = onlineStatus?.index;
     pigeonMap['userAvatars'] = userAvatars;
     pigeonMap['stickerCount'] = stickerCount;
@@ -62,6 +65,7 @@ class ZnaidyAnnotationOptions {
       markerType: pigeonMap['markerType'] != null
           ? MarkerType.values[pigeonMap['markerType']! as int]
           : null,
+      markerStyle: pigeonMap['markerStyle'] as String?,
       onlineStatus: pigeonMap['onlineStatus'] != null
           ? OnlineStatus.values[pigeonMap['onlineStatus']! as int]
           : null,

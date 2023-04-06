@@ -41,6 +41,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
 + (instancetype)makeWithUserId:(nullable NSString *)userId
     geometry:(nullable NSDictionary<NSString *, id> *)geometry
     markerType:(FLTMarkerType)markerType
+    markerStyle:(nullable NSString *)markerStyle
     onlineStatus:(FLTOnlineStatus)onlineStatus
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
@@ -52,6 +53,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.userId = userId;
   pigeonResult.geometry = geometry;
   pigeonResult.markerType = markerType;
+  pigeonResult.markerStyle = markerStyle;
   pigeonResult.onlineStatus = onlineStatus;
   pigeonResult.userAvatars = userAvatars;
   pigeonResult.stickerCount = stickerCount;
@@ -66,6 +68,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.userId = GetNullableObject(dict, @"userId");
   pigeonResult.geometry = GetNullableObject(dict, @"geometry");
   pigeonResult.markerType = [GetNullableObject(dict, @"markerType") integerValue];
+  pigeonResult.markerStyle = GetNullableObject(dict, @"markerStyle");
   pigeonResult.onlineStatus = [GetNullableObject(dict, @"onlineStatus") integerValue];
   pigeonResult.userAvatars = GetNullableObject(dict, @"userAvatars");
   pigeonResult.stickerCount = GetNullableObject(dict, @"stickerCount");
@@ -81,6 +84,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     @"userId" : (self.userId ?: [NSNull null]),
     @"geometry" : (self.geometry ?: [NSNull null]),
     @"markerType" : @(self.markerType),
+    @"markerStyle" : (self.markerStyle ?: [NSNull null]),
     @"onlineStatus" : @(self.onlineStatus),
     @"userAvatars" : (self.userAvatars ?: [NSNull null]),
     @"stickerCount" : (self.stickerCount ?: [NSNull null]),

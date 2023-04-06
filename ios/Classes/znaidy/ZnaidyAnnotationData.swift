@@ -10,11 +10,12 @@ import Turf
 import MapboxMaps
 
 class ZnaidyAnnotationData {
-    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, focused: Bool) {
+    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, markerStyle: ZnaidyMarkerStyle, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, focused: Bool) {
         self.id = id
         self.userId = userId
         self.geometry = geometry
         self.markerType = markerType
+        self.markerStyle = markerStyle
         self.onlineStatus = onlineStatus
         self.avatarUrls = avatartUrls
         self.stickerCount = stickerCount
@@ -29,6 +30,7 @@ class ZnaidyAnnotationData {
     let userId: String
     let geometry: CLLocationCoordinate2D
     let markerType: ZnaidyMarkerType
+    let markerStyle: ZnaidyMarkerStyle
     let onlineStatus: ZnaidyOnlineStatus
     let avatarUrls: [String]
     let stickerCount: Int
@@ -60,7 +62,7 @@ class ZnaidyAnnotationData {
     }
     
     func toString() -> String {
-        return "ZnaidyAnnotationData(id=\(id), userId=\(userId), geometry=\(geometry), type=\(markerType), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), focused=\(focused))"
+        return "ZnaidyAnnotationData(id=\(id), userId=\(userId), geometry=\(geometry), type=\(markerType), style=\(markerStyle), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), focused=\(focused))"
     }
 }
 
@@ -74,4 +76,18 @@ enum ZnaidyMarkerType: Int {
     case _self = 1
     case friend = 2
     case company = 3
+}
+
+enum ZnaidyMarkerStyle: String {
+    case _default = "default"
+    case preOrder = "pre_order"
+    
+    func getImageName() -> String {
+        switch(self) {
+            case ._default:
+                return "marker_default"
+            case .preOrder:
+                return "marker_pre_order"
+        }
+    }
 }

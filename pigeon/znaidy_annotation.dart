@@ -19,6 +19,7 @@ class ZnaidyAnnotationOptions {
     this.userId,
     this.geometry,
     this.markerType,
+    this.markerStyle,
     this.onlineStatus,
     this.userAvatars,
     this.stickerCount,
@@ -31,6 +32,7 @@ class ZnaidyAnnotationOptions {
   String? userId;
   Map<String?, Object?>? geometry;
   MarkerType? markerType;
+  String? markerStyle;
   OnlineStatus? onlineStatus;
   List<String?>? userAvatars;
   int? stickerCount;

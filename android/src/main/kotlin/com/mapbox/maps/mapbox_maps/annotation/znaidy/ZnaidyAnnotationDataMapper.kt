@@ -15,6 +15,7 @@ object ZnaidyAnnotationDataMapper {
       options.userId!!,
       options.geometry?.toPoint() ?: Point.fromLngLat(0.0, 0.0),
       options.markerType?.let { mapFromTunnelMarkerType(it) } ?: ZnaidyMarkerType.FRIEND,
+      options.markerStyle?.let { mapFromTunnelMarkerStyle(it) } ?: ZnaidyMarkerStyle.DEFAULT,
       options.onlineStatus?.let { mapFromTunnelOnlineStatus(it) }
         ?: ZnaidyOnlineStatus.OFFLINE,
       options.userAvatars ?: listOf(),
@@ -43,6 +44,7 @@ object ZnaidyAnnotationDataMapper {
           data.markerType
         }
       } ?: data.markerType,
+      markerStyle = options.markerStyle?.let { mapFromTunnelMarkerStyle(it) } ?: data.markerStyle,
       onlineStatus = options.onlineStatus?.let {
         if (it != OnlineStatus.none) {
           mapFromTunnelOnlineStatus(it)
@@ -75,5 +77,9 @@ object ZnaidyAnnotationDataMapper {
 
   private fun mapFromTunnelMarkerType(markerType: MarkerType): ZnaidyMarkerType {
     return ZnaidyMarkerType.valueOf(markerType.name.uppercase())
+  }
+
+  private fun mapFromTunnelMarkerStyle(markerStyle: String): ZnaidyMarkerStyle {
+    return ZnaidyMarkerStyle.valueOf(markerStyle.uppercase())
   }
 }

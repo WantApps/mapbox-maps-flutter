@@ -66,6 +66,12 @@ public class FLTZnaidyAnnotationMessager {
       this.markerType = setterArg;
     }
 
+    private @Nullable String markerStyle;
+    public @Nullable String getMarkerStyle() { return markerStyle; }
+    public void setMarkerStyle(@Nullable String setterArg) {
+      this.markerStyle = setterArg;
+    }
+
     private @Nullable OnlineStatus onlineStatus;
     public @Nullable OnlineStatus getOnlineStatus() { return onlineStatus; }
     public void setOnlineStatus(@Nullable OnlineStatus setterArg) {
@@ -124,6 +130,11 @@ public class FLTZnaidyAnnotationMessager {
         this.markerType = setterArg;
         return this;
       }
+      private @Nullable String markerStyle;
+      public @NonNull Builder setMarkerStyle(@Nullable String setterArg) {
+        this.markerStyle = setterArg;
+        return this;
+      }
       private @Nullable OnlineStatus onlineStatus;
       public @NonNull Builder setOnlineStatus(@Nullable OnlineStatus setterArg) {
         this.onlineStatus = setterArg;
@@ -164,6 +175,7 @@ public class FLTZnaidyAnnotationMessager {
         pigeonReturn.setUserId(userId);
         pigeonReturn.setGeometry(geometry);
         pigeonReturn.setMarkerType(markerType);
+        pigeonReturn.setMarkerStyle(markerStyle);
         pigeonReturn.setOnlineStatus(onlineStatus);
         pigeonReturn.setUserAvatars(userAvatars);
         pigeonReturn.setStickerCount(stickerCount);
@@ -179,6 +191,7 @@ public class FLTZnaidyAnnotationMessager {
       toMapResult.put("userId", userId);
       toMapResult.put("geometry", geometry);
       toMapResult.put("markerType", markerType == null ? null : markerType.index);
+      toMapResult.put("markerStyle", markerStyle);
       toMapResult.put("onlineStatus", onlineStatus == null ? null : onlineStatus.index);
       toMapResult.put("userAvatars", userAvatars);
       toMapResult.put("stickerCount", stickerCount);
@@ -196,6 +209,8 @@ public class FLTZnaidyAnnotationMessager {
       pigeonResult.setGeometry((Map<String, Object>)geometry);
       Object markerType = map.get("markerType");
       pigeonResult.setMarkerType(markerType == null ? null : MarkerType.values()[(int)markerType]);
+      Object markerStyle = map.get("markerStyle");
+      pigeonResult.setMarkerStyle((String)markerStyle);
       Object onlineStatus = map.get("onlineStatus");
       pigeonResult.setOnlineStatus(onlineStatus == null ? null : OnlineStatus.values()[(int)onlineStatus]);
       Object userAvatars = map.get("userAvatars");

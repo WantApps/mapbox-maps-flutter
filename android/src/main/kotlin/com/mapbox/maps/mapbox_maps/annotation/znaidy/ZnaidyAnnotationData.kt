@@ -1,6 +1,7 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
 import com.mapbox.geojson.Point
+import com.mapbox.maps.mapbox_maps.R
 import kotlin.math.max
 
 data class ZnaidyAnnotationData(
@@ -8,6 +9,7 @@ data class ZnaidyAnnotationData(
   val userId: String,
   val geometry: Point,
   val markerType: ZnaidyMarkerType,
+  val markerStyle: ZnaidyMarkerStyle,
   val onlineStatus: ZnaidyOnlineStatus,
   val avatarUrls: List<String>,
   val stickersCount: Int,
@@ -50,4 +52,9 @@ enum class ZnaidyMarkerType {
   SELF,
   FRIEND,
   COMPANY
+}
+
+enum class ZnaidyMarkerStyle(val drawable: Int) {
+  DEFAULT(R.drawable.marker_default),
+  PRE_ORDER(R.drawable.marker_pre_order),
 }

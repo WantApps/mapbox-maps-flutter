@@ -26,7 +26,7 @@
         android:id="@+id/markerBackground"
         android:layout_width="@dimen/marker_width"
         android:layout_height="@dimen/marker_height"
-        android:src="@drawable/znaidy_marker_friend"
+        android:src="@drawable/marker_default"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

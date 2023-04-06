@@ -16,9 +16,6 @@ import androidx.annotation.IdRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
-import com.bumptech.glide.load.resource.bitmap.GranularRoundedCorners
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
 import jp.wasabeef.glide.transformations.MaskTransformation
@@ -151,7 +148,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     val typeChanged = annotationData?.markerType != annotation.markerType
     if (typeChanged) {
       animator.stopAvatarAnimation()
-      setMarkerBackground(R.drawable.znaidy_marker_friend)
+      setMarkerBackground(annotation.markerStyle.drawable)
       hideStickersCount(constraintAnimationBuilder)
       hideCompanySize(constraintAnimationBuilder)
     }
@@ -167,6 +164,9 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     if (typeChanged || annotationData?.batteryLevel != annotation.batteryLevel || annotationData?.batteryCharging != annotation.batteryCharging) {
       setBatteryLevel(annotation.batteryLevel, annotation.batteryCharging)
     }
+    if (annotationData?.markerStyle != annotation.markerStyle) {
+      setMarkerBackground(annotation.markerStyle.drawable)
+    }
   }
 
 
@@ -177,7 +177,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     val typeChanged = annotationData?.markerType != annotation.markerType
     if (typeChanged) {
       animator.stopAvatarAnimation()
-      setMarkerBackground(R.drawable.znaidy_marker_friend)
+      setMarkerBackground(annotation.markerStyle.drawable)
       hideCompanySize(constraintAnimationBuilder)
     }
     if (typeChanged || annotationData?.userAvatar != annotation.userAvatar) {
@@ -194,6 +194,9 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     }
     if (typeChanged || annotationData?.batteryLevel != annotation.batteryLevel || annotationData?.batteryCharging != annotation.batteryCharging) {
       setBatteryLevel(annotation.batteryLevel, annotation.batteryCharging)
+    }
+    if (annotationData?.markerStyle != annotation.markerStyle) {
+      setMarkerBackground(annotation.markerStyle.drawable)
     }
   }
 

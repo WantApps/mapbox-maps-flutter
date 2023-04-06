@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
 + (instancetype)makeWithUserId:(nullable NSString *)userId
     geometry:(nullable NSDictionary<NSString *, id> *)geometry
     markerType:(FLTMarkerType)markerType
+    markerStyle:(nullable NSString *)markerStyle
     onlineStatus:(FLTOnlineStatus)onlineStatus
     userAvatars:(nullable NSArray<NSString *> *)userAvatars
     stickerCount:(nullable NSNumber *)stickerCount
@@ -38,6 +39,7 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
 @property(nonatomic, copy, nullable) NSString * userId;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
 @property(nonatomic, assign) FLTMarkerType markerType;
+@property(nonatomic, copy, nullable) NSString * markerStyle;
 @property(nonatomic, assign) FLTOnlineStatus onlineStatus;
 @property(nonatomic, strong, nullable) NSArray<NSString *> * userAvatars;
 @property(nonatomic, strong, nullable) NSNumber * stickerCount;
