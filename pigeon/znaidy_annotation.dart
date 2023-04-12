@@ -27,6 +27,7 @@ class ZnaidyAnnotationOptions {
     this.batteryLevel,
     this.batteryCharging,
     this.currentSpeed,
+    this.lastOnline,
 });
 
   String? userId;
@@ -40,6 +41,7 @@ class ZnaidyAnnotationOptions {
   int? currentSpeed;
   int? batteryLevel;
   bool? batteryCharging;
+  int? lastOnline;
 }
 
 @FlutterApi()

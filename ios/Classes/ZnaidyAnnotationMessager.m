@@ -48,7 +48,8 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed
     batteryLevel:(nullable NSNumber *)batteryLevel
-    batteryCharging:(nullable NSNumber *)batteryCharging {
+    batteryCharging:(nullable NSNumber *)batteryCharging
+    lastOnline:(nullable NSNumber *)lastOnline {
   FLTZnaidyAnnotationOptions* pigeonResult = [[FLTZnaidyAnnotationOptions alloc] init];
   pigeonResult.userId = userId;
   pigeonResult.geometry = geometry;
@@ -61,6 +62,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.currentSpeed = currentSpeed;
   pigeonResult.batteryLevel = batteryLevel;
   pigeonResult.batteryCharging = batteryCharging;
+  pigeonResult.lastOnline = lastOnline;
   return pigeonResult;
 }
 + (FLTZnaidyAnnotationOptions *)fromMap:(NSDictionary *)dict {
@@ -76,6 +78,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
   pigeonResult.currentSpeed = GetNullableObject(dict, @"currentSpeed");
   pigeonResult.batteryLevel = GetNullableObject(dict, @"batteryLevel");
   pigeonResult.batteryCharging = GetNullableObject(dict, @"batteryCharging");
+  pigeonResult.lastOnline = GetNullableObject(dict, @"lastOnline");
   return pigeonResult;
 }
 + (nullable FLTZnaidyAnnotationOptions *)nullableFromMap:(NSDictionary *)dict { return (dict) ? [FLTZnaidyAnnotationOptions fromMap:dict] : nil; }
@@ -92,6 +95,7 @@ static id GetNullableObjectAtIndex(NSArray* array, NSInteger key) {
     @"currentSpeed" : (self.currentSpeed ?: [NSNull null]),
     @"batteryLevel" : (self.batteryLevel ?: [NSNull null]),
     @"batteryCharging" : (self.batteryCharging ?: [NSNull null]),
+    @"lastOnline" : (self.lastOnline ?: [NSNull null]),
   };
 }
 @end

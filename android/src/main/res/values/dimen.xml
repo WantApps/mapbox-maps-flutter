@@ -38,4 +38,8 @@
     <dimen name="battery_text_size">10dp</dimen>
     <dimen name="battery_horizontal_offset">-13dp</dimen>
     <dimen name="battery_vertical_offset">0dp</dimen>
+
+    <dimen name="offline_time_width">58dp</dimen>
+    <dimen name="offline_time_height">30dp</dimen>
+    <dimen name="offline_time_vertical_offset">6dp</dimen>
 </resources>

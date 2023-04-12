@@ -2,6 +2,9 @@ package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
 import com.mapbox.geojson.Point
 import com.mapbox.maps.mapbox_maps.R
+import java.time.Duration
+import java.time.LocalDate
+import java.time.Period
 import kotlin.math.max
 
 data class ZnaidyAnnotationData(
@@ -17,9 +20,11 @@ data class ZnaidyAnnotationData(
   val currentSpeed: Int,
   val batteryLevel: Int,
   val batteryCharging: Boolean,
+  val lastOnline: Long?,
   val focused: Boolean = false,
 ) {
   var userAvatar = avatarUrls.firstOrNull()
+  var offlineTime = lastOnline?.let { (System.currentTimeMillis() - it) / 1000 } ?: 0
 
   companion object {
     val zoomSteps = listOf(0.0, 0.5, 0.8, 1.0, 1.2)

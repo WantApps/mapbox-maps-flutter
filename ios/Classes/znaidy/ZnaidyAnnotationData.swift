@@ -10,7 +10,7 @@ import Turf
 import MapboxMaps
 
 class ZnaidyAnnotationData {
-    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, markerStyle: ZnaidyMarkerStyle, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, focused: Bool) {
+    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, markerStyle: ZnaidyMarkerStyle, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, lastOnline: Date?, focused: Bool) {
         self.id = id
         self.userId = userId
         self.geometry = geometry
@@ -23,6 +23,7 @@ class ZnaidyAnnotationData {
         self.currentSpeed = currentSpeed
         self.batteryLevel = batteryLevel
         self.batteryCharging = batteryCharging
+        self.lastOnline = lastOnline
         self.focused = focused
     }
     
@@ -38,10 +39,19 @@ class ZnaidyAnnotationData {
     let currentSpeed: Int
     let batteryLevel: Int
     let batteryCharging: Bool
+    let lastOnline: Date?
     let focused: Bool
     
     func userAvatar() -> String? {
         return avatarUrls.first
+    }
+    
+    func offlineTime() -> TimeInterval {
+        if let lastOnlineDate = lastOnline {
+            return Date().timeIntervalSince(lastOnlineDate)
+        } else {
+            return -1
+        }
     }
     
     private let zoomSteps = [0.2, 0.5, 0.8, 1.0, 1.2]
@@ -62,7 +72,7 @@ class ZnaidyAnnotationData {
     }
     
     func toString() -> String {
-        return "ZnaidyAnnotationData(id=\(id), userId=\(userId), geometry=\(geometry), type=\(markerType), style=\(markerStyle), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), focused=\(focused))"
+        return "ZnaidyAnnotationData(id=\(id), userId=\(userId), geometry=\(geometry), type=\(markerType), style=\(markerStyle), status=\(onlineStatus), avatars\(avatarUrls), stickers=\(stickerCount), company=\(companySize), speed=\(currentSpeed), batteryLevel=\(batteryLevel), batteryCharging=\(batteryCharging), lastOnline=\(lastOnline), focused=\(focused))"
     }
 }
 

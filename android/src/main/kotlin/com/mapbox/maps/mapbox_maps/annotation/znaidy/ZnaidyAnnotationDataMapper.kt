@@ -6,6 +6,9 @@ import com.mapbox.maps.mapbox_maps.toPoint
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.MarkerType
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.OnlineStatus
 import com.mapbox.maps.pigeons.FLTZnaidyAnnotationMessager.ZnaidyAnnotationOptions
+import java.time.Instant
+import java.time.LocalDate
+import java.util.Date
 
 object ZnaidyAnnotationDataMapper {
 
@@ -24,6 +27,7 @@ object ZnaidyAnnotationDataMapper {
       options.currentSpeed?.toInt() ?: 0,
       options.batteryLevel?.toInt() ?: 0,
       options.batteryCharging ?: false,
+      options.lastOnline?.toLong(),
     )
   }
 
@@ -58,6 +62,7 @@ object ZnaidyAnnotationDataMapper {
       currentSpeed = options.currentSpeed?.toInt() ?: data.currentSpeed,
       batteryLevel = options.batteryLevel?.toInt() ?: data.batteryLevel,
       batteryCharging = options.batteryCharging ?: data.batteryCharging,
+      lastOnline = options.lastOnline?.toLong() ?: data.lastOnline,
     )
   }
 

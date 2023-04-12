@@ -22,6 +22,7 @@ class ZnaidyAnnotationView: UIView {
     private var glowView: GlowView!
     private var inAppView: UILabel!
     private var batteryView: ZnaidyBatteryView!
+    private var offlineTimeView: ZnaidyOfflineTimeView!
     
     private var markerBackgrounsWidthConstraint: NSLayoutConstraint!
     private var markerBackgroundHeightConstraint: NSLayoutConstraint!
@@ -355,6 +356,14 @@ extension ZnaidyAnnotationView {
             self.stickerCounter.isHidden = false
         }
         
+        if (zoomFactor >= 1.0 && annotationData.onlineStatus == .offline) {
+            self.offlineTimeView.setOfflineTime(interval: annotationData.offlineTime())
+            NSLog("\(TAG): setOfflineTime: \(annotationData.offlineTime())")
+            self.offlineTimeView.isHidden = false
+        } else {
+            self.offlineTimeView.isHidden = true
+        }
+        
         UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
         }, completion: { result in
@@ -387,6 +396,7 @@ extension ZnaidyAnnotationView {
         glowView = GlowView()
         inAppView = buildInAppView()
         batteryView = ZnaidyBatteryView()
+        offlineTimeView = ZnaidyOfflineTimeView()
         addSubview(glowView)
         addSubview(markerBackground)
         addSubview(userAvatar)
@@ -395,11 +405,13 @@ extension ZnaidyAnnotationView {
         addSubview(speedView)
         addSubview(inAppView)
         addSubview(batteryView)
+        addSubview(offlineTimeView)
         companyCounter.isHidden = true
         speedView.isHidden = true
         stickerCounter.isHidden = true
         inAppView.isHidden = true
         batteryView.isHidden = true
+        offlineTimeView.isHidden = true
         
         markerBackgrounsWidthConstraint = markerBackground.widthAnchor.constraint(equalToConstant: ZnaidyConstants.markerWidth)
         markerBackgroundHeightConstraint = markerBackground.heightAnchor.constraint(equalToConstant: ZnaidyConstants.markerHeight)
@@ -455,7 +467,12 @@ extension ZnaidyAnnotationView {
             batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize),
             batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize),
             batteryView.rightAnchor.constraint(equalTo: markerBackground.rightAnchor, constant: ZnaidyConstants.batteryHoryzontalOffset),
-            batteryView.bottomAnchor.constraint(equalTo: markerBackground.bottomAnchor)
+            batteryView.bottomAnchor.constraint(equalTo: markerBackground.bottomAnchor),
+            
+            offlineTimeView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.offlineTimeWidth),
+            offlineTimeView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.offlineTimeHeight),
+            offlineTimeView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
+            offlineTimeView.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: ZnaidyConstants.offlineTimeVerticalOffset)
         ])
         
         markerIdleAnimation()

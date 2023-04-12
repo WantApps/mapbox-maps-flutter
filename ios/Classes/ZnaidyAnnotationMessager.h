@@ -35,7 +35,8 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
     companySize:(nullable NSNumber *)companySize
     currentSpeed:(nullable NSNumber *)currentSpeed
     batteryLevel:(nullable NSNumber *)batteryLevel
-    batteryCharging:(nullable NSNumber *)batteryCharging;
+    batteryCharging:(nullable NSNumber *)batteryCharging
+    lastOnline:(nullable NSNumber *)lastOnline;
 @property(nonatomic, copy, nullable) NSString * userId;
 @property(nonatomic, strong, nullable) NSDictionary<NSString *, id> * geometry;
 @property(nonatomic, assign) FLTMarkerType markerType;
@@ -47,6 +48,7 @@ typedef NS_ENUM(NSUInteger, FLTMarkerType) {
 @property(nonatomic, strong, nullable) NSNumber * currentSpeed;
 @property(nonatomic, strong, nullable) NSNumber * batteryLevel;
 @property(nonatomic, strong, nullable) NSNumber * batteryCharging;
+@property(nonatomic, strong, nullable) NSNumber * lastOnline;
 @end
 
 /// The codec used by FLTOnZnaidyAnnotationClickListener.

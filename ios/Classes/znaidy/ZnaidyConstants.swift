@@ -38,6 +38,10 @@ class ZnaidyConstants {
     static let batterySize = 30.0
     static let batteryHoryzontalOffset = 13.0
     
+    static let offlineTimeWidth = 58.0
+    static let offlineTimeHeight = 30.0
+    static let offlineTimeVerticalOffset = -6.0
+    
     static let znaidyBlue = UIColor(red: 0.0, green: 155.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     static let inAppColor = UIColor(red: 184.0/255.0, green: 78.0/255.0, blue: 250.0/255.0, alpha: 1.0)
     static let znaidyGray = UIColor(red: 188.0/256.0, green: 171.0/255.0, blue: 174.0/255.0, alpha: 1.0)

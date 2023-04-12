@@ -292,6 +292,13 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       } else {
         constraintSet.setVisibility(R.id.stickers, View.VISIBLE)
       }
+
+      if (annotationZoomFactor >= 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
+        setOfflineTime(annotationData.offlineTime)
+        constraintSet.setVisibility(R.id.offline_time, View.VISIBLE)
+      } else {
+        constraintSet.setVisibility(R.id.offline_time, View.GONE)
+      }
     }
   }
 
@@ -396,6 +403,25 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     } else {
       batteryText.setTextColor(context.resources.getColor(textColor))
     }
+  }
+
+  @SuppressLint("SetTextI18n")
+  private fun setOfflineTime(offlineTime: Long) {
+    val timeLabel = findViewById<TextView>(R.id.offline_time_label)
+
+    val time: Int
+    val unit: String
+    if (offlineTime < 3600) {
+      time = (offlineTime / 60.0).roundToInt()
+      unit = "min"
+    } else if (offlineTime < 86400) {
+      time = (offlineTime / 3600.0).roundToInt()
+      unit = "hrs"
+    } else {
+      time = (offlineTime /  86400.0).roundToInt()
+      unit = "days"
+    }
+    timeLabel.text = "${time}${unit}"
   }
 
   private fun setViewVisibility(

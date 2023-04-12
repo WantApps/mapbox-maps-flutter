@@ -27,6 +27,7 @@ class ZnaidyAnnotationOptions {
     this.currentSpeed,
     this.batteryLevel,
     this.batteryCharging,
+    this.lastOnline,
   });
 
   String? userId;
@@ -40,6 +41,7 @@ class ZnaidyAnnotationOptions {
   int? currentSpeed;
   int? batteryLevel;
   bool? batteryCharging;
+  int? lastOnline;
 
   Object encode() {
     final Map<Object?, Object?> pigeonMap = <Object?, Object?>{};
@@ -54,6 +56,7 @@ class ZnaidyAnnotationOptions {
     pigeonMap['currentSpeed'] = currentSpeed;
     pigeonMap['batteryLevel'] = batteryLevel;
     pigeonMap['batteryCharging'] = batteryCharging;
+    pigeonMap['lastOnline'] = lastOnline;
     return pigeonMap;
   }
 
@@ -75,6 +78,7 @@ class ZnaidyAnnotationOptions {
       currentSpeed: pigeonMap['currentSpeed'] as int?,
       batteryLevel: pigeonMap['batteryLevel'] as int?,
       batteryCharging: pigeonMap['batteryCharging'] as bool?,
+      lastOnline: pigeonMap['lastOnline'] as int?,
     );
   }
 }

@@ -114,6 +114,12 @@ public class FLTZnaidyAnnotationMessager {
       this.batteryCharging = setterArg;
     }
 
+    private @Nullable Long lastOnline;
+    public @Nullable Long getLastOnline() { return lastOnline; }
+    public void setLastOnline(@Nullable Long setterArg) {
+      this.lastOnline = setterArg;
+    }
+
     public static final class Builder {
       private @Nullable String userId;
       public @NonNull Builder setUserId(@Nullable String setterArg) {
@@ -170,6 +176,11 @@ public class FLTZnaidyAnnotationMessager {
         this.batteryCharging = setterArg;
         return this;
       }
+      private @Nullable Long lastOnline;
+      public @NonNull Builder setLastOnline(@Nullable Long setterArg) {
+        this.lastOnline = setterArg;
+        return this;
+      }
       public @NonNull ZnaidyAnnotationOptions build() {
         ZnaidyAnnotationOptions pigeonReturn = new ZnaidyAnnotationOptions();
         pigeonReturn.setUserId(userId);
@@ -183,6 +194,7 @@ public class FLTZnaidyAnnotationMessager {
         pigeonReturn.setCurrentSpeed(currentSpeed);
         pigeonReturn.setBatteryLevel(batteryLevel);
         pigeonReturn.setBatteryCharging(batteryCharging);
+        pigeonReturn.setLastOnline(lastOnline);
         return pigeonReturn;
       }
     }
@@ -199,6 +211,7 @@ public class FLTZnaidyAnnotationMessager {
       toMapResult.put("currentSpeed", currentSpeed);
       toMapResult.put("batteryLevel", batteryLevel);
       toMapResult.put("batteryCharging", batteryCharging);
+      toMapResult.put("lastOnline", lastOnline);
       return toMapResult;
     }
     static @NonNull ZnaidyAnnotationOptions fromMap(@NonNull Map<String, Object> map) {
@@ -225,6 +238,8 @@ public class FLTZnaidyAnnotationMessager {
       pigeonResult.setBatteryLevel((batteryLevel == null) ? null : ((batteryLevel instanceof Integer) ? (Integer)batteryLevel : (Long)batteryLevel));
       Object batteryCharging = map.get("batteryCharging");
       pigeonResult.setBatteryCharging((Boolean)batteryCharging);
+      Object lastOnline = map.get("lastOnline");
+      pigeonResult.setLastOnline((lastOnline == null) ? null : ((lastOnline instanceof Integer) ? (Integer)lastOnline : (Long)lastOnline));
       return pigeonResult;
     }
   }

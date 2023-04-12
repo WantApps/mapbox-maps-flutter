@@ -11,4 +11,5 @@
     <color name="in_app_glow_in">#6600FFFF</color>
     <color name="in_app_glow_out">#66B84EFA</color>
     <color name="online_glow">#4026FFFF</color>
+    <color name="black_half_alpha">#80000000</color>
 </resources>
