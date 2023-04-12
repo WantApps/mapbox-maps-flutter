@@ -34,14 +34,14 @@ class ZnaidySpeedView : UIView {
         speedLabel.text = "2"
         speedLabel.textColor = ZnaidyConstants.mainTextColor
         speedLabel.textAlignment = .center
-        speedLabel.font = .systemFont(ofSize: 13, weight: UIFont.Weight.bold)
+        speedLabel.font = MediaProvider.getFont(ofSize: 13, weight: .bold)
         speedLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(speedLabel)
         unitsLabel = UILabel()
         unitsLabel.text = "km/h"
         unitsLabel.textColor = ZnaidyConstants.secondaryTextColor
         unitsLabel.textAlignment = .center
-        unitsLabel.font = .systemFont(ofSize: 6)
+        unitsLabel.font = MediaProvider.getFont(ofSize: 6)
         unitsLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(unitsLabel)
         NSLayoutConstraint.activate([
@@ -57,11 +57,11 @@ class ZnaidySpeedView : UIView {
     
     func setZoomFactor(zoomFactor: Double) {
         if (zoomFactor >= 1.0) {
-            speedLabel.font = .systemFont(ofSize: 13, weight: UIFont.Weight.bold)
-            unitsLabel.font = .systemFont(ofSize: 6)
+            speedLabel.font = MediaProvider.getFont(ofSize: 13, weight: .bold)
+            unitsLabel.font = MediaProvider.getFont(ofSize: 6)
         } else {
-            speedLabel.font = .systemFont(ofSize: 10, weight: UIFont.Weight.bold)
-            unitsLabel.font = .systemFont(ofSize: 6)
+            speedLabel.font = MediaProvider.getFont(ofSize: 10, weight: .bold)
+            unitsLabel.font = MediaProvider.getFont(ofSize: 6)
         }
     }
     

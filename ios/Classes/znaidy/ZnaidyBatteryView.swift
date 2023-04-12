@@ -37,7 +37,7 @@ class ZnaidyBatteryView : UIView {
         batteryText.textColor = ZnaidyConstants.secondaryTextColor
         batteryText.textAlignment = .center
         batteryText.lineBreakMode = .byClipping
-        batteryText.font = .systemFont(ofSize: 10)
+        batteryText.font = MediaProvider.getFont(ofSize: 10, weight: .bold)
         batteryText.translatesAutoresizingMaskIntoConstraints = false
         addSubview(batteryText)
         NSLayoutConstraint.activate([
@@ -47,7 +47,7 @@ class ZnaidyBatteryView : UIView {
             batteryIcon.widthAnchor.constraint(equalToConstant: 13),
             batteryIcon.heightAnchor.constraint(equalToConstant: 13),
             batteryIcon.centerXAnchor.constraint(equalTo: centerXAnchor),
-            batteryIcon.bottomAnchor.constraint(equalTo: bottomAnchor),
+            batteryIcon.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
             
             batteryText.centerXAnchor.constraint(equalTo: centerXAnchor),
             batteryText.bottomAnchor.constraint(equalTo: batteryIcon.topAnchor)

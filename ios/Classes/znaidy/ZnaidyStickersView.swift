@@ -31,7 +31,7 @@ class ZnaidyStickersView : UIView {
         stickersText.textColor = UIColor.white
         stickersText.textAlignment = .center
         stickersText.lineBreakMode = .byClipping
-        stickersText.font = .systemFont(ofSize: 13)
+        stickersText.font = MediaProvider.getFont(ofSize: 13)
         stickersText.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stickersText)
         NSLayoutConstraint.activate([

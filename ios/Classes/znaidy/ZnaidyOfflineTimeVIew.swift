@@ -36,7 +36,7 @@ class ZnaidyOfflineTimeView : UIView {
         offlineLabel = UILabel()
         offlineLabel.text = "OFFLINE FOR"
         offlineLabel.textColor = UIColor.black.withAlphaComponent(0.5)
-        offlineLabel.font = .systemFont(ofSize: 7, weight: UIFont.Weight(0.7))
+        offlineLabel.font = MediaProvider.getFont(ofSize: 7, weight: .bold)
         offlineLabel.textAlignment = .center
         offlineLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(offlineLabel)
@@ -44,7 +44,7 @@ class ZnaidyOfflineTimeView : UIView {
         timeLabel = UILabel()
         timeLabel.text = "23hrs"
         timeLabel.textColor = UIColor.black
-        timeLabel.font = .systemFont(ofSize: 12.5, weight: UIFont.Weight(0.7))
+        timeLabel.font = MediaProvider.getFont(ofSize: 12.5, weight: .bold)
         timeLabel.textAlignment = .center
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(timeLabel)

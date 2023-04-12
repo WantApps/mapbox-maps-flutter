@@ -506,7 +506,7 @@ extension ZnaidyAnnotationView {
         label.text = "2"
         label .textColor = .white
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 11)
+        label.font = MediaProvider.getFont(ofSize: 11)
         label.backgroundColor = ZnaidyConstants.znaidyBlack
         label.layer.cornerRadius = ZnaidyConstants.companyCountSize / 2
         label.layer.masksToBounds = true
@@ -519,7 +519,7 @@ extension ZnaidyAnnotationView {
         label.text = "IN APP"
         label .textColor = .white
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 10)
+        label.font = MediaProvider.getFont(ofSize: 10)
         label.backgroundColor = ZnaidyConstants.inAppColor
         label.layer.cornerRadius = 6.7
         label.layer.masksToBounds = true
