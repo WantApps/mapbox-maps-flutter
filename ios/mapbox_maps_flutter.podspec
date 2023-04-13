@@ -14,12 +14,13 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
 
   s.source_files = 'Classes/**/*'
-  s.resources = ['Assets/**/*.xcassets', 'Assets/**/*.ttf']
-  s.resource_bundle = { 'mapbox_maps_flutter' => ['Assets/**/*.xcassets', 'Assets/**/*.ttf'] }
+  s.resources = ['Assets/**/*']
+  s.resource_bundle = { 'mapbox_maps_flutter' => ['Assets/**/*'] }
   s.dependency 'Flutter'
   s.platform = :ios, '13.0'
   s.dependency 'MapboxMaps', '~> 10.11.1'
   s.dependency 'SDWebImage', '~> 5.0'
+  s.dependency 'L10n-swift', '~> 5.10'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

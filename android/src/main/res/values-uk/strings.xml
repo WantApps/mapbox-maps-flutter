@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speed_units">км/год</string>
+    <string name="offline_for">ОФФЛАЙН ВЖЕ</string>
+    <string name="offline_since">ОФФЛАЙН З</string>
+    <plurals name="time_unit_min">
+        <item quantity="one">хв</item>
+        <item quantity="other">хв</item>
+    </plurals>
+    <plurals name="time_unit_hour">
+        <item quantity="one">год</item>
+        <item quantity="other">год</item>
+    </plurals>
+    <plurals name="time_unit_day">
+        <item quantity="one">день</item>
+        <item quantity="two">дні</item>
+        <item quantity="few">дні</item>
+        <item quantity="many">днів</item>
+        <item quantity="other">днів</item>
+    </plurals>
+    <string name="time_unit_month">м</string>
+    <string name="time_unit_year">р</string>
+    <string name="in_app">В АПЦІ</string>
+</resources>

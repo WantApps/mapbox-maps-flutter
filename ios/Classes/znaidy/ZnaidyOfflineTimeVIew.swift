@@ -34,7 +34,7 @@ class ZnaidyOfflineTimeView : UIView {
         addSubview(backgroundView)
         
         offlineLabel = UILabel()
-        offlineLabel.text = "OFFLINE FOR"
+        offlineLabel.text = Localizaton.localize(key: "offline_for")
         offlineLabel.textColor = UIColor.black.withAlphaComponent(0.5)
         offlineLabel.font = MediaProvider.getFont(ofSize: 7, weight: .bold)
         offlineLabel.textAlignment = .center
@@ -42,7 +42,6 @@ class ZnaidyOfflineTimeView : UIView {
         addSubview(offlineLabel)
         
         timeLabel = UILabel()
-        timeLabel.text = "23hrs"
         timeLabel.textColor = UIColor.black
         timeLabel.font = MediaProvider.getFont(ofSize: 12.5, weight: .bold)
         timeLabel.textAlignment = .center
@@ -63,20 +62,41 @@ class ZnaidyOfflineTimeView : UIView {
         ])
     }
     
-    func setOfflineTime(interval: TimeInterval) {
-        var time = 0.0
-        var unit = "min"
-        if (interval < 3600) {
-            time = (interval / 60).rounded()
-            unit = "min"
-        } else if (interval < 86400) {
-            time = (interval / 3600).rounded()
-            unit = "hrs"
+    func setOfflineTime(offlineTime: Int, offlineTimestamp: Int) {
+        if (offlineTime > 86400 * 7) {
+            if (offlineTime > 86400 * 356) {
+                let years = Int((Double(offlineTime) / (86400 * 356)).rounded())
+                let month = Int(((Double(offlineTime) - (Double(years) * 86400 * 356)) / (86400 * 30)).rounded())
+                offlineLabel.text = Localizaton.localize(key: "offline_for")
+                if (month == 0) {
+                    timeLabel.text = "\(years)\(Localizaton.localize(key: "time_unit_year"))"
+                } else {
+                    timeLabel.text = "\(years)\(Localizaton.localize(key: "time_unit_year")) \(month)\(Localizaton.localize(key: "time_unit_month"))"
+                }
+            } else {
+                let date = Date(timeIntervalSince1970: Double(offlineTimestamp) / 1000.0)
+                let format = DateFormatter()
+                format.dateFormat = "dd MMM"
+                offlineLabel.text = Localizaton.localize(key: "offline_since")
+                let formattedDate = format.string(from: date).uppercased().replacingOccurrences(of: ".", with: "")
+                timeLabel.text = formattedDate
+            }
         } else {
-            time = (interval / 86400).rounded()
-            unit = "days"
+            var time = 0
+            var unit = "min"
+            if (offlineTime < 3600) {
+                time = Int((Double(offlineTime) / 60).rounded())
+                unit = Localizaton.localize(key: "time_unit_minute")
+            } else if (offlineTime < 86400) {
+                time = Int((Double(offlineTime) / 3600).rounded())
+                unit = Localizaton.localizePlural(key: "time_unit_hour", count: time)
+            } else {
+                time = Int((Double(offlineTime) / 86400).rounded())
+                unit = Localizaton.localizePlural(key: "time_unit_day", count: time)
+            }
+            offlineLabel.text = Localizaton.localize(key: "offline_for")
+            timeLabel.text = "\(time)\(unit)"
         }
-        timeLabel.text = "\(String(format: "%.0f", time))\(unit)"
     }
     
 }

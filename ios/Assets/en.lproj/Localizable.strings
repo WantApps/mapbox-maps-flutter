@@ -1,0 +1,28 @@
+/* 
+  Localizable.strings
+  Pods
+    Default(English)
+
+  Created by Yurii Potapov on 13.04.2023.
+  
+*/
+
+"in_app" = "IN APP";
+
+"speed_units" = "km/h";
+
+"offline_for" = "OFFLINE FOR";
+
+"offline_since" = "OFFLINE SINCE";
+
+"time_unit_minute" = "min";
+
+"time_unit_hour.one" = "hr";
+"time_unit_hour.other" = "hrs";
+
+"time_unit_day.one" = "day";
+"time_unit_day.other" = "days";
+
+"time_unit_month" = "m";
+
+"time_unit_year" = "y";

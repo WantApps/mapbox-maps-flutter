@@ -19,6 +19,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.mapbox.maps.mapbox_maps.R
 import jp.wasabeef.glide.transformations.MaskTransformation
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -294,7 +301,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       }
 
       if (annotationZoomFactor >= 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE) {
-        setOfflineTime(annotationData.offlineTime)
+        setOfflineTime(annotationData.offlineTime, annotationData.lastOnline ?: 0)
         constraintSet.setVisibility(R.id.offline_time, View.VISIBLE)
       } else {
         constraintSet.setVisibility(R.id.offline_time, View.GONE)
@@ -406,22 +413,43 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
   }
 
   @SuppressLint("SetTextI18n")
-  private fun setOfflineTime(offlineTime: Long) {
+  private fun setOfflineTime(offlineTime: Long, offlineTimestamp: Long) {
+    val offlineLabel = findViewById<TextView>(R.id.offline_label)
     val timeLabel = findViewById<TextView>(R.id.offline_time_label)
 
-    val time: Int
-    val unit: String
-    if (offlineTime < 3600) {
-      time = (offlineTime / 60.0).roundToInt()
-      unit = "min"
-    } else if (offlineTime < 86400) {
-      time = (offlineTime / 3600.0).roundToInt()
-      unit = "hrs"
+    if (offlineTime > 86400 * 7) {
+      if (offlineTime > 86400 * 356) {
+        val years = (offlineTime / (86400.0 * 356)).roundToInt()
+        val month = ((offlineTime - (years * 86400 * 356)) / (86400.0 * 30)).roundToInt()
+        offlineLabel.text = context.getString(R.string.offline_for)
+        if (month == 0) {
+          timeLabel.text = "${years}${context.getString(R.string.time_unit_year)}"
+        } else {
+          timeLabel.text = "${years}${context.getString(R.string.time_unit_year)} ${month}${context.getString(R.string.time_unit_month)}"
+        }
+      } else {
+        val zonedTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(offlineTimestamp), ZoneId.systemDefault())
+        val format = DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault())
+        offlineLabel.text = context.getString(R.string.offline_since)
+        val formattedDate = format.format(zonedTime).uppercase().replace(".", "")
+        timeLabel.text = formattedDate
+      }
     } else {
-      time = (offlineTime /  86400.0).roundToInt()
-      unit = "days"
+      val time: Int
+      val unit: String
+      if (offlineTime < 3600) {
+        time = (offlineTime / 60.0).roundToInt()
+        unit = context.resources.getQuantityString(R.plurals.time_unit_min, time)
+      } else if (offlineTime < 86400) {
+        time = (offlineTime / 3600.0).roundToInt()
+        unit = context.resources.getQuantityString(R.plurals.time_unit_hour, time)
+      } else {
+        time = (offlineTime / 86400.0).roundToInt()
+        unit = context.resources.getQuantityString(R.plurals.time_unit_day, time)
+      }
+      offlineLabel.text = context.getString(R.string.offline_for)
+      timeLabel.text = "${time}${unit}"
     }
-    timeLabel.text = "${time}${unit}"
   }
 
   private fun setViewVisibility(

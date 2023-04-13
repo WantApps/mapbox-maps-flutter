@@ -38,7 +38,7 @@ class ZnaidySpeedView : UIView {
         speedLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(speedLabel)
         unitsLabel = UILabel()
-        unitsLabel.text = "km/h"
+        unitsLabel.text = Localizaton.localize(key: "speed_units")
         unitsLabel.textColor = ZnaidyConstants.secondaryTextColor
         unitsLabel.textAlignment = .center
         unitsLabel.font = MediaProvider.getFont(ofSize: 6)

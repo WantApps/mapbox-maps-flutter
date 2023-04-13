@@ -357,8 +357,7 @@ extension ZnaidyAnnotationView {
         }
         
         if (zoomFactor >= 1.0 && annotationData.onlineStatus == .offline) {
-            self.offlineTimeView.setOfflineTime(interval: annotationData.offlineTime())
-            NSLog("\(TAG): setOfflineTime: \(annotationData.offlineTime())")
+            self.offlineTimeView.setOfflineTime(offlineTime: annotationData.offlineTime(), offlineTimestamp: annotationData.lastOnline)
             self.offlineTimeView.isHidden = false
         } else {
             self.offlineTimeView.isHidden = true
@@ -516,13 +515,14 @@ extension ZnaidyAnnotationView {
     
     private func buildInAppView() -> UILabel {
         let label = UILabel()
-        label.text = "IN APP"
+        label.text = Localizaton.localize(key: "in_app")
         label .textColor = .white
         label.textAlignment = .center
-        label.font = MediaProvider.getFont(ofSize: 10)
+        label.font = MediaProvider.getFont(ofSize: 10, weight: .heavy)
         label.backgroundColor = ZnaidyConstants.inAppColor
         label.layer.cornerRadius = 6.7
         label.layer.masksToBounds = true
+        label.transform = CGAffineTransformMakeRotation((-9.39) * .pi/180)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }

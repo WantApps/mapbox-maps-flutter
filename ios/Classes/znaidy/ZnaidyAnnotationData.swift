@@ -10,7 +10,7 @@ import Turf
 import MapboxMaps
 
 class ZnaidyAnnotationData {
-    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, markerStyle: ZnaidyMarkerStyle, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, lastOnline: Date?, focused: Bool) {
+    init(id: String, userId: String, geometry: CLLocationCoordinate2D, markerType: ZnaidyMarkerType, markerStyle: ZnaidyMarkerStyle, onlineStatus: ZnaidyOnlineStatus, avatartUrls: [String], stickerCount: Int, companySize: Int, currentSpeed: Int, batteryLevel: Int, batteryCharging: Bool, lastOnline: Int?, focused: Bool) {
         self.id = id
         self.userId = userId
         self.geometry = geometry
@@ -23,7 +23,7 @@ class ZnaidyAnnotationData {
         self.currentSpeed = currentSpeed
         self.batteryLevel = batteryLevel
         self.batteryCharging = batteryCharging
-        self.lastOnline = lastOnline
+        self.lastOnline = lastOnline ?? 0
         self.focused = focused
     }
     
@@ -39,19 +39,15 @@ class ZnaidyAnnotationData {
     let currentSpeed: Int
     let batteryLevel: Int
     let batteryCharging: Bool
-    let lastOnline: Date?
+    let lastOnline: Int
     let focused: Bool
     
     func userAvatar() -> String? {
         return avatarUrls.first
     }
     
-    func offlineTime() -> TimeInterval {
-        if let lastOnlineDate = lastOnline {
-            return Date().timeIntervalSince(lastOnlineDate)
-        } else {
-            return -1
-        }
+    func offlineTime() -> Int {
+        return Int(Date().timeIntervalSince1970 - Double(lastOnline / 1000))
     }
     
     private let zoomSteps = [0.2, 0.5, 0.8, 1.0, 1.2]

@@ -1,0 +1,30 @@
+/* 
+  Localizable.strings
+  Pods
+    Ukrainian
+
+  Created by Yurii Potapov on 13.04.2023.
+  
+*/
+
+"in_app" = "В АПЦІ";
+
+"speed_units" = "км/год";
+
+"offline_for" = "ОФФЛАЙН ВЖЕ";
+
+"offline_since" = "ОФФЛАЙН З";
+
+"time_unit_minute" = "хв";
+
+"time_unit_hour.one" = "год";
+"time_unit_hour.other" = "год";
+
+"time_unit_day.one" = "день";
+"time_unit_day.two" = "дні";
+"time_unit_day.few" = "дні";
+"time_unit_day.other" = "днів";
+
+"time_unit_month" = "м";
+
+"time_unit_year" = "р";

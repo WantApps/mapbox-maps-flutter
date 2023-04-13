@@ -1,0 +1,32 @@
+/* 
+  Localizable.strings
+  Pods
+    Russuan
+
+  Created by Yurii Potapov on 13.04.2023.
+  
+*/
+
+"in_app" = "В ПРИЛЕ";
+
+"speed_units" = "км/ч";
+
+"offline_for" = "ОФФЛАЙН УЖЕ";
+
+"offline_since" = "ОФФЛАЙН С";
+
+"time_unit_minute" = "мин";
+
+"time_unit_hour.one" = "час";
+"time_unit_hour.two" = "часа";
+"time_unit_hour.few" = "часа";
+"time_unit_hour.other" = "часов";
+
+"time_unit_day.one" = "день";
+"time_unit_day.two" = "дня";
+"time_unit_day.few" = "дня";
+"time_unit_day.other" = "дней";
+
+"time_unit_month" = "м";
+
+"time_unit_year" = "г";

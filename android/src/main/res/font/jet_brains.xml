@@ -6,4 +6,14 @@
         android:fontWeight="400"
         android:font="@font/jet_brains_mono_regular"
         />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="700"
+        android:font="@font/jet_brains_mono_bold"
+        />
+    <font
+        android:fontStyle="normal"
+        android:fontWeight="800"
+        android:font="@font/jet_brains_mono_extrabold"
+        />
 </font-family>

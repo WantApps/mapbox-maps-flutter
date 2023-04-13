@@ -11,7 +11,6 @@ import CoreLocation
 class ZnaidyAnnotationDataMapper {
     
     static func createAnnotation(id: String, options: FLTZnaidyAnnotationOptions) -> ZnaidyAnnotationData {
-        let lastOnlineArg = Double(truncating: options.lastOnline ?? 0) / 1000.0
         return ZnaidyAnnotationData(
             id: id,
             userId: options.userId!,
@@ -25,7 +24,7 @@ class ZnaidyAnnotationDataMapper {
             currentSpeed: Int(truncating: options.currentSpeed ?? 0),
             batteryLevel: Int(truncating: options.batteryLevel ?? 0),
             batteryCharging: Bool(truncating: options.batteryCharging ?? 0),
-            lastOnline: lastOnlineArg != 0 ? Date(timeIntervalSince1970: lastOnlineArg) : nil,
+            lastOnline: Int(truncating: options.lastOnline ?? 0),
             focused: false
         )
     }
@@ -35,7 +34,6 @@ class ZnaidyAnnotationDataMapper {
     }
     
     static func updateAnnotation(data: ZnaidyAnnotationData, options: FLTZnaidyAnnotationOptions) -> ZnaidyAnnotationData {
-        let lastOnlineArg = Double(truncating: options.lastOnline ?? 0) / 1000.0
         return ZnaidyAnnotationData(
             id: data.id,
             userId: data.userId,
@@ -49,7 +47,7 @@ class ZnaidyAnnotationDataMapper {
             currentSpeed: Int(truncating: options.currentSpeed ?? data.currentSpeed as NSNumber),
             batteryLevel: Int(truncating: options.batteryLevel ?? data.batteryLevel as NSNumber),
             batteryCharging: options.batteryCharging != nil ? Bool(truncating: options.batteryCharging ?? 0) : data.batteryCharging,
-            lastOnline: lastOnlineArg != 0 ? Date(timeIntervalSince1970: lastOnlineArg) : data.lastOnline,
+            lastOnline: Int(truncating: options.lastOnline ?? data.lastOnline as? NSNumber ?? 0),
             focused: data.focused
         )
     }

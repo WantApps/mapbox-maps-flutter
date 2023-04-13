@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="speed_units">km/h</string>
+    <string name="offline_for">OFFLINE FOR</string>
+    <string name="offline_since">OFFLINE SINCE</string>
+    <plurals name="time_unit_min">
+        <item quantity="one">min</item>
+        <item quantity="other">min</item>
+    </plurals>
+    <plurals name="time_unit_hour">
+        <item quantity="one">hr</item>
+        <item quantity="other">hrs</item>
+    </plurals>
+    <plurals name="time_unit_day">
+        <item quantity="one">day</item>
+        <item quantity="other">days</item>
+    </plurals>
+    <string name="time_unit_month">m</string>
+    <string name="time_unit_year">y</string>
+    <string name="in_app">IN APP</string>
+</resources>

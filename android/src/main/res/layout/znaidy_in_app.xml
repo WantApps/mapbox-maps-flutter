@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/inAppContainer"
     android:background="@drawable/in_app_label_background"
+    android:rotation="-9.39"
     >
 
     <TextView
@@ -14,7 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textSize="10dp"
-        android:text="IN APP"
+        android:text="@string/in_app"
+        android:textFontWeight="800"
         android:textColor="@android:color/white"
         />
 

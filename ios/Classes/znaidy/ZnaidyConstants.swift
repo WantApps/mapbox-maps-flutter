@@ -38,7 +38,7 @@ class ZnaidyConstants {
     static let batterySize = 30.0
     static let batteryHoryzontalOffset = 13.0
     
-    static let offlineTimeWidth = 58.0
+    static let offlineTimeWidth = 64.0
     static let offlineTimeHeight = 30.0
     static let offlineTimeVerticalOffset = -6.0
     
