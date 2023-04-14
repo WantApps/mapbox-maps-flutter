@@ -88,7 +88,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     if (annotationZoomFactor != 0.0) {
       setLayout(constraintAnimationBuilder, annotation)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
-        if (annotationZoomFactor >= 1.0) {
+        if (annotationZoomFactor >= 1.0 && annotationData?.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
           animator.startIdleAnimation()
           animator.showGlowAnimation()
           if (annotation.markerType != ZnaidyMarkerType.COMPANY) {
@@ -116,7 +116,7 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
     if (annotationZoomFactor != 0.0) {
       setLayout(constraintAnimationBuilder, annotationData!!)
       if (annotationData != null) constraintAnimationBuilder.onAnimationEnd = {
-        if (annotationZoomFactor >= 1.0) {
+        if (annotationZoomFactor >= 1.0 && annotationData?.onlineStatus != ZnaidyOnlineStatus.OFFLINE) {
           animator.startIdleAnimation()
           animator.showGlowAnimation()
           if (annotationData!!.markerType != ZnaidyMarkerType.COMPANY) {
@@ -267,18 +267,17 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
         constraintSet.setVisibility(R.id.speed, View.GONE)
       } else {
         constraintSet.setVisibility(R.id.speed, View.VISIBLE)
-        val speedZoomFactor = if (annotationZoomFactor >= 1.0) 1.0 else 0.7
-        constraintSet.constrainWidth(R.id.speed, getDimen(R.dimen.current_speed_width, speedZoomFactor))
-        constraintSet.constrainHeight(R.id.speed, getDimen(R.dimen.current_speed_height, speedZoomFactor))
-        constraintSet.setMargin(R.id.speed, ConstraintSet.BOTTOM, getDimen(R.dimen.current_speed_offset_vertical, speedZoomFactor))
-        constraintSet.setMargin(R.id.speed, ConstraintSet.START, if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_offset_horizontal) else getDimen(R.dimen.current_speed_offset_horizontal_small))
+        constraintSet.constrainWidth(R.id.speed, getDimen(R.dimen.current_speed_width, annotationZoomFactor))
+        constraintSet.constrainHeight(R.id.speed, getDimen(R.dimen.current_speed_height, annotationZoomFactor))
+        constraintSet.setMargin(R.id.speed, ConstraintSet.BOTTOM, getDimen(R.dimen.current_speed_offset_vertical, annotationZoomFactor))
+        constraintSet.setMargin(R.id.speed, ConstraintSet.START, if (annotationZoomFactor >= 1.0) getDimen(R.dimen.current_speed_offset_horizontal) else getDimen(R.dimen.current_speed_offset_horizontal_small))
         findViewById<TextView>(R.id.currentSpeedText).setTextSize(
           TypedValue.COMPLEX_UNIT_PX,
-          (if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_text_number) else getDimen(R.dimen.current_speed_text_number_small)).toFloat()
+          (getDimen(R.dimen.current_speed_text_number, annotationZoomFactor)).toFloat()
         )
         findViewById<TextView>(R.id.currentSpeedUnits).setTextSize(
           TypedValue.COMPLEX_UNIT_PX,
-          (if (speedZoomFactor >= 1.0) getDimen(R.dimen.current_speed_text_units) else getDimen(R.dimen.current_speed_text_units_small)).toFloat()
+          (getDimen(R.dimen.current_speed_text_units, annotationZoomFactor)).toFloat()
         )
       }
 
@@ -289,6 +288,12 @@ class ZnaidyAnnotationView @JvmOverloads constructor(
       }
 
       if (annotationZoomFactor > 1.0 || (annotationZoomFactor >= 1.0 && annotationData.onlineStatus == ZnaidyOnlineStatus.OFFLINE)) {
+        constraintSet.constrainWidth(R.id.battery, getDimen(R.dimen.battery_size, annotationZoomFactor))
+        constraintSet.constrainHeight(R.id.battery, getDimen(R.dimen.battery_size, annotationZoomFactor))
+        findViewById<TextView>(R.id.battery_text).setTextSize(
+          TypedValue.COMPLEX_UNIT_PX,
+          (getDimen(R.dimen.battery_text_size, annotationZoomFactor).toFloat())
+        )
         constraintSet.setVisibility(R.id.battery, View.VISIBLE)
       } else {
         constraintSet.setVisibility(R.id.battery, View.GONE)

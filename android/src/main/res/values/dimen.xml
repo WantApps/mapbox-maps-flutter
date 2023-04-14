@@ -24,13 +24,11 @@
     <dimen name="current_speed_offset_vertical">0dp</dimen>
     <dimen name="current_speed_offset_horizontal">-13dp</dimen>
     <dimen name="current_speed_offset_horizontal_small">-9dp</dimen>
-    <dimen name="current_speed_text_number">12dp</dimen>
-    <dimen name="current_speed_text_units">6dp</dimen>
-    <dimen name="current_speed_text_number_small">10dp</dimen>
-    <dimen name="current_speed_text_units_small">6dp</dimen>
+    <dimen name="current_speed_text_number">12.5dp</dimen>
+    <dimen name="current_speed_text_units">6.25dp</dimen>
 
-    <dimen name="in_app_width">46dp</dimen>
-    <dimen name="in_app_height">22dp</dimen>
+    <dimen name="in_app_width">55.2dp</dimen>
+    <dimen name="in_app_height">26.4dp</dimen>
     <dimen name="in_app_vertical_offset">6dp</dimen>
 
     <dimen name="battery_size">30dp</dimen>
