@@ -14,6 +14,10 @@ class ZnaidyBatteryView : UIView {
     private var batteryIcon: UIImageView!
     private var batteryText: UILabel!
     
+    private var batteryIconWidth: NSLayoutConstraint!
+    private var batteryIconHeight: NSLayoutConstraint!
+    private var batteryTextBottomConstraint: NSLayoutConstraint!
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -37,21 +41,38 @@ class ZnaidyBatteryView : UIView {
         batteryText.textColor = ZnaidyConstants.secondaryTextColor
         batteryText.textAlignment = .center
         batteryText.lineBreakMode = .byClipping
-        batteryText.font = MediaProvider.getFont(ofSize: 10, weight: .bold)
+        batteryText.font = MediaProvider.getFont(ofSize: ZnaidyConstants.batteryFontSize, weight: .bold)
         batteryText.translatesAutoresizingMaskIntoConstraints = false
         addSubview(batteryText)
+        
+        batteryIconWidth = batteryIcon.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batteryIconSize)
+        batteryIconHeight = batteryIcon.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batteryIconSize)
+        batteryTextBottomConstraint = batteryText.bottomAnchor.constraint(equalTo: batteryIcon.topAnchor, constant: 2)
+        
         NSLayoutConstraint.activate([
             backgroundView.widthAnchor.constraint(equalTo: widthAnchor),
             backgroundView.heightAnchor.constraint(equalTo: heightAnchor),
             
-            batteryIcon.widthAnchor.constraint(equalToConstant: 13),
-            batteryIcon.heightAnchor.constraint(equalToConstant: 13),
+            batteryIconWidth,
+            batteryIconHeight,
             batteryIcon.centerXAnchor.constraint(equalTo: centerXAnchor),
             batteryIcon.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
             
             batteryText.centerXAnchor.constraint(equalTo: centerXAnchor),
-            batteryText.bottomAnchor.constraint(equalTo: batteryIcon.topAnchor)
+            batteryTextBottomConstraint
         ])
+    }
+    
+    func setZoomFactor(zoomFactor: Double) {
+        batteryText.font = MediaProvider.getFont(ofSize: ZnaidyConstants.batteryFontSize * zoomFactor, weight: .bold)
+        
+        batteryIconWidth.constant = ZnaidyConstants.batteryIconSize * zoomFactor
+        batteryIconHeight.constant = ZnaidyConstants.batteryIconSize * zoomFactor
+        batteryTextBottomConstraint.constant = 2.5 * zoomFactor
+        
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
     }
     
     func setBatteryLevel(level: Int, charging: Bool) {

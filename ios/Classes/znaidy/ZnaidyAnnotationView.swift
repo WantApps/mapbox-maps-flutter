@@ -13,6 +13,7 @@ class ZnaidyAnnotationView: UIView {
     
     private let TAG = "ZnaidyAnnotationView"
     
+    private var animationContainer: UIView!
     private var markerBackground: UIImageView!
     private var userAvatar: UIImageView!
     private var avatarMask: CALayer!
@@ -35,7 +36,9 @@ class ZnaidyAnnotationView: UIView {
     private var speedHeightConstraint: NSLayoutConstraint!
     private var speedOffsetYConstraint: NSLayoutConstraint!
     private var speedOffsetXConstraint: NSLayoutConstraint!
-    
+    private var batteryWidthConstraint: NSLayoutConstraint!
+    private var batteryHeightConstraint: NSLayoutConstraint!
+
     private(set) var annotationData: ZnaidyAnnotationData?
     private(set) var annotationZoomFactor: Double = 1.0
     
@@ -243,7 +246,6 @@ extension ZnaidyAnnotationView {
     private func markerIdleAnimation() {
         let keyframes: [NSNumber] = [0.0, NSNumber(value: 1.0/7.0), NSNumber(value: 2.0/7.0), NSNumber(value: 3.0/7.0), NSNumber(value: 4.0/7.0), NSNumber(value: 5.0/7.0), NSNumber(value: 6.0/7.0), NSNumber(value: 7.0/7.0)]
         let values = [1.0, 1.02, 1.06, 1.0, 0.94, 0.98, 1.0]
-        let reversedValues = [1.0, 0.98, 0.94, 1.0, 1.06, 1.02, 1.0]
         let duration = 1.5
         
         let markerAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
@@ -251,33 +253,18 @@ extension ZnaidyAnnotationView {
         markerAnimation.keyTimes = keyframes
         markerAnimation.duration = duration
         markerAnimation.repeatCount = Float.infinity
-        markerBackground.layer.add(markerAnimation, forKey: "idle")
-        
-//        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
-//        avatarHeightAnimation.values = values
-//        markerAnimation.keyTimes = keyframes
-
-        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        avatarWidthAnimation.values = values
-        avatarWidthAnimation.keyTimes = keyframes
-
-        let animationGroup = CAAnimationGroup()
-        animationGroup.animations = [avatarWidthAnimation]
-        animationGroup.duration = duration
-        animationGroup.repeatCount = Float.infinity
-        userAvatar.layer.add(animationGroup, forKey: "idle")
+        animationContainer.layer.add(markerAnimation, forKey: "idle")
     }
     
     private func startIdleAnimation() {
-        if (markerBackground.isAnimating && userAvatar.isAnimating) {
+        if (animationContainer.layer.animationKeys()?.contains("idle") != nil) {
             return
         }
         markerIdleAnimation()
     }
     
     private func stopIdleAnimation() {
-        markerBackground.layer.removeAnimation(forKey: "idle")
-        userAvatar.layer.removeAnimation(forKey: "idle")
+        animationContainer.layer.removeAnimation(forKey: "idle")
     }
     
     private func stickerAnimation() {
@@ -296,20 +283,7 @@ extension ZnaidyAnnotationView {
         let markerAnimationGroup = CAAnimationGroup()
         markerAnimationGroup.animations = [markerWidthAnimation, markerHeightAnimation]
         markerAnimationGroup.duration = duration
-        markerBackground.layer.add(markerAnimationGroup, forKey: "sticker")
-        
-        let avatarHeightAnimation = CAKeyframeAnimation(keyPath: "transform.scale.x")
-        avatarHeightAnimation.values = values
-        avatarHeightAnimation.keyTimes = keyframes
-
-        let avatarWidthAnimation = CAKeyframeAnimation(keyPath: "transform.scale.y")
-        avatarWidthAnimation.values = values
-        avatarWidthAnimation.keyTimes = keyframes
-
-        let animationGroup = CAAnimationGroup()
-        animationGroup.animations = [avatarWidthAnimation, avatarHeightAnimation]
-        animationGroup.duration = duration
-        userAvatar.layer.add(animationGroup, forKey: "sticker")
+        layer.add(markerAnimationGroup, forKey: "sticker")
     }
     
     private func setLayout(zoomFactor: Double, annotationData: ZnaidyAnnotationData, completion: ((Bool) -> Void)? = nil) {
@@ -329,11 +303,10 @@ extension ZnaidyAnnotationView {
         if (zoomFactor <= 0.5 || annotationData.currentSpeed < 1 || annotationData.onlineStatus == .offline) {
             self.speedView.isHidden = true
         } else {
-            let speedZoomFactor = zoomFactor >= 1.0 ? 1.0 : 0.7
             speedView.isHidden = false
-            speedWidthConstraint.constant = ZnaidyConstants.currentSpeedWidth * speedZoomFactor
-            speedHeightConstraint.constant = ZnaidyConstants.currentSpeedHeight * speedZoomFactor
-            speedOffsetYConstraint.constant = ZnaidyConstants.currentSpeedVerticalOffset * speedZoomFactor
+            speedWidthConstraint.constant = ZnaidyConstants.currentSpeedSize * zoomFactor
+            speedHeightConstraint.constant = ZnaidyConstants.currentSpeedSize * zoomFactor
+            speedOffsetYConstraint.constant = ZnaidyConstants.currentSpeedVerticalOffset * zoomFactor
             speedOffsetXConstraint.constant = zoomFactor >= 1.0 ? ZnaidyConstants.currentSpeedHorizontalOffset : ZnaidyConstants.currentSpeedHorizontalOffsetSmall
             speedView.setZoomFactor(zoomFactor: zoomFactor)
         }
@@ -345,6 +318,9 @@ extension ZnaidyAnnotationView {
         }
         
         if (zoomFactor > 1.0 || (zoomFactor >= 1.0 && annotationData.onlineStatus == .offline)) {
+            batteryWidthConstraint.constant = ZnaidyConstants.batterySize * zoomFactor
+            batteryHeightConstraint.constant = ZnaidyConstants.batterySize * zoomFactor
+            batteryView.setZoomFactor(zoomFactor: zoomFactor)
             batteryView.isHidden = false
         } else {
             batteryView.isHidden = true
@@ -366,16 +342,6 @@ extension ZnaidyAnnotationView {
         UIView.animate(withDuration: 0.2, animations: {
             self.layoutIfNeeded()
         }, completion: { result in
-//            let maskImage = MediaProvider.image(named: "avatar_mask")!
-//            let layer = CALayer()
-//            layer.contents = maskImage.cgImage
-//            layer.contentsCenter = CGRect(
-//                    x: ((maskImage.size.width/2) - 1)/maskImage.size.width,
-//                    y: ((maskImage.size.height/2) - 1)/maskImage.size.height,
-//                    width: 1 / maskImage.size.width,
-//                    height: 1 / maskImage.size.height)
-//            layer.frame = self.userAvatar.bounds.insetBy(dx: 0.0, dy: 0.0)
-//            self.userAvatar.layer.mask = layer
             if let completion = completion {
                 completion(result)
             }
@@ -387,6 +353,9 @@ extension ZnaidyAnnotationView {
 extension ZnaidyAnnotationView {
     
     private func commonInit() {
+//        backgroundColor = UIColor.red.withAlphaComponent(0.2)
+        animationContainer = UIView()
+        animationContainer.translatesAutoresizingMaskIntoConstraints = false
         markerBackground = buildMarkerBackground()
         userAvatar = buildUserAvatar()
         stickerCounter = ZnaidyStickersView()
@@ -396,15 +365,17 @@ extension ZnaidyAnnotationView {
         inAppView = buildInAppView()
         batteryView = ZnaidyBatteryView()
         offlineTimeView = ZnaidyOfflineTimeView()
+        
         addSubview(glowView)
-        addSubview(markerBackground)
-        addSubview(userAvatar)
-        addSubview(stickerCounter)
-        addSubview(companyCounter)
-        addSubview(speedView)
         addSubview(inAppView)
-        addSubview(batteryView)
+        addSubview(animationContainer)
         addSubview(offlineTimeView)
+        animationContainer.addSubview(markerBackground)
+        animationContainer.addSubview(userAvatar)
+        animationContainer.addSubview(stickerCounter)
+        animationContainer.addSubview(companyCounter)
+        animationContainer.addSubview(speedView)
+        animationContainer.addSubview(batteryView)
         companyCounter.isHidden = true
         speedView.isHidden = true
         stickerCounter.isHidden = true
@@ -422,12 +393,20 @@ extension ZnaidyAnnotationView {
         glowWidthConstraint = glowView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.annotationWidth)
         glowHeightConstraint = glowView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.annotationWidth)
         
-        speedWidthConstraint = speedView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.currentSpeedWidth)
-        speedHeightConstraint = speedView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.currentSpeedHeight)
+        speedWidthConstraint = speedView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.currentSpeedSize)
+        speedHeightConstraint = speedView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.currentSpeedSize)
         speedOffsetYConstraint = speedView.bottomAnchor.constraint(equalTo: markerBackground.bottomAnchor, constant: ZnaidyConstants.currentSpeedVerticalOffset)
         speedOffsetXConstraint = speedView.leftAnchor.constraint(equalTo: markerBackground.leftAnchor, constant: ZnaidyConstants.currentSpeedHorizontalOffset)
 
+        batteryWidthConstraint = batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize)
+        batteryHeightConstraint = batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize)
+        
         NSLayoutConstraint.activate([
+            animationContainer.widthAnchor.constraint(equalTo: widthAnchor),
+            animationContainer.heightAnchor.constraint(equalTo: heightAnchor),
+            animationContainer.centerXAnchor.constraint(equalTo: centerXAnchor),
+            animationContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
+            
             markerBackgrounsWidthConstraint,
             markerBackgroundHeightConstraint,
             markerBackground.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -ZnaidyConstants.markerOffsetY),
@@ -435,8 +414,8 @@ extension ZnaidyAnnotationView {
             
             glowWidthConstraint,
             glowHeightConstraint,
-            glowView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
-            glowView.centerYAnchor.constraint(equalTo: markerBackground.centerYAnchor),
+            glowView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            glowView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             avatarWidthConstraint,
             avatarHeightConstraint,
@@ -460,18 +439,18 @@ extension ZnaidyAnnotationView {
             
             inAppView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.inAppWidth),
             inAppView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.inAppHeight),
-            inAppView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
-            inAppView.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: -10.0),
+            inAppView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            inAppView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -ZnaidyConstants.inAppVerticalOffset),
             
-            batteryView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize),
-            batteryView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.batterySize),
+            batteryWidthConstraint,
+            batteryHeightConstraint,
             batteryView.rightAnchor.constraint(equalTo: markerBackground.rightAnchor, constant: ZnaidyConstants.batteryHoryzontalOffset),
             batteryView.bottomAnchor.constraint(equalTo: markerBackground.bottomAnchor),
             
             offlineTimeView.widthAnchor.constraint(equalToConstant: ZnaidyConstants.offlineTimeWidth),
             offlineTimeView.heightAnchor.constraint(equalToConstant: ZnaidyConstants.offlineTimeHeight),
-            offlineTimeView.centerXAnchor.constraint(equalTo: markerBackground.centerXAnchor),
-            offlineTimeView.bottomAnchor.constraint(equalTo: markerBackground.topAnchor, constant: ZnaidyConstants.offlineTimeVerticalOffset)
+            offlineTimeView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            offlineTimeView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -ZnaidyConstants.offlineTimeVerticalOffset)
         ])
         
         markerIdleAnimation()
@@ -518,7 +497,7 @@ extension ZnaidyAnnotationView {
         label.text = Localizaton.localize(key: "in_app")
         label .textColor = .white
         label.textAlignment = .center
-        label.font = MediaProvider.getFont(ofSize: 10, weight: .heavy)
+        label.font = MediaProvider.getFont(ofSize: ZnaidyConstants.inAppFont, weight: .heavy)
         label.backgroundColor = ZnaidyConstants.inAppColor
         label.layer.cornerRadius = 6.7
         label.layer.masksToBounds = true

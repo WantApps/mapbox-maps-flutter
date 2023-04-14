@@ -10,9 +10,9 @@ import Foundation
 class ZnaidyConstants {
     
     static let annotationWidth = 150.0
-    static let annotationHeight = 193.0
+    static let annotationHeight = 162.0
     
-    static let markerOffsetY = 42.0
+    static let markerOffsetY = 34.0
     
     static let markerWidth = 68.0
     static let markerHeight = 76.0
@@ -25,22 +25,26 @@ class ZnaidyConstants {
     
     static let companyCountSize = 24.0
     
-    static let currentSpeedWidth = 30.0
-    static let currentSpeedHeight = 30.0
+    static let currentSpeedSize = 30.0
     static let currentSpeedVerticalOffset = 0.0
     static let currentSpeedHorizontalOffset = -13.0
     static let currentSpeedHorizontalOffsetSmall = -9.0
+    static let currentSpeedSpeedFontSize = 12.5
+    static let currentSpeedUnitFontSize = 6.25
 
-    static let inAppWidth = 46.0
-    static let inAppHeight = 22.0
-    static let inAppVerticalOffset = 6.0
+    static let inAppWidth = 46.0 * 1.2
+    static let inAppHeight = 22.0 * 1.2
+    static let inAppVerticalOffset = markerOffsetY + (markerHeight * 1.2) + 6.0
+    static let inAppFont = 10.0 * 1.2
     
     static let batterySize = 30.0
     static let batteryHoryzontalOffset = 13.0
+    static let batteryFontSize = 10.0
+    static let batteryIconSize = 13.0
     
     static let offlineTimeWidth = 64.0
     static let offlineTimeHeight = 30.0
-    static let offlineTimeVerticalOffset = -6.0
+    static let offlineTimeVerticalOffset = markerOffsetY + markerHeight + 6.0
     
     static let znaidyBlue = UIColor(red: 0.0, green: 155.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     static let inAppColor = UIColor(red: 184.0/255.0, green: 78.0/255.0, blue: 250.0/255.0, alpha: 1.0)

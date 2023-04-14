@@ -13,6 +13,8 @@ class ZnaidySpeedView : UIView {
     private var speedLabel: UILabel!
     private var unitsLabel: UILabel!
     
+    private var bottomOffset: NSLayoutConstraint!
+    
     var speed: Int = 0
     
     override init(frame: CGRect) {
@@ -34,16 +36,19 @@ class ZnaidySpeedView : UIView {
         speedLabel.text = "2"
         speedLabel.textColor = ZnaidyConstants.mainTextColor
         speedLabel.textAlignment = .center
-        speedLabel.font = MediaProvider.getFont(ofSize: 13, weight: .bold)
+        speedLabel.font = MediaProvider.getFont(ofSize: ZnaidyConstants.currentSpeedSpeedFontSize, weight: .bold)
         speedLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(speedLabel)
         unitsLabel = UILabel()
         unitsLabel.text = Localizaton.localize(key: "speed_units")
         unitsLabel.textColor = ZnaidyConstants.secondaryTextColor
         unitsLabel.textAlignment = .center
-        unitsLabel.font = MediaProvider.getFont(ofSize: 6)
+        unitsLabel.font = MediaProvider.getFont(ofSize: ZnaidyConstants.currentSpeedUnitFontSize, weight: .heavy)
         unitsLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(unitsLabel)
+        
+        bottomOffset = unitsLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
+        
         NSLayoutConstraint.activate([
             backgroundView.widthAnchor.constraint(equalTo: widthAnchor),
             backgroundView.heightAnchor.constraint(equalTo: heightAnchor),
@@ -51,17 +56,16 @@ class ZnaidySpeedView : UIView {
             speedLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             speedLabel.bottomAnchor.constraint(equalTo: unitsLabel.topAnchor, constant: 2),
             unitsLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            unitsLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+            bottomOffset,
         ])
     }
     
     func setZoomFactor(zoomFactor: Double) {
-        if (zoomFactor >= 1.0) {
-            speedLabel.font = MediaProvider.getFont(ofSize: 13, weight: .bold)
-            unitsLabel.font = MediaProvider.getFont(ofSize: 6)
-        } else {
-            speedLabel.font = MediaProvider.getFont(ofSize: 10, weight: .bold)
-            unitsLabel.font = MediaProvider.getFont(ofSize: 6)
+        speedLabel.font = MediaProvider.getFont(ofSize: ZnaidyConstants.currentSpeedSpeedFontSize * zoomFactor, weight: .bold)
+        unitsLabel.font = MediaProvider.getFont(ofSize: ZnaidyConstants.currentSpeedUnitFontSize * zoomFactor, weight: .heavy)
+        bottomOffset.constant = -2 * zoomFactor
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
         }
     }
     
