@@ -29,7 +29,7 @@
 
     <dimen name="in_app_width">55.2dp</dimen>
     <dimen name="in_app_height">26.4dp</dimen>
-    <dimen name="in_app_vertical_offset">6dp</dimen>
+    <dimen name="in_app_vertical_offset">139.2dp</dimen>
 
     <dimen name="battery_size">30dp</dimen>
     <dimen name="battery_icon_size">13dp</dimen>
@@ -39,5 +39,5 @@
 
     <dimen name="offline_time_width">64dp</dimen>
     <dimen name="offline_time_height">30dp</dimen>
-    <dimen name="offline_time_vertical_offset">6dp</dimen>
+    <dimen name="offline_time_vertical_offset">124dp</dimen>
 </resources>

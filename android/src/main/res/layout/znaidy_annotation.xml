@@ -22,89 +22,101 @@
         app:layout_constraintVertical_bias="1.0"
         />
 
-    <ImageView
-        android:id="@+id/markerBackground"
-        android:layout_width="@dimen/marker_width"
-        android:layout_height="@dimen/marker_height"
-        android:src="@drawable/marker_default"
-        android:scaleType="fitCenter"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/animationContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription"
-        android:layout_marginBottom="@dimen/annotation_y_offset"
-        app:layout_constraintVertical_bias="1.0"
-        />
+        >
 
-    <include
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        layout="@layout/znaidy_avatar"
-        app:layout_constraintTop_toTopOf="@id/markerBackground"
-        app:layout_constraintBottom_toBottomOf="@id/markerBackground"
-        app:layout_constraintStart_toStartOf="@id/markerBackground"
-        app:layout_constraintEnd_toEndOf="@id/markerBackground"
-        android:layout_marginBottom="@dimen/avatar_offset"
-        />
+        <ImageView
+            android:id="@+id/markerBackground"
+            android:layout_width="@dimen/marker_width"
+            android:layout_height="@dimen/marker_height"
+            android:src="@drawable/marker_default"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription"
+            android:layout_marginBottom="@dimen/annotation_y_offset"
+            app:layout_constraintVertical_bias="1.0"
+            />
 
-    <include
-        android:id="@+id/stickers"
-        layout="@layout/znaidy_sticker_counter"
-        android:layout_width="@dimen/stickers_count_size"
-        android:layout_height="@dimen/stickers_count_size"
-        app:layout_constraintTop_toTopOf="@id/markerBackground"
-        app:layout_constraintEnd_toEndOf="@id/markerBackground"
-        android:layout_marginEnd="@dimen/stickers_offset_horizontal"
-        android:layout_marginTop="@dimen/stickers_offset_vertical"
-        android:visibility="gone"
-        />
+        <include
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            layout="@layout/znaidy_avatar"
+            app:layout_constraintTop_toTopOf="@id/markerBackground"
+            app:layout_constraintBottom_toBottomOf="@id/markerBackground"
+            app:layout_constraintStart_toStartOf="@id/markerBackground"
+            app:layout_constraintEnd_toEndOf="@id/markerBackground"
+            android:layout_marginBottom="@dimen/avatar_offset"
+            />
 
-    <include
-        android:id="@+id/company"
-        layout="@layout/znaidy_company_size"
-        android:layout_width="@dimen/company_count_size"
-        android:layout_height="@dimen/company_count_size"
-        app:layout_constraintBottom_toBottomOf="@id/markerBackground"
-        app:layout_constraintStart_toStartOf="@id/markerBackground"
-        android:layout_marginBottom="20dp"
-        android:visibility="gone"
-        />
+        <include
+            android:id="@+id/stickers"
+            layout="@layout/znaidy_sticker_counter"
+            android:layout_width="@dimen/stickers_count_size"
+            android:layout_height="@dimen/stickers_count_size"
+            app:layout_constraintTop_toTopOf="@id/markerBackground"
+            app:layout_constraintEnd_toEndOf="@id/markerBackground"
+            android:layout_marginEnd="@dimen/stickers_offset_horizontal"
+            android:layout_marginTop="@dimen/stickers_offset_vertical"
+            android:visibility="gone"
+            />
 
-    <include
-        android:id="@+id/speed"
-        layout="@layout/znaidy_speed"
-        android:layout_width="@dimen/current_speed_width"
-        android:layout_height="@dimen/current_speed_height"
-        app:layout_constraintBottom_toBottomOf="@id/markerBackground"
-        app:layout_constraintStart_toStartOf="@id/markerBackground"
-        android:layout_marginBottom="@dimen/current_speed_offset_vertical"
-        android:layout_marginStart="@dimen/current_speed_offset_horizontal"
-        android:visibility="gone"
-        />
+        <include
+            android:id="@+id/company"
+            layout="@layout/znaidy_company_size"
+            android:layout_width="@dimen/company_count_size"
+            android:layout_height="@dimen/company_count_size"
+            app:layout_constraintBottom_toBottomOf="@id/markerBackground"
+            app:layout_constraintStart_toStartOf="@id/markerBackground"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            />
+
+        <include
+            android:id="@+id/speed"
+            layout="@layout/znaidy_speed"
+            android:layout_width="@dimen/current_speed_width"
+            android:layout_height="@dimen/current_speed_height"
+            app:layout_constraintBottom_toBottomOf="@id/markerBackground"
+            app:layout_constraintStart_toStartOf="@id/markerBackground"
+            android:layout_marginBottom="@dimen/current_speed_offset_vertical"
+            android:layout_marginStart="@dimen/current_speed_offset_horizontal"
+            android:visibility="gone"
+            />
+
+        <include
+            android:id="@+id/battery"
+            layout="@layout/znaidy_battery"
+            android:layout_width="@dimen/battery_size"
+            android:layout_height="@dimen/battery_size"
+            app:layout_constraintBottom_toBottomOf="@id/markerBackground"
+            app:layout_constraintEnd_toEndOf="@id/markerBackground"
+            android:layout_marginEnd="@dimen/battery_horizontal_offset"
+            android:layout_marginBottom="@dimen/battery_vertical_offset"
+            android:visibility="gone"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include
         android:id="@+id/inApp"
         layout="@layout/znaidy_in_app"
         android:layout_width="@dimen/in_app_width"
         android:layout_height="@dimen/in_app_height"
-        app:layout_constraintBottom_toTopOf="@id/markerBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="@dimen/in_app_vertical_offset"
-        android:visibility="gone"
-        />
-
-    <include
-        android:id="@+id/battery"
-        layout="@layout/znaidy_battery"
-        android:layout_width="@dimen/battery_size"
-        android:layout_height="@dimen/battery_size"
-        app:layout_constraintBottom_toBottomOf="@id/markerBackground"
-        app:layout_constraintEnd_toEndOf="@id/markerBackground"
-        android:layout_marginEnd="@dimen/battery_horizontal_offset"
-        android:layout_marginBottom="@dimen/battery_vertical_offset"
         android:visibility="gone"
         />
 
@@ -112,7 +124,7 @@
         android:id="@+id/offline_time"
         android:layout_width="@dimen/offline_time_width"
         android:layout_height="@dimen/offline_time_height"
-        app:layout_constraintBottom_toTopOf="@id/markerBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="@dimen/offline_time_vertical_offset"

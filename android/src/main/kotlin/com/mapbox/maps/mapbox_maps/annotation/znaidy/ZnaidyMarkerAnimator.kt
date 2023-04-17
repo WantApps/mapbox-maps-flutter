@@ -64,13 +64,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
 
   private fun startIdleAnimation(baseValue: Float) {
     markerIdleAnimator?.end()
-    val background = annotationView.findViewById<View>(R.id.markerBackground)
-    val avatar = annotationView.findViewById<View>(R.id.avatar)
-    val battery = annotationView.findViewById<View>(R.id.battery)
-    val stickers = annotationView.findViewById<View>(R.id.stickers)
-    val speed = annotationView.findViewById<View>(R.id.speed)
-
-    val animatedView = listOf(background, avatar, battery, stickers, speed)
+    val animatedContainer = annotationView.findViewById<View>(R.id.animationContainer)
 
     markerIdleAnimator = ValueAnimator.ofFloat(
       baseValue,
@@ -86,9 +80,7 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
       interpolator = LinearInterpolator()
       addUpdateListener { animator ->
         val value = animator.animatedValue.toString().toFloatOrNull() ?: baseValue
-        for (view in animatedView) {
-          view.scaleX = value
-        }
+        animatedContainer.scaleX = value
       }
     }
     markerIdleAnimator?.start()
@@ -119,24 +111,15 @@ class ZnaidyMarkerAnimator(private val annotationView: ZnaidyAnnotationView) {
 
   fun animateReceiveSticker() {
     stickerReceiveAnimator?.end()
-
-    val background = annotationView.findViewById<View>(R.id.markerBackground)
-    val avatar = annotationView.findViewById<View>(R.id.avatar)
-    val battery = annotationView.findViewById<View>(R.id.battery)
-    val stickers = annotationView.findViewById<View>(R.id.stickers)
-    val speed = annotationView.findViewById<View>(R.id.speed)
-
-    val animatedView = listOf(background, avatar, battery, stickers, speed)
+    val animatedContainer = annotationView.findViewById<View>(R.id.animationContainer)
 
     stickerReceiveAnimator = ValueAnimator.ofFloat(1.0f, 0.97f, 0.96f, 0.9f, 1.1f, 0.99f, 1.01f, 1.0f).apply {
       interpolator = LinearInterpolator()
       duration = 200L
       addUpdateListener { animator ->
         val value = animator.animatedValue.toString().toFloatOrNull() ?: 1f
-        for (view in animatedView) {
-          view.scaleX = value
-          view.scaleY = value
-        }
+        animatedContainer.scaleX = value
+        animatedContainer.scaleY = value
       }
     }
     stickerReceiveAnimator?.start()

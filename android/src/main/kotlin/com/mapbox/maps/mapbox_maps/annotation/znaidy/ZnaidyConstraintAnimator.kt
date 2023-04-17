@@ -7,7 +7,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import com.mapbox.maps.mapbox_maps.R
 
-typealias ConstraintAnimationChange = (ConstraintSet) -> Unit
+typealias ConstraintAnimationChange = (ConstraintSet, ConstraintSet) -> Unit
 
 class ZnaidyConstraintAnimation private constructor(
   private val znaidyAnnotationView: ZnaidyAnnotationView,
@@ -49,9 +49,12 @@ class ZnaidyConstraintAnimation private constructor(
 
   private fun constraintAnimation() {
     val root = znaidyAnnotationView.findViewById<ConstraintLayout>(R.id.annotationRoot)
-    val constraintSet = ConstraintSet()
-    constraintSet.clone(root)
-    changes.forEach { change -> change(constraintSet) }
+    val animationContainer = znaidyAnnotationView.findViewById<ConstraintLayout>(R.id.animationContainer)
+    val rootConstraintSet = ConstraintSet()
+    rootConstraintSet.clone(root)
+    val animConstraintSet = ConstraintSet()
+    animConstraintSet.clone(animationContainer)
+    changes.forEach { change -> change(rootConstraintSet, animConstraintSet) }
     transition.duration = duration
     transition.addListener(object : Transition.TransitionListener {
       override fun onTransitionStart(transition: Transition?) {
@@ -72,6 +75,7 @@ class ZnaidyConstraintAnimation private constructor(
 
     })
     TransitionManager.beginDelayedTransition(root, transition)
-    constraintSet.applyTo(root)
+    rootConstraintSet.applyTo(root)
+    animConstraintSet.applyTo(animationContainer)
   }
 }
