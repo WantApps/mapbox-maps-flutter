@@ -330,7 +330,7 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
           delegate.getCameraAnimationController().flyTo(cameraOptions, animationOptions)
         }
       }
-    } catch (ex: Exception) {
+    } catch (ex: Throwable) {
       Log.e(TAG, "onPositionAnimationUpdate: ", ex)
       annotationAnimations[id]?.stop()
       annotationAnimations.remove(id)
@@ -339,6 +339,13 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
 
   override fun onPositionAnimationEnded(id: String) {
     annotationAnimations.remove(id)
+  }
+
+  fun onRemove() {
+    annotationAnimations.values.forEach {
+      it.stop()
+    }
+    annotationAnimations.clear()
   }
 
   private fun updateAnnotationZoomFactor(annotationView: ZnaidyAnnotationView) {

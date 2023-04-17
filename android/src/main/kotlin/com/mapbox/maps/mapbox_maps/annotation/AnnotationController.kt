@@ -99,6 +99,7 @@ class AnnotationController(
   fun handleRemoveManager(call: MethodCall, result: MethodChannel.Result) {
     val id = call.argument<String>("id")!!
     if (id == ZNAIDY_ANNOTATION_CONTROLLER_ID) {
+      znaidyAnnotationController.onRemove()
       managerMap.remove(ZNAIDY_POINT_CONTROLLER_ID)?.let {
         mapView.annotations.removeAnnotationManager(it)
       }
