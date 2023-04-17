@@ -46,10 +46,6 @@ class ZnaidyAnnotationData {
         return avatarUrls.first
     }
     
-    func offlineTime() -> Int {
-        return Int(Date().timeIntervalSince1970 - Double(lastOnline / 1000))
-    }
-    
     private let zoomSteps = [0.2, 0.5, 0.8, 1.0, 1.2]
     
     func applyZoomFactor(zoomFactor: Double) -> Double {

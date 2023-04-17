@@ -13,6 +13,8 @@ class ZnaidyOfflineTimeView : UIView {
     private var offlineLabel: UILabel!
     private var timeLabel: UILabel!
     
+    private var updatesTimer: Timer?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -62,7 +64,25 @@ class ZnaidyOfflineTimeView : UIView {
         ])
     }
     
-    func setOfflineTime(offlineTime: Int, offlineTimestamp: Int) {
+    func setOfflineTime(offlineTimestamp: Int) {
+        startUpdates(offlineTimestamp)
+    }
+    
+    private func startUpdates(_ offlineTimestamp: Int) {
+        stopUpdates()
+        onUpdate(offlineTimestamp: offlineTimestamp)
+        updatesTimer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true) { timer in
+            self.onUpdate(offlineTimestamp: offlineTimestamp)
+        }
+    }
+    
+    func stopUpdates() {
+        updatesTimer?.invalidate()
+    }
+    
+    private func onUpdate(offlineTimestamp: Int) {
+        let offlineTime = Int(Date().timeIntervalSince1970 - Double(offlineTimestamp / 1000))
+        
         if (offlineTime > 86400 * 7) {
             if (offlineTime > 86400 * 356) {
                 let years = Int((Double(offlineTime) / (86400 * 356)).rounded())

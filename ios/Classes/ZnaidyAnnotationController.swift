@@ -142,6 +142,7 @@ class ZnaidyAnnotationController: NSObject, FLT_ZnaidyAnnotationMessager {
             if index == nil {
                 throw AnnotationControllerError.noAnnotationFound
             }
+            annotationView.onRemove()
             pointManager.annotations.remove(at: index!)
             let userId = annotationView.annotationData!.userId
             try delegate?.getViewAnnotationsManager().remove(annotationView)

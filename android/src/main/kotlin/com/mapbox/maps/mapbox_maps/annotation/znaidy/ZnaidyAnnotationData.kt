@@ -24,7 +24,6 @@ data class ZnaidyAnnotationData(
   val focused: Boolean = false,
 ) {
   var userAvatar = avatarUrls.firstOrNull()
-  var offlineTime = lastOnline?.let { (System.currentTimeMillis() - it) / 1000 } ?: 0
 
   companion object {
     val zoomSteps = listOf(0.0, 0.5, 0.8, 1.0, 1.2)

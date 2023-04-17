@@ -103,6 +103,10 @@ class ZnaidyAnnotationView: UIView {
         }
     }
     
+    func onRemove() {
+        offlineTimeView.stopUpdates()
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -333,10 +337,11 @@ extension ZnaidyAnnotationView {
         }
         
         if (zoomFactor >= 1.0 && annotationData.onlineStatus == .offline) {
-            self.offlineTimeView.setOfflineTime(offlineTime: annotationData.offlineTime(), offlineTimestamp: annotationData.lastOnline)
+            self.offlineTimeView.setOfflineTime(offlineTimestamp: annotationData.lastOnline)
             self.offlineTimeView.isHidden = false
         } else {
             self.offlineTimeView.isHidden = true
+            self.offlineTimeView.stopUpdates()
         }
         
         UIView.animate(withDuration: 0.2, animations: {

@@ -108,9 +108,8 @@
         android:visibility="gone"
         />
 
-    <include
+    <com.mapbox.maps.mapbox_maps.annotation.znaidy.ZnaidyOfflineTimeView
         android:id="@+id/offline_time"
-        layout="@layout/znaidy_offline_time"
         android:layout_width="@dimen/offline_time_width"
         android:layout_height="@dimen/offline_time_height"
         app:layout_constraintBottom_toTopOf="@id/markerBackground"
