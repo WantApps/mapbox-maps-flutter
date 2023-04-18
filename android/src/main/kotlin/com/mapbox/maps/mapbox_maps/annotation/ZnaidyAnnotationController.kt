@@ -321,7 +321,6 @@ class ZnaidyAnnotationController(private val delegate: ControllerDelegate) :
           pointAnnotationManager.annotations.first { it.id.toString() == znaidyAnnotationView.annotationData!!.id }
         pointAnnotation.geometry = position
         pointAnnotationManager.update(pointAnnotation)
-        Log.d(TAG, "onAnimationUpdate: focused=${znaidyAnnotationView.annotationData?.focused}")
         if (znaidyAnnotationView.annotationData?.focused != true) return
         trackingCameraOptionsBuilder?.let { cameraOptionsBuilder ->
           cameraOptionsBuilder.setCenter(position.toMap())

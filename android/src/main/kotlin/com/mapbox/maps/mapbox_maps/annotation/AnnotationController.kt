@@ -138,6 +138,7 @@ class AnnotationController(
   }
 
   fun dispose(messenger: BinaryMessenger) {
+    znaidyAnnotationController.onRemove()
     FLTPointAnnotationMessager._PointAnnotationMessager.setup(messenger, null)
     FLTCircleAnnotationMessager._CircleAnnotationMessager.setup(messenger, null)
     FLTPolylineAnnotationMessager._PolylineAnnotationMessager.setup(messenger, null)

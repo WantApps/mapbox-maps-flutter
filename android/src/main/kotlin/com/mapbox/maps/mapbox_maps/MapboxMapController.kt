@@ -62,7 +62,11 @@ class MapboxMapController(
     methodChannel.setMethodCallHandler(this)
     mapboxMap.subscribe(
       { event ->
-        methodChannel.invokeMethod(getEventMethodName(event.type), event.data.toJson())
+        try {
+          methodChannel.invokeMethod(getEventMethodName(event.type), event.data.toJson())
+        } catch (ex: Throwable) {
+          logE("MapboxMapController", "onEventError: $ex")
+        }
       },
       eventTypes
     )
