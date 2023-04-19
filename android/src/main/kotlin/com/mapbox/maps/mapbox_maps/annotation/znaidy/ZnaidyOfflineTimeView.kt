@@ -1,6 +1,12 @@
 package com.mapbox.maps.mapbox_maps.annotation.znaidy
 
+import android.annotation.TargetApi
 import android.content.Context
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
+import android.text.style.MetricAffectingSpan
+import android.text.style.RelativeSizeSpan
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +19,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.roundToInt
+
 
 class ZnaidyOfflineTimeView @JvmOverloads constructor(
   context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -86,7 +93,12 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
         unit = context.resources.getQuantityString(R.plurals.time_unit_day, time)
       }
       offlineLabel.text = context.getString(R.string.offline_for)
-      timeLabel.text = "${time}${unit}"
+      val spannable = SpannableStringBuilder().apply {
+        append(time.toString())
+        append(" ", RelativeSizeSpan(0.5f), Spanned.SPAN_MARK_MARK)
+        append(unit)
+      }
+      timeLabel.text = spannable
     }
   }
 
@@ -110,4 +122,23 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
     offlineTimeUpdater = null
   }
 
+}
+
+@TargetApi(21)
+class LetterSpacingSpan
+/**
+ * @param letterSpacing
+ */(val letterSpacing: Float) : MetricAffectingSpan() {
+
+  override fun updateDrawState(ds: TextPaint) {
+    apply(ds)
+  }
+
+  override fun updateMeasureState(paint: TextPaint) {
+    apply(paint)
+  }
+
+  private fun apply(paint: TextPaint) {
+    paint.letterSpacing = letterSpacing
+  }
 }

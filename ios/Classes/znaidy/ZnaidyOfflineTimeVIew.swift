@@ -89,7 +89,7 @@ class ZnaidyOfflineTimeView : UIView {
                 let month = Int(((Double(offlineTime) - (Double(years) * 86400 * 356)) / (86400 * 30)).rounded())
                 offlineLabel.text = Localizaton.localize(key: "offline_for")
                 if (month == 0) {
-                    timeLabel.text = "\(years)\(Localizaton.localize(key: "time_unit_year"))"
+                    timeLabel.text = "\(years) \(Localizaton.localize(key: "time_unit_year"))"
                 } else {
                     timeLabel.text = "\(years)\(Localizaton.localize(key: "time_unit_year")) \(month)\(Localizaton.localize(key: "time_unit_month"))"
                 }
@@ -115,7 +115,11 @@ class ZnaidyOfflineTimeView : UIView {
                 unit = Localizaton.localizePlural(key: "time_unit_day", count: time)
             }
             offlineLabel.text = Localizaton.localize(key: "offline_for")
-            timeLabel.text = "\(time)\(unit)"
+            let attributedString = NSMutableAttributedString()
+            attributedString.append(NSAttributedString(string: "\(time)"))
+            attributedString.append(NSAttributedString(string: " ", attributes: [ NSAttributedString.Key.font: MediaProvider.getFont(ofSize: 6, weight: .bold) ]))
+            attributedString.append(NSAttributedString(string: "\(unit)"))
+            timeLabel.attributedText = attributedString
         }
     }
     
