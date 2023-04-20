@@ -287,7 +287,7 @@ extension ZnaidyAnnotationView {
         let markerAnimationGroup = CAAnimationGroup()
         markerAnimationGroup.animations = [markerWidthAnimation, markerHeightAnimation]
         markerAnimationGroup.duration = duration
-        layer.add(markerAnimationGroup, forKey: "sticker")
+        animationContainer.layer.add(markerAnimationGroup, forKey: "sticker")
     }
     
     private func setLayout(zoomFactor: Double, annotationData: ZnaidyAnnotationData, completion: ((Bool) -> Void)? = nil) {
