@@ -17,10 +17,8 @@
 
 "time_unit_minute" = "мин";
 
-"time_unit_hour.one" = "час";
-"time_unit_hour.two" = "часа";
-"time_unit_hour.few" = "часа";
-"time_unit_hour.other" = "часов";
+"time_unit_hour.one" = "ч";
+"time_unit_hour.other" = "ч";
 
 "time_unit_day.one" = "день";
 "time_unit_day.two" = "дня";

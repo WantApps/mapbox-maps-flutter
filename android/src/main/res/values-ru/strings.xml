@@ -8,10 +8,8 @@
         <item quantity="other">мин</item>
     </plurals>
     <plurals name="time_unit_hour">
-        <item quantity="one">час</item>
-        <item quantity="two">часа</item>
-        <item quantity="few">часа</item>
-        <item quantity="other">часов</item>
+        <item quantity="one">ч</item>
+        <item quantity="other">ч</item>
     </plurals>
     <plurals name="time_unit_day">
         <item quantity="one">день</item>

@@ -18,12 +18,17 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 
 class ZnaidyOfflineTimeView @JvmOverloads constructor(
   context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr), View.OnAttachStateChangeListener {
+
+  companion object {
+    val supportedLocales = listOf("en", "uk", "ru")
+  }
 
   private var offlineTimeUpdater: Timer? = null
 
@@ -60,36 +65,53 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
     val timeLabel = findViewById<TextView>(R.id.offline_time_label)
     val zonedTime =
       ZonedDateTime.ofInstant(Instant.ofEpochMilli(offlineTimestamp), ZoneId.systemDefault())
-    val format = DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault())
+    val format = DateTimeFormatter.ofPattern("dd MMM", getLocale())
     offlineLabel.text = context.getString(R.string.offline_since)
     val formattedDate = format.format(zonedTime).uppercase().replace(".", "")
-    timeLabel.text = formattedDate
+    val parts = formattedDate.split(" ")
+    val spannable = SpannableStringBuilder().apply {
+      append(parts[0])
+      append(" ", RelativeSizeSpan(0.5f), Spanned.SPAN_MARK_MARK)
+      parts[1].let {
+        append(if (it.length > 3) it.substring(0, 3) else it)
+      }
+    }
+    timeLabel.text = spannable
   }
 
   private fun updateOfflineTime(offlineTime: Long) {
     val offlineLabel = findViewById<TextView>(R.id.offline_label)
     val timeLabel = findViewById<TextView>(R.id.offline_time_label)
     if (offlineTime > 86400 * 7) {
-      val years = (offlineTime / (86400.0 * 356)).roundToInt()
-      val month = ((offlineTime - (years * 86400 * 356)) / (86400.0 * 30)).roundToInt()
+      val years = floor(offlineTime / (86400.0 * 356)).toInt()
+      val month = floor((offlineTime - (years * 86400 * 356)) / (86400.0 * 30)).toInt()
       offlineLabel.text = context.getString(R.string.offline_for)
       if (month == 0) {
-        timeLabel.text = "${years}${context.getString(R.string.time_unit_year)}"
+        val spannable = SpannableStringBuilder().apply {
+          append("$years")
+          append(" ", RelativeSizeSpan(0.5f), Spanned.SPAN_MARK_MARK)
+          append(context.getString(R.string.time_unit_year))
+        }
+        timeLabel.text = spannable
       } else {
-        timeLabel.text =
-          "${years}${context.getString(R.string.time_unit_year)} ${month}${context.getString(R.string.time_unit_month)}"
+        val spannable = SpannableStringBuilder().apply {
+          append("${years}${context.getString(R.string.time_unit_year)}")
+          append(" ", RelativeSizeSpan(0.5f), Spanned.SPAN_MARK_MARK)
+          append("${month}${context.getString(R.string.time_unit_month)}")
+        }
+        timeLabel.text = spannable
       }
     } else {
       val time: Int
       val unit: String
       if (offlineTime < 3600) {
-        time = (offlineTime / 60.0).roundToInt()
+        time = floor(offlineTime / 60.0).toInt()
         unit = context.resources.getQuantityString(R.plurals.time_unit_min, time)
       } else if (offlineTime < 86400) {
-        time = (offlineTime / 3600.0).roundToInt()
+        time = floor(offlineTime / 3600.0).toInt()
         unit = context.resources.getQuantityString(R.plurals.time_unit_hour, time)
       } else {
-        time = (offlineTime / 86400.0).roundToInt()
+        time = floor(offlineTime / 86400.0).toInt()
         unit = context.resources.getQuantityString(R.plurals.time_unit_day, time)
       }
       offlineLabel.text = context.getString(R.string.offline_for)
@@ -102,9 +124,17 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
     }
   }
 
+  private fun getLocale(): Locale {
+    val defaultLocale = Locale.getDefault()
+    return if (defaultLocale.language !in supportedLocales) {
+      Locale.US
+    } else {
+      defaultLocale
+    }
+  }
+
   private fun startUpdates(offlineTimestamp: Long) {
     val offlineTime = (System.currentTimeMillis() - offlineTimestamp) / 1000
-
 
     offlineTimeUpdater?.cancel()
     offlineTimeUpdater = Timer()
