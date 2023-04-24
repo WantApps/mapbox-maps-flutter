@@ -102,7 +102,7 @@ class ZnaidyOfflineTimeView : UIView {
             }
         } else if (diffs.day! > 7) {
             let format = DateFormatter()
-            format.dateFormat = "dd MMM"
+            format.dateFormat = "d MMM"
             offlineLabel.text = Localizaton.localize(key: "offline_since")
             let formattedDate = format.string(from: lastOnlineDate).uppercased().replacingOccurrences(of: ".", with: "")
             let parts = formattedDate.split(separator: " ")
