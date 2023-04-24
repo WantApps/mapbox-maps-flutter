@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="speed_units">км/ч</string>
-    <string name="offline_for">ОФФЛАЙН УЖЕ</string>
-    <string name="offline_since">ОФФЛАЙН С</string>
+    <string name="offline_for">ОФЛАЙН УЖЕ</string>
+    <string name="offline_since">ОФЛАЙН С</string>
     <plurals name="time_unit_min">
         <item quantity="one">мин</item>
         <item quantity="other">мин</item>

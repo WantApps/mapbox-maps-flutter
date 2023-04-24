@@ -11,9 +11,9 @@
 
 "speed_units" = "км/ч";
 
-"offline_for" = "ОФФЛАЙН УЖЕ";
+"offline_for" = "ОФЛАЙН УЖЕ";
 
-"offline_since" = "ОФФЛАЙН С";
+"offline_since" = "ОФЛАЙН С";
 
 "time_unit_minute" = "мин";
 

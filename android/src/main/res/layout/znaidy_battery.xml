@@ -8,19 +8,6 @@
     android:background="@drawable/battery_background"
     >
 
-    <ImageView
-        android:id="@+id/battery_icon"
-        android:layout_width="@dimen/battery_icon_size"
-        android:layout_height="@dimen/battery_icon_size"
-        android:src="@drawable/battery_full"
-        app:layout_constraintTop_toBottomOf="@id/battery_text"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        android:layout_marginBottom="3dp"
-        />
-
     <TextView
         android:id="@+id/battery_text"
         style="@style/MarkerTextBase"
@@ -35,7 +22,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="4dp"
+        android:layout_marginBottom="-2.5dp"
         tools:text="100%"
+        />
+
+    <ImageView
+        android:id="@+id/battery_icon"
+        android:layout_width="@dimen/battery_icon_size"
+        android:layout_height="@dimen/battery_icon_size"
+        android:src="@drawable/battery_full"
+        app:layout_constraintTop_toBottomOf="@id/battery_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_marginBottom="3dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

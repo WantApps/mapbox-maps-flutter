@@ -11,9 +11,9 @@
 
 "speed_units" = "км/год";
 
-"offline_for" = "ОФФЛАЙН ВЖЕ";
+"offline_for" = "ОФЛАЙН ВЖЕ";
 
-"offline_since" = "ОФФЛАЙН З";
+"offline_since" = "ОФЛАЙН З";
 
 "time_unit_minute" = "хв";
 

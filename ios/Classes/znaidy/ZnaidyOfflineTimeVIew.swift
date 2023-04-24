@@ -81,52 +81,49 @@ class ZnaidyOfflineTimeView : UIView {
     }
     
     private func onUpdate(offlineTimestamp: Int) {
+        let lastOnlineDate = Date(timeIntervalSince1970: Double(offlineTimestamp) / 1000.0)
+        let diffs = Calendar.current.dateComponents([.minute, .hour, .day, .month, .year], from: lastOnlineDate, to: Date())
         let offlineTime = Int(Date().timeIntervalSince1970 - Double(offlineTimestamp / 1000))
         
-        if (offlineTime > 86400 * 7) {
-            if (offlineTime > 86400 * 356) {
-                let years = Int((Double(offlineTime) / (86400 * 356)).rounded(.down))
-                let month = Int(((Double(offlineTime) - (Double(years) * 86400 * 356)) / (86400 * 30)).rounded(.down))
-                offlineLabel.text = Localizaton.localize(key: "offline_for")
-                if (month == 0) {
-                    let attributedString = NSMutableAttributedString()
-                    attributedString.append(NSAttributedString(string: "\(years)"))
-                    attributedString.append(NSAttributedString(string: " ", attributes: [ NSAttributedString.Key.font: MediaProvider.getFont(ofSize: 6, weight: .bold) ]))
-                    attributedString.append(NSAttributedString(string: "\(Localizaton.localize(key: "time_unit_year"))"))
-                    timeLabel.attributedText = attributedString
-                } else {
-                    let attributedString = NSMutableAttributedString()
-                    attributedString.append(NSAttributedString(string: "\(years)\(Localizaton.localize(key: "time_unit_year"))"))
-                    attributedString.append(NSAttributedString(string: " ", attributes: [ NSAttributedString.Key.font: MediaProvider.getFont(ofSize: 6, weight: .bold) ]))
-                    attributedString.append(NSAttributedString(string: "\(month)\(Localizaton.localize(key: "time_unit_month"))"))
-                    timeLabel.attributedText = attributedString
-                }
-            } else {
-                let date = Date(timeIntervalSince1970: Double(offlineTimestamp) / 1000.0)
-                let format = DateFormatter()
-                format.dateFormat = "dd MMM"
-                offlineLabel.text = Localizaton.localize(key: "offline_since")
-                let formattedDate = format.string(from: date).uppercased().replacingOccurrences(of: ".", with: "")
-                let parts = formattedDate.split(separator: " ")
+        if (diffs.year! >= 1) {
+            offlineLabel.text = Localizaton.localize(key: "offline_for")
+            if (diffs.month! % 12 == 0) {
                 let attributedString = NSMutableAttributedString()
-                attributedString.append(NSAttributedString(string: "\(parts[0])"))
+                attributedString.append(NSAttributedString(string: "\(diffs.year!)"))
                 attributedString.append(NSAttributedString(string: " ", attributes: [ NSAttributedString.Key.font: MediaProvider.getFont(ofSize: 6, weight: .bold) ]))
-                let monthName = String(parts[1])
-                attributedString.append(NSAttributedString(string: "\(monthName.prefix(3))"))
+                attributedString.append(NSAttributedString(string: "\(Localizaton.localize(key: "time_unit_year"))"))
+                timeLabel.attributedText = attributedString
+            } else {
+                let attributedString = NSMutableAttributedString()
+                attributedString.append(NSAttributedString(string: "\(diffs.year!)\(Localizaton.localize(key: "time_unit_year"))"))
+                attributedString.append(NSAttributedString(string: " ", attributes: [ NSAttributedString.Key.font: MediaProvider.getFont(ofSize: 6, weight: .bold) ]))
+                attributedString.append(NSAttributedString(string: "\(diffs.month!)\(Localizaton.localize(key: "time_unit_month"))"))
                 timeLabel.attributedText = attributedString
             }
+        } else if (diffs.day! > 7) {
+            let format = DateFormatter()
+            format.dateFormat = "dd MMM"
+            offlineLabel.text = Localizaton.localize(key: "offline_since")
+            let formattedDate = format.string(from: lastOnlineDate).uppercased().replacingOccurrences(of: ".", with: "")
+            let parts = formattedDate.split(separator: " ")
+            let attributedString = NSMutableAttributedString()
+            attributedString.append(NSAttributedString(string: "\(parts[0])"))
+            attributedString.append(NSAttributedString(string: " ", attributes: [ NSAttributedString.Key.font: MediaProvider.getFont(ofSize: 6, weight: .bold) ]))
+            let monthName = String(parts[1])
+            attributedString.append(NSAttributedString(string: "\(monthName.prefix(3))"))
+            timeLabel.attributedText = attributedString
         } else {
             var time = 0
             var unit = "min"
-            if (offlineTime < 3600) {
-                time = Int((Double(offlineTime) / 60).rounded(.down))
-                unit = Localizaton.localize(key: "time_unit_minute")
-            } else if (offlineTime < 86400) {
-                time = Int((Double(offlineTime) / 3600).rounded(.down))
-                unit = Localizaton.localizePlural(key: "time_unit_hour", count: time)
-            } else {
-                time = Int((Double(offlineTime) / 86400).rounded(.down))
+            if (diffs.day! >= 1) {
+                time = diffs.day!
                 unit = Localizaton.localizePlural(key: "time_unit_day", count: time)
+            } else if (diffs.hour! < 1) {
+                time = diffs.minute!
+                unit = Localizaton.localize(key: "time_unit_minute")
+            } else if (diffs.hour! < 24) {
+                time = diffs.hour!
+                unit = Localizaton.localizePlural(key: "time_unit_hour", count: time)
             }
             offlineLabel.text = Localizaton.localize(key: "offline_for")
             let attributedString = NSMutableAttributedString()

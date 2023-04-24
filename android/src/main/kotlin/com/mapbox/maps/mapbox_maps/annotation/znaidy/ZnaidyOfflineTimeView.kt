@@ -13,13 +13,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.mapbox.maps.mapbox_maps.R
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.*
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 
 class ZnaidyOfflineTimeView @JvmOverloads constructor(
@@ -50,24 +48,24 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
   }
 
   private fun onUpdateTick(offlineTimestamp: Long) {
-    val offlineTime = (System.currentTimeMillis() - offlineTimestamp) / 1000
+    val lastOnlineDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(offlineTimestamp), ZoneId.systemDefault())
+    val diffDays = ChronoUnit.DAYS.between(lastOnlineDate, LocalDateTime.now())
+    val diffYear = ChronoUnit.YEARS.between(lastOnlineDate, LocalDateTime.now())
 
-    val showDate = offlineTime > 86400 * 7 && offlineTime < 86400 * 356
+    val showDate = diffDays > 7 && diffYear < 1
     if (showDate) {
-      updateLastSeenDate(offlineTimestamp)
+      updateLastSeenDate(lastOnlineDate)
     } else {
-      updateOfflineTime(offlineTime)
+      updateOfflineTime(lastOnlineDate)
     }
   }
 
-  private fun updateLastSeenDate(offlineTimestamp: Long) {
+  private fun updateLastSeenDate(lastOnlineTime: LocalDateTime) {
     val offlineLabel = findViewById<TextView>(R.id.offline_label)
     val timeLabel = findViewById<TextView>(R.id.offline_time_label)
-    val zonedTime =
-      ZonedDateTime.ofInstant(Instant.ofEpochMilli(offlineTimestamp), ZoneId.systemDefault())
-    val format = DateTimeFormatter.ofPattern("dd MMM", getLocale())
+    val format = DateTimeFormatter.ofPattern("d MMM", getLocale())
     offlineLabel.text = context.getString(R.string.offline_since)
-    val formattedDate = format.format(zonedTime).uppercase().replace(".", "")
+    val formattedDate = format.format(lastOnlineTime).uppercase().replace(".", "")
     val parts = formattedDate.split(" ")
     val spannable = SpannableStringBuilder().apply {
       append(parts[0])
@@ -79,39 +77,39 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
     timeLabel.text = spannable
   }
 
-  private fun updateOfflineTime(offlineTime: Long) {
+  private fun updateOfflineTime(lastOnlineTime: LocalDateTime) {
     val offlineLabel = findViewById<TextView>(R.id.offline_label)
     val timeLabel = findViewById<TextView>(R.id.offline_time_label)
-    if (offlineTime > 86400 * 7) {
-      val years = floor(offlineTime / (86400.0 * 356)).toInt()
-      val month = floor((offlineTime - (years * 86400 * 356)) / (86400.0 * 30)).toInt()
+    if (ChronoUnit.DAYS.between(lastOnlineTime, LocalDateTime.now()) > 7) {
       offlineLabel.text = context.getString(R.string.offline_for)
-      if (month == 0) {
+      val period = Period.between(lastOnlineTime.toLocalDate(), LocalDate.now())
+      if (period.months.rem(12) == 0) {
         val spannable = SpannableStringBuilder().apply {
-          append("$years")
+          append("${period.years}")
           append(" ", RelativeSizeSpan(0.5f), Spanned.SPAN_MARK_MARK)
           append(context.getString(R.string.time_unit_year))
         }
         timeLabel.text = spannable
       } else {
         val spannable = SpannableStringBuilder().apply {
-          append("${years}${context.getString(R.string.time_unit_year)}")
+          append("${period.years}${context.getString(R.string.time_unit_year)}")
           append(" ", RelativeSizeSpan(0.5f), Spanned.SPAN_MARK_MARK)
-          append("${month}${context.getString(R.string.time_unit_month)}")
+          append("${period.months}${context.getString(R.string.time_unit_month)}")
         }
         timeLabel.text = spannable
       }
     } else {
       val time: Int
       val unit: String
-      if (offlineTime < 3600) {
-        time = floor(offlineTime / 60.0).toInt()
+      val duration = Duration.between(lastOnlineTime, LocalDateTime.now())
+      if (duration.toMinutes() < 60) {
+        time = duration.toMinutes().toInt()
         unit = context.resources.getQuantityString(R.plurals.time_unit_min, time)
-      } else if (offlineTime < 86400) {
-        time = floor(offlineTime / 3600.0).toInt()
+      } else if (duration.toHours() < 24) {
+        time = duration.toHours().toInt()
         unit = context.resources.getQuantityString(R.plurals.time_unit_hour, time)
       } else {
-        time = floor(offlineTime / 86400.0).toInt()
+        time = duration.toDays().toInt()
         unit = context.resources.getQuantityString(R.plurals.time_unit_day, time)
       }
       offlineLabel.text = context.getString(R.string.offline_for)
@@ -134,8 +132,6 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
   }
 
   private fun startUpdates(offlineTimestamp: Long) {
-    val offlineTime = (System.currentTimeMillis() - offlineTimestamp) / 1000
-
     offlineTimeUpdater?.cancel()
     offlineTimeUpdater = Timer()
     offlineTimeUpdater?.schedule(object : TimerTask() {
@@ -152,23 +148,4 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
     offlineTimeUpdater = null
   }
 
-}
-
-@TargetApi(21)
-class LetterSpacingSpan
-/**
- * @param letterSpacing
- */(val letterSpacing: Float) : MetricAffectingSpan() {
-
-  override fun updateDrawState(ds: TextPaint) {
-    apply(ds)
-  }
-
-  override fun updateMeasureState(paint: TextPaint) {
-    apply(paint)
-  }
-
-  private fun apply(paint: TextPaint) {
-    paint.letterSpacing = letterSpacing
-  }
 }
