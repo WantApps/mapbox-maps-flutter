@@ -52,7 +52,7 @@ class ZnaidyOfflineTimeView @JvmOverloads constructor(
     val diffDays = ChronoUnit.DAYS.between(lastOnlineDate, LocalDateTime.now())
     val diffYear = ChronoUnit.YEARS.between(lastOnlineDate, LocalDateTime.now())
 
-    val showDate = diffDays > 7 && diffYear < 1
+    val showDate = diffDays >= 7 && diffYear < 1
     if (showDate) {
       updateLastSeenDate(lastOnlineDate)
     } else {

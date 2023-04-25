@@ -100,7 +100,7 @@ class ZnaidyOfflineTimeView : UIView {
                 attributedString.append(NSAttributedString(string: "\(diffs.month!)\(Localizaton.localize(key: "time_unit_month"))"))
                 timeLabel.attributedText = attributedString
             }
-        } else if (diffs.day! > 7) {
+        } else if (diffs.day! >= 7) {
             let format = DateFormatter()
             format.dateFormat = "d MMM"
             offlineLabel.text = Localizaton.localize(key: "offline_since")
